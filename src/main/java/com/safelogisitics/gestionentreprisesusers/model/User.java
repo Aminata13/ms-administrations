@@ -16,8 +16,8 @@ public class User {
   private String id;
 
   @NotBlank
-  @Field(value = "oid")
-  private String oid;
+  @Field(value = "infosPerso")
+  private InfosPerso infosPerso;
   
   @NotBlank
   @Field(value = "username")
@@ -28,23 +28,23 @@ public class User {
   @Field(value = "password")
   private String password;
 
-  @NotBlank
-  @Field(value = "createDate")
-  private Date createDate;
-
   @JsonIgnore
   @Field(value = "status")
   private int status;
+
+  @NotBlank
+  @Field(value = "dateCreation")
+  private Date dateCreation;
 
 
   public User() {
   }
 
-  public User(String oid, String username, String password, int status) {
-    this.oid = oid;
+  public User(InfosPerso infosPerso, String username, String password, int status) {
+    this.infosPerso = infosPerso;
     this.username = username;
     this.password = password;
-    this.createDate = new Date();
+    this.dateCreation = new Date();
     this.status = status;
   }
 
@@ -56,12 +56,12 @@ public class User {
     this.id = id;
   }
 
-  public String getOid() {
-    return oid;
+  public InfosPerso getInfosPerso() {
+    return infosPerso;
   }
 
-  public void setOid(String oid) {
-    this.oid = oid;
+  public void setInfosPerso(InfosPerso infosPerso) {
+    this.infosPerso = infosPerso;
   }
 
   public String getUsername() {
@@ -88,11 +88,11 @@ public class User {
     this.status = status;
   }
 
-  public Date getCreateDate() {
-    return this.createDate;
+  public Date getDateCreation() {
+    return this.dateCreation;
   }
 
-  public void setCreateDate(Date createDate) {
-    this.createDate = createDate;
+  public void setDateCreation(Date dateCreation) {
+    this.dateCreation = dateCreation;
   }
 }

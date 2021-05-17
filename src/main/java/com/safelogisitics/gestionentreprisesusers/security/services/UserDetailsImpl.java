@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,7 +20,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	private String username;
 
-	private String oid;
+	private InfosPerso infosPerso;
 
 	private int status;
 
@@ -28,11 +29,11 @@ public class UserDetailsImpl implements UserDetails {
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(String id, String oid, String username, String password, int status,
+	public UserDetailsImpl(String id, InfosPerso infosPerso, String username, String password, int status,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
-		this.oid = oid;
+		this.infosPerso = infosPerso;
 		this.password = password;
 		this.authorities = authorities;
 	}
@@ -44,7 +45,7 @@ public class UserDetailsImpl implements UserDetails {
 
 		return new UserDetailsImpl(
 				user.getId(),
-        user.getOid(),
+        user.getInfosPerso(),
 				user.getUsername(), 
 				user.getPassword(),
 				user.getStatus(),
@@ -60,8 +61,8 @@ public class UserDetailsImpl implements UserDetails {
 		return id;
 	}
 
-	public String getOid() {
-		return oid;
+	public InfosPerso getInfosPerso() {
+		return infosPerso;
 	}
 
 	@Override
