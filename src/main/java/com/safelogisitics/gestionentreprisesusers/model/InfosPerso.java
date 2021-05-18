@@ -1,8 +1,11 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -26,6 +29,10 @@ public class InfosPerso {
 
   @Field(value = "adresse")
   private String adresse;
+
+  @DBRef
+  @Field(value = "comptes")
+  private Set<Compte> comptes = new HashSet<>();
 
   @Field(value = "dateCreation")
   private Date dateCreation;
@@ -88,6 +95,14 @@ public class InfosPerso {
 
   public void setAdresse(String adresse) {
     this.adresse = adresse;
+  }
+
+  public Set<Compte> getComptes() {
+    return this.comptes;
+  }
+
+  public void setComptes(Set<Compte> comptes) {
+    this.comptes = comptes;
   }
 
   public Date getDateCreation() {

@@ -1,0 +1,56 @@
+[
+  {
+    "libelle": "Gestion des utilisateurs",
+    "valeur": "GESTION_UTILISATEURS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des agents",
+    "valeur": "GESTION_AGENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des prestataires",
+    "valeur": "GESTION_PRESTATAIRES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des entreprises",
+    "valeur": "GESTION_ENTREPRISES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des comptes clients",
+    "valeur": "GESTION_CLIENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des tarifs",
+    "valeur": "GESTION_TARIFS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des commandes de livraisons",
+    "valeur": "GESTION_COMMANDE_LIVRAISONS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des commandes de prestations",
+    "valeur": "GESTION_COMMANDE_PRESTATIONS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Gestion des abonnements",
+    "valeur": "GESTION_ABONNEMENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  }
+]

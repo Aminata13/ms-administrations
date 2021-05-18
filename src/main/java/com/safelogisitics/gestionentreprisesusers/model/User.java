@@ -2,11 +2,10 @@ package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,37 +14,32 @@ public class User {
   @Id
   private String id;
 
-  @NotBlank
+  @DBRef
   @Field(value = "infosPerso")
   private InfosPerso infosPerso;
-  
-  @NotBlank
+
   @Field(value = "username")
   private String username;
 
-  @NotBlank
   @JsonIgnore
   @Field(value = "password")
   private String password;
 
-  @JsonIgnore
-  @Field(value = "status")
-  private int status;
+  @Field(value = "statut")
+  private int statut;
 
-  @NotBlank
   @Field(value = "dateCreation")
   private Date dateCreation;
-
 
   public User() {
   }
 
-  public User(InfosPerso infosPerso, String username, String password, int status) {
+  public User(InfosPerso infosPerso, String username, String password, int statut) {
     this.infosPerso = infosPerso;
     this.username = username;
     this.password = password;
     this.dateCreation = new Date();
-    this.status = status;
+    this.statut = statut;
   }
 
   public String getId() {
@@ -80,12 +74,12 @@ public class User {
     this.password = password;
   }
 
-  public int getStatus() {
-    return this.status;
+  public int getStatut() {
+    return this.statut;
   }
 
-  public void setStatus(int status) {
-    this.status = status;
+  public void setStatut(int statut) {
+    this.statut = statut;
   }
 
   public Date getDateCreation() {

@@ -39,17 +39,17 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = null; /* user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
-				.collect(Collectors.toList()); */
+		List<GrantedAuthority> authorities = user.getInfosPerso().getComptes().stream()
+      .map(compte -> new SimpleGrantedAuthority(compte.getType().name()))
+      .collect(Collectors.toList());
 
 		return new UserDetailsImpl(
-				user.getId(),
-        user.getInfosPerso(),
-				user.getUsername(), 
-				user.getPassword(),
-				user.getStatus(),
-				authorities);
+      user.getId(),
+      user.getInfosPerso(),
+      user.getUsername(), 
+      user.getPassword(),
+      user.getStatut(),
+      authorities);
 	}
 
 	@Override
