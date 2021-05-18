@@ -21,9 +21,9 @@ public interface RoleService {
 
   public Collection<Role> updateMultiRole(Collection<RoleRequest> roleRequests);
 
-  public void delete(String id);
+  public void deleteRole(String id);
 
-  public void deleteMultiple(Collection<String> ids);
+  public void deleteMultiRole(Collection<String> ids);
 
   public Collection<Privilege> getPrivileges();
 

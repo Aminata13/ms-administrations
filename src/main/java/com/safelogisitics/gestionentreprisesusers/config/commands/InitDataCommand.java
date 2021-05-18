@@ -92,6 +92,7 @@ public class InitDataCommand implements CommandLineRunner {
 
     role.setLibelle("Super Administrateur");
     role.setEditable(false);
+    role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
     role.setPrivileges(new HashSet<Privilege>(privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR)));
     roleDao.save(role);
 

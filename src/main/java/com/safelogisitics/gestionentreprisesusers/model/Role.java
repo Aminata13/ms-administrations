@@ -3,6 +3,9 @@ package com.safelogisitics.gestionentreprisesusers.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,8 +20,13 @@ public class Role {
   @Field(value = "libelle")
   private String libelle;
 
+  @JsonIgnore
   @Field(value = "editable")
   private boolean editable;
+
+  @JsonIgnore
+  @Field(value = "type")
+  private ECompteType type;
 
   @DBRef
   @Field(value = "privileges")
@@ -54,6 +62,14 @@ public class Role {
 
   public void setEditable(boolean editable) {
     this.editable = editable;
+  }
+
+  public ECompteType getType() {
+    return this.type;
+  }
+
+  public void setType(ECompteType type) {
+    this.type = type;
   }
 
   public Set<Privilege> getPrivileges() {

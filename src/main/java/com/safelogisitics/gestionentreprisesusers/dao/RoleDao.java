@@ -13,8 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface RoleDao extends PagingAndSortingRepository<Role, String> {
   Optional<Role> findByLibelle(String libelle);
 
-  Collection<Role> findByPrivilegesType(ECompteType type);
+  Collection<Role> findByTypeAndEditableIsTrue(ECompteType type);
   
   Boolean existsByLibelle(String libelle);
-  
 }

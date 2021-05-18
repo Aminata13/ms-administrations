@@ -25,11 +25,11 @@ public class RoleServiceImpl implements RoleService {
   private RoleDao roleDao;
 
   public Collection<Role> getRoles() {
-    return roleDao.findByPrivilegesType(ECompteType.COMPTE_ADMINISTRATEUR);
+    return roleDao.findByTypeAndEditableIsTrue(ECompteType.COMPTE_ADMINISTRATEUR);
   }
 
   public Collection<Role> getRoles(ECompteType type) {
-    return roleDao.findByPrivilegesType(type);
+    return roleDao.findByTypeAndEditableIsTrue(type);
   }
 
   @Override
@@ -39,9 +39,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     Role role = new Role(roleRequest.getLibelle());
-    Set<Privilege> privileges = (Set<Privilege>) privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR);
+    Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
 
     role.setPrivileges(privileges);
+    role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
 
     roleDao.save(role);
 
@@ -74,7 +75,7 @@ public class RoleServiceImpl implements RoleService {
     Role role = _role.get();
 
     role.setLibelle(roleRequest.getLibelle());
-    Set<Privilege> privileges = (Set<Privilege>) privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR);
+    Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
 
     role.setPrivileges(privileges);
 
@@ -99,7 +100,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public void delete(String id) {
+  public void deleteRole(String id) {
     Optional<Role> _role = roleDao.findById(id);
 
     if (!_role.isPresent()) {
@@ -110,10 +111,10 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public void deleteMultiple(Collection<String> ids) {
+  public void deleteMultiRole(Collection<String> ids) {
     for (String id : ids) {
       try {
-        delete(id);
+        deleteRole(id);
       } catch (Exception e) {
         continue;
       }
