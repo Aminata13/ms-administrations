@@ -17,9 +17,6 @@ public class Role {
   @Field(value = "libelle")
   private String libelle;
 
-  @Field(value = "statut")
-  private int statut;
-
   @Field(value = "editable")
   private boolean editable;
 
@@ -30,9 +27,8 @@ public class Role {
   public Role() {
   }
 
-  public Role(String libelle, int statut) {
+  public Role(String libelle) {
     this.libelle = libelle;
-    this.statut = statut;
     this.editable = true;
   }
 
@@ -50,14 +46,6 @@ public class Role {
 
   public void setLibelle(String libelle) {
     this.libelle = libelle;
-  }
-  
-  public int getStatut() {
-    return this.statut;
-  }
-
-  public void setStatut(int statut) {
-    this.statut = statut;
   }
   
   public boolean isEditable() {
