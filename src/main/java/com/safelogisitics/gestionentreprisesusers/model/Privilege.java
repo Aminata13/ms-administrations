@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EPrivilege;
 
@@ -19,9 +20,11 @@ public class Privilege {
   @Field(value = "valeur")
   private EPrivilege valeur;
 
+  @JsonIgnore
   @Field(value = "type")
   private ECompteType type;
 
+  @JsonIgnore
   @Field(value = "statut")
   private int statut;
 

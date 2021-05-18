@@ -24,6 +24,14 @@ public class RoleServiceImpl implements RoleService {
   @Autowired
   private RoleDao roleDao;
 
+  public Collection<Role> getRoles() {
+    return roleDao.findByPrivilegesType(ECompteType.COMPTE_ADMINISTRATEUR);
+  }
+
+  public Collection<Role> getRoles(ECompteType type) {
+    return roleDao.findByPrivilegesType(type);
+  }
+
   @Override
   public Role createRole(RoleRequest roleRequest) {
     if (roleDao.existsByLibelle(roleRequest.getLibelle())) {
@@ -112,10 +120,12 @@ public class RoleServiceImpl implements RoleService {
     }
   }
 
+  @Override
   public Collection<Privilege> getPrivileges() {
     return privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR);
   }
 
+  @Override
   public Collection<Privilege> getPrivileges(ECompteType type) {
     return privilegeDao.findByType(type);
   }

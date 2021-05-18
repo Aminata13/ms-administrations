@@ -8,6 +8,10 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RoleRequest;
 
 public interface RoleService {
+
+  public Collection<Role> getRoles();
+
+  public Collection<Role> getRoles(ECompteType type);
   
   public Role createRole(RoleRequest roleRequest);
 
