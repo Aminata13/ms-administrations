@@ -1,15 +1,19 @@
 package com.safelogisitics.gestionentreprisesusers.security.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,9 +43,9 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = user.getInfosPerso().getComptes().stream()
+		List<GrantedAuthority> authorities = getGrantedAuthorities(user.getInfosPerso().getTypeAndPrivileges()); /* user.getInfosPerso().getComptes().stream()
       .map(compte -> new SimpleGrantedAuthority(compte.getType().name()))
-      .collect(Collectors.toList());
+      .collect(Collectors.toList()); */
 
 		return new UserDetailsImpl(
       user.getId(),
@@ -110,4 +114,15 @@ public class UserDetailsImpl implements UserDetails {
 		UserDetailsImpl user = (UserDetailsImpl) o;
 		return Objects.equals(id, user.id);
 	}
+
+  public static List<GrantedAuthority> getGrantedAuthorities(List<String> typeAndPrivileges) {
+
+    List<GrantedAuthority> _authorities = new ArrayList<>();
+
+    for (String _authority : typeAndPrivileges) {
+      _authorities.add(new SimpleGrantedAuthority(_authority));
+    }
+
+    return _authorities;
+  } 
 }

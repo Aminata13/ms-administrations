@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, String> {
   Optional<InfosPerso> findByEmail(String email);
 
-  Boolean existsByEmail(String email);
+  boolean existsByEmail(String email);
 
-  Boolean existsByEmailOrTelephone(String email, String telephone);
+  boolean existsByEmailOrTelephone(String email, String telephone);
 
   
 }

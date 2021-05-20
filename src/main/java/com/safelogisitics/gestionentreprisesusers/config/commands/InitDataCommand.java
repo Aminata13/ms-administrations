@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.config.commands;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -69,9 +70,10 @@ public class InitDataCommand implements CommandLineRunner {
     InfosPerso newInfosPerso = _newInfosPerso[0];
 
     if (!infosPersoDao.existsByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone())) {
+      newInfosPerso.setDateCreation(new Date());
       infosPersoDao.save(newInfosPerso);
     }
-    
+
     InfosPerso infosPerso = infosPersoDao.findByEmail(newInfosPerso.getEmail()).get();
 
     Privilege[] newPrivileges = objectMapper.readValue(new FileInputStream("data/privileges.json"), Privilege[].class);

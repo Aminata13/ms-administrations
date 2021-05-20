@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface EntrepriseDao extends PagingAndSortingRepository<Entreprise, String> {
   Optional<Entreprise> findByDenomination(String denomination);
 
-  Boolean existsByDenomination(String denomination);
+  boolean existsByDenomination(String denomination);
 }

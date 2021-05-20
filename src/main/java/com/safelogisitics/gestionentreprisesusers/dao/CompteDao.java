@@ -18,10 +18,10 @@ public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
   
   Optional<Compte> findByInfosPersoAndEntreprise(InfosPerso infosPerso, Entreprise entreprise);
 
-  Boolean existsByInfosPerso(InfosPerso infosPerso);
+  boolean existsByInfosPerso(InfosPerso infosPerso);
   
-  Boolean existsByInfosPersoAndEntreprise(InfosPerso infosPerso, Entreprise entreprise);
+  boolean existsByInfosPersoAndEntreprise(InfosPerso infosPerso, Entreprise entreprise);
 
-  Boolean existsByInfosPersoAndType(InfosPerso infosPerso, ECompteType type);
+  boolean existsByInfosPersoAndType(InfosPerso infosPerso, ECompteType type);
 
 }

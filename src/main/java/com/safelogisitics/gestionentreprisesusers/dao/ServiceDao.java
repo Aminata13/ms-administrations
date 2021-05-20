@@ -14,5 +14,5 @@ public interface ServiceDao extends PagingAndSortingRepository<Service, String> 
 
   Collection<Service> findByPublicService(boolean publicService);
 
-  Boolean existsByLibelle(String libelle);
+  boolean existsByLibelle(String libelle);
 }

@@ -21,5 +21,5 @@ public interface PrivilegeDao extends PagingAndSortingRepository<Privilege, Stri
 
   Collection<Privilege> findByIdInAndType(Set<String> ids, ECompteType type);
 
-  Boolean existsByTypeAndValeur(ECompteType type, EPrivilege valeur);  
+  boolean existsByTypeAndValeur(ECompteType type, EPrivilege valeur);  
 }

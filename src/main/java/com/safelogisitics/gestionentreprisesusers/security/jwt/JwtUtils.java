@@ -4,10 +4,13 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 
@@ -21,12 +24,20 @@ public class JwtUtils {
 	@Value("${security.jwt.expiration}")
 	private int jwtExpirationMs;
 
+  @Autowired
+  private InfosPersoDao infosPersoDao;
+
 	public String generateJwtToken(Authentication authentication) {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    InfosPerso infosPerso = infosPersoDao.findById(userPrincipal.getInfosPerso().getId()).get();
 
 		return Jwts.builder()
 				.setSubject((userPrincipal.getUsername()))
+        .claim("id", infosPerso.getId())
+        .claim("username", userPrincipal.getUsername())
+				.claim("infosPerso", infosPerso.getComptes())
+				.claim("rolesAndPrivileges", infosPerso.getTypeAndPrivileges())
 				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret)

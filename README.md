@@ -3,8 +3,7 @@ The following was discovered as part of building this project:
 
 * The original package name 'com.safelogisitics.gestion-entreprises-users' is invalid and this project uses 'com.safelogisitics.gestionentreprisesusers' instead.
 
-* API URL: {{url}}/api/v1/administrations/{{route}}
-Pour {{url}} referer sur le fichier src/main/resources/application.properties
+* API URL: {{url}}/api/v1/administrations/{{route}}. (Pour {{url}} referer sur le fichier src/main/resources/application.properties)
 
 # Getting Started
 

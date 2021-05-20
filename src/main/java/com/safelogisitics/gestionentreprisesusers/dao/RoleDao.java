@@ -15,5 +15,5 @@ public interface RoleDao extends PagingAndSortingRepository<Role, String> {
 
   Collection<Role> findByTypeAndEditableIsTrue(ECompteType type);
   
-  Boolean existsByLibelle(String libelle);
+  boolean existsByLibelle(String libelle);
 }

@@ -1,7 +1,9 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -112,4 +114,20 @@ public class InfosPerso {
   public void setDateCreation(Date dateCreation) {
     this.dateCreation = dateCreation;
   }
+
+  public List<String> getTypeAndPrivileges() {
+
+    List<String> _authorities = new ArrayList<>();
+
+    for (Compte compte : comptes) {
+      _authorities.add(compte.getType().name());
+      if (compte.getRole() != null) {
+        for (Privilege privilege: compte.getRole().getPrivileges()) {
+          _authorities.add(privilege.getValeur().name());
+        }
+      }
+    }
+
+    return _authorities;
+  } 
 }
