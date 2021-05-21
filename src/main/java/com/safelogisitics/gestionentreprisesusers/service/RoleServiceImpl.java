@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.dao.PrivilegeDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
+import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -122,8 +123,8 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Collection<Privilege> getPrivileges() {
-    return privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR);
+  public Collection<PrivilegeDefaultFields> getPrivileges() {
+    return privilegeDao.findByTypeWithDefaultFields(ECompteType.COMPTE_ADMINISTRATEUR);
   }
 
   @Override

@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Collection;
 
+import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -25,7 +26,7 @@ public interface RoleService {
 
   public void deleteMultiRole(Collection<String> ids);
 
-  public Collection<Privilege> getPrivileges();
+  public Collection<PrivilegeDefaultFields> getPrivileges();
 
   public Collection<Privilege> getPrivileges(ECompteType type);
 }

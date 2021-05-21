@@ -98,11 +98,13 @@ public class InitDataCommand implements CommandLineRunner {
     role.setPrivileges(new HashSet<Privilege>(privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR)));
     roleDao.save(role);
 
-    Compte compte = new Compte();
+    Compte compte;
     Optional<Compte> _compte = compteDao.findByInfosPersoAndType(infosPerso, ECompteType.COMPTE_ADMINISTRATEUR);
 
     if (_compte.isPresent()) {
       compte = _compte.get();
+    } else {
+      compte = new Compte();
     }
 
     compte.setType(ECompteType.COMPTE_ADMINISTRATEUR);

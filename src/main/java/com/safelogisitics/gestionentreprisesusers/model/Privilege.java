@@ -20,7 +20,6 @@ public class Privilege {
   @Field(value = "valeur")
   private EPrivilege valeur;
 
-  @JsonIgnore
   @Field(value = "type")
   private ECompteType type;
 

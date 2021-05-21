@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "infosPersos")
 public class InfosPerso {
-  
+
   @Id
   private String id;
   
@@ -32,7 +32,6 @@ public class InfosPerso {
   @Field(value = "adresse")
   private String adresse;
 
-  @DBRef
   @Field(value = "comptes")
   private Set<Compte> comptes = new HashSet<>();
 

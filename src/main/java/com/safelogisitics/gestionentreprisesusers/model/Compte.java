@@ -136,9 +136,4 @@ public class Compte {
   public void setDateCreation(Date dateCreation) {
     this.dateCreation = dateCreation;
   }
-
-  @Override
-  public String toString() {
-    return id;
-  }
 }
