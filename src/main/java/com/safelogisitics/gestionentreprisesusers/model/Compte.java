@@ -2,11 +2,15 @@ package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -20,9 +24,8 @@ public class Compte {
   @Field(value = "type")
   private ECompteType type;
 
-  @DBRef
-  @Field(value = "infosPerso")
-  private InfosPerso infosPerso;
+  @Field(value = "infosPersoId")
+  private String infosPersoId;
 
   @DBRef
   @Field(value = "entreprise")
@@ -46,27 +49,27 @@ public class Compte {
     this.dateCreation = new Date();
   }
 
-  public Compte(ECompteType type, InfosPerso infosPerso, Role role, int statut) {
+  public Compte(ECompteType type, String infosPersoId, Role role, int statut) {
     this.type = type;
-    this.infosPerso = infosPerso;
+    this.infosPersoId = infosPersoId;
     this.role = role;
     this.statut = statut;
     this.dateCreation = new Date();
   }
 
-  public Compte(ECompteType type, InfosPerso infosPerso, Role role, Set<Service> services, int statut) {
+  public Compte(ECompteType type, String infosPersoId, Role role, Set<Service> services, int statut) {
     this.type = type;
-    this.infosPerso = infosPerso;
+    this.infosPersoId = infosPersoId;
     this.role = role;
     this.services = services;
     this.statut = statut;
     this.dateCreation = new Date();
   }
 
-  public Compte(ECompteType type, Entreprise entreprise, InfosPerso infosPerso, Role role, Set<Service> services, int statut) {
+  public Compte(ECompteType type, Entreprise entreprise, String infosPersoId, Role role, Set<Service> services, int statut) {
     this.type = type;
     this.entreprise = entreprise;
-    this.infosPerso = infosPerso;
+    this.infosPersoId = infosPersoId;
     this.role = role;
     this.services = services;
     this.statut = statut;
@@ -89,12 +92,12 @@ public class Compte {
     this.type = type;
   }
 
-  public InfosPerso getInfosPerso() {
-    return this.infosPerso;
+  public String getInfosPersoId() {
+    return this.infosPersoId;
   }
 
-  public void setInfosPerso(InfosPerso infosPerso) {
-    this.infosPerso = infosPerso;
+  public void setInfosPersoId(String infosPersoId) {
+    this.infosPersoId = infosPersoId;
   }
 
   public Entreprise getEntreprise() {
@@ -135,5 +138,29 @@ public class Compte {
 
   public void setDateCreation(Date dateCreation) {
     this.dateCreation = dateCreation;
+  }
+
+  public Object getCustomRoleFields(String privilegeData) {
+    Object customRoleField = new Object() {
+      public final String id = role.getId();
+      public final String libelle = role.getLibelle();
+      public final ECompteType type = role.getType();
+      public final List<String> privileges = role.getPrivileges().stream().map(privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name())
+      .collect(Collectors.toList());
+    };
+    return customRoleField;
+  }
+
+  public int hashCode() {
+    return Objects.hash(type, infosPersoId, entreprise, 1000);
+  }
+
+  public boolean equals(Object obj) {
+    if (obj instanceof Compte) {
+        Compte pp = (Compte) obj;
+        return (pp.hashCode() == this.hashCode());
+    } else {
+        return false;
+    }
   }
 }

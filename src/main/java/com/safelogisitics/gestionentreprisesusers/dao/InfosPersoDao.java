@@ -13,7 +13,5 @@ public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, St
 
   boolean existsByEmail(String email);
 
-  boolean existsByEmailOrTelephone(String email, String telephone);
-
-  
+  boolean existsByEmailOrTelephone(String email, String telephone);  
 }

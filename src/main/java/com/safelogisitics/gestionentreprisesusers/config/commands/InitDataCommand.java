@@ -99,7 +99,7 @@ public class InitDataCommand implements CommandLineRunner {
     roleDao.save(role);
 
     Compte compte;
-    Optional<Compte> _compte = compteDao.findByInfosPersoAndType(infosPerso, ECompteType.COMPTE_ADMINISTRATEUR);
+    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ADMINISTRATEUR);
 
     if (_compte.isPresent()) {
       compte = _compte.get();
@@ -108,11 +108,15 @@ public class InitDataCommand implements CommandLineRunner {
     }
 
     compte.setType(ECompteType.COMPTE_ADMINISTRATEUR);
-    compte.setInfosPerso(infosPerso);
+    compte.setInfosPersoId(infosPerso.getId());
     compte.setRole(role);
     compte.setStatut(1);
 
     compteDao.save(compte);
+
+    infosPerso.addCompte(compte);
+
+    infosPersoDao.save(infosPerso);
 
     Optional<User> _user = userDao.findByUsername(infosPerso.getEmail());
 

@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.security.jwt;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,8 @@ public class JwtUtils {
 				.setSubject((userPrincipal.getUsername()))
         .claim("id", infosPerso.getId())
         .claim("username", userPrincipal.getUsername())
-				.claim("infosPerso", infosPerso.getComptes())
-				.claim("rolesAndPrivileges", infosPerso.getTypeAndPrivileges())
+				.claim("infosPerso", infosPerso.getDefaultFields())
+				.claim("comptes", infosPerso.getComptes().stream().map(compte -> compte.getCustomRoleFields("valeur")).collect(Collectors.toList()))
 				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret)

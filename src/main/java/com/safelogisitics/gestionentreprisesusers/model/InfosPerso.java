@@ -32,6 +32,7 @@ public class InfosPerso {
   @Field(value = "adresse")
   private String adresse;
 
+  @DBRef
   @Field(value = "comptes")
   private Set<Compte> comptes = new HashSet<>();
 
@@ -102,8 +103,10 @@ public class InfosPerso {
     return this.comptes;
   }
 
-  public void setComptes(Set<Compte> comptes) {
-    this.comptes = comptes;
+  public void addCompte(Compte compte) {
+    if (!this.comptes.contains(compte)) {
+      this.comptes.add(compte);
+    }
   }
 
   public Date getDateCreation() {
@@ -115,7 +118,6 @@ public class InfosPerso {
   }
 
   public List<String> getTypeAndPrivileges() {
-
     List<String> _authorities = new ArrayList<>();
 
     for (Compte compte : comptes) {
@@ -128,5 +130,18 @@ public class InfosPerso {
     }
 
     return _authorities;
-  } 
+  }
+
+  public Object getDefaultFields() {
+    Object defaultFields = new Object() {
+      public final String id = getId();
+      public final String prenom = getPrenom();
+      public final String nom = getNom();
+      public final String email = getEmail();
+      public final String telephone = getTelephone();
+      public final String adresse = getAdresse();
+      public final String dateCreation = getDateCreation().toString();
+    };
+    return defaultFields;
+  }
 }
