@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.controller;
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.service.UserService;
 
@@ -30,4 +31,10 @@ public class AuthController {
 
 		return ResponseEntity.ok(jwtRes);
 	}
+
+  @PostMapping("/refreshtoken")
+	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    JwtResponse jwtRes = userService.refreshToken(request);
+		return ResponseEntity.ok(jwtRes);
+  }
 }

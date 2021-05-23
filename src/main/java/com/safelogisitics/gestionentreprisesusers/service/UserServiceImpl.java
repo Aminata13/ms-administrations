@@ -2,7 +2,10 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
+import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtUtils;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	PasswordEncoder encoder;
 
+  @Autowired
+	RefreshTokenService refreshTokenService;
+
 	@Autowired
   JwtUtils jwtUtils;
   
@@ -43,6 +49,23 @@ public class UserServiceImpl implements UserService {
       return null;
     }
 
-		return new JwtResponse(jwt);
+    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+		return new JwtResponse(jwt, refreshToken.getToken());
+  }
+
+  @Override
+  public JwtResponse refreshToken(TokenRefreshRequest request) {
+    String requestRefreshToken = request.getRefreshToken();
+
+    return refreshTokenService.findByToken(requestRefreshToken)
+      .map(refreshTokenService::verifyExpiration)
+      .map(RefreshToken::getUser)
+      .map(user -> {
+        String token = jwtUtils.generateJwtTokenFromUser(user);
+        return new JwtResponse(token, requestRefreshToken);
+      })
+      .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+        "Refresh token is not not found!"));
   }
 }

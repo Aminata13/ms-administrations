@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 
@@ -26,24 +26,27 @@ public class JwtUtils {
 	private int jwtExpirationMs;
 
   @Autowired
-  private InfosPersoDao infosPersoDao;
+  private UserDao userDao;
 
 	public String generateJwtToken(Authentication authentication) {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-    InfosPerso infosPerso = infosPersoDao.findById(userPrincipal.getInfosPerso().getId()).get();
 
-		return Jwts.builder()
-				.setSubject((userPrincipal.getUsername()))
-        .claim("id", infosPerso.getId())
-        .claim("username", userPrincipal.getUsername())
-				.claim("infosPerso", infosPerso.getDefaultFields())
-				.claim("comptes", infosPerso.getComptes().stream().map(compte -> compte.getCustomRoleFields("valeur")).collect(Collectors.toList()))
-				.setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-				.signWith(SignatureAlgorithm.HS512, jwtSecret)
-				.compact();
+		return generateJwtTokenFromUser(userDao.findById(userPrincipal.getId()).get());
 	}
+
+  public String generateJwtTokenFromUser(User user) {
+    return Jwts.builder()
+    .setSubject((user.getUsername()))
+    .claim("id", user.getInfosPerso().getId())
+    .claim("username", user.getUsername())
+    .claim("infosPerso", user.getInfosPerso().getDefaultFields())
+    .claim("comptes", user.getInfosPerso().getComptes().stream().map(compte -> compte.getCustomRoleFields("valeur")).collect(Collectors.toList()))
+    .setIssuedAt(new Date())
+    .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+    .signWith(SignatureAlgorithm.HS512, jwtSecret)
+    .compact();
+  }
 
 	public String getUserNameFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
