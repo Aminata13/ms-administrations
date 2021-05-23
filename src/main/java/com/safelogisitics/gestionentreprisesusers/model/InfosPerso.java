@@ -141,6 +141,11 @@ public class InfosPerso {
       public final String telephone = getTelephone();
       public final String adresse = getAdresse();
       public final String dateCreation = getDateCreation().toString();
+
+      @Override
+      public String toString() {
+        return String.format("%s %s %s %s %s %s %s", id, prenom, nom, email, telephone, adresse, dateCreation); 
+      }
     };
     return defaultFields;
   }

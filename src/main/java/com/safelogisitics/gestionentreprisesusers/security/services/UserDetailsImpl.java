@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -43,9 +39,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = getGrantedAuthorities(user.getInfosPerso().getTypeAndPrivileges()); /* user.getInfosPerso().getComptes().stream()
-      .map(compte -> new SimpleGrantedAuthority(compte.getType().name()))
-      .collect(Collectors.toList()); */
+		List<GrantedAuthority> authorities = getGrantedAuthorities(user.getInfosPerso().getTypeAndPrivileges());
 
 		return new UserDetailsImpl(
       user.getId(),

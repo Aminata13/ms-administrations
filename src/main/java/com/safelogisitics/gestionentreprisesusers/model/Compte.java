@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.aggregation.ConvertOperators.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -147,6 +146,11 @@ public class Compte {
       public final ECompteType type = role.getType();
       public final List<String> privileges = role.getPrivileges().stream().map(privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name())
       .collect(Collectors.toList());
+      
+      @Override
+      public String toString() {
+        return String.format("%s %s %s %s", id, libelle, type, privileges); 
+      }
     };
     return customRoleField;
   }

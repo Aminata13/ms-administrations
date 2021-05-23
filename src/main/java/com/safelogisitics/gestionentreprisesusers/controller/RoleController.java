@@ -4,11 +4,7 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
-import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RoleRequest;
 import com.safelogisitics.gestionentreprisesusers.service.RoleService;
@@ -31,12 +27,6 @@ public class RoleController {
   
   @Autowired
   private RoleService roleService;
-  
-  @Autowired
-  private InfosPersoDao infosPersoDao;
-
-  @Autowired
-  private CompteDao compteDao;
 
   @GetMapping("/list")
 	public ResponseEntity<?> allRoles() {
@@ -84,10 +74,5 @@ public class RoleController {
 	public ResponseEntity<?> allPrivileges() {
     Collection<PrivilegeDefaultFields> privileges = roleService.getPrivileges();
     return ResponseEntity.status(HttpStatus.OK).body(privileges);
-	}
-
-  @GetMapping("infosperso/{id}")
-	public ResponseEntity<?> getInfosPerso(@PathVariable(value = "id") String id) {
-		return ResponseEntity.status(HttpStatus.OK).body(infosPersoDao.findById(id).get());
 	}
 }
