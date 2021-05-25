@@ -18,7 +18,7 @@ public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, St
   // @Query(value = "{'comptes': ?0}", fields = "{'comptes' : 0}")
   Page<InfosPerso> findByComptesIsNull(Pageable pageable);
 
-  @Query("{ 'comptes': { $elemMatch: { 'type' : {$regex: ?0, $options: 'i'} } }}")
+  @Query("{'comptes': {'$elemMatch': {'type': ?0}}}")
   Page<InfosPerso> findByComptesType(ECompteType type, Pageable pageable);
 
   Optional<InfosPerso> findByEmail(String email);
