@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
   Collection<Compte> findByInfosPersoId(String infosPersoId);
 
+  Collection<Compte> findByType(ECompteType type);
+
   Optional<Compte> findByInfosPersoIdAndType(String infosPerso, ECompteType type);
   
   Optional<Compte> findByInfosPersoIdAndEntreprise(String infosPersoId, Entreprise entreprise);

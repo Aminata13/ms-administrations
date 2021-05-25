@@ -2,8 +2,10 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
@@ -57,9 +59,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public Page<InfosPerso> getInfosPersos(ECompteType type, Pageable pageable) {
-    return infosPersoDao.findByComptesType(type, pageable);
+    List<String> ids = compteDao.findByType(type)
+      .stream()
+      .map(compte -> compte.getInfosPersoId())
+      .collect(Collectors.toList());
+
+    return infosPersoDao.findByIdIn(ids, pageable);
   }
-  
+
   @Override
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest) {
     Optional<InfosPerso> _infosPerso = infosPersoDao.findByEmailOrTelephone(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone());

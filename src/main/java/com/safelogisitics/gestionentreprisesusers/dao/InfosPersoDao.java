@@ -1,13 +1,12 @@
 package com.safelogisitics.gestionentreprisesusers.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,8 +17,7 @@ public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, St
   // @Query(value = "{'comptes': ?0}", fields = "{'comptes' : 0}")
   Page<InfosPerso> findByComptesIsNull(Pageable pageable);
 
-  @Query("{'comptes': {'$elemMatch': {'type': ?0} } }")
-  Page<InfosPerso> findByComptesType(ECompteType type, Pageable pageable);
+  Page<InfosPerso> findByIdIn(List<String> ids, Pageable pageable);
 
   Optional<InfosPerso> findByEmail(String email);
 
