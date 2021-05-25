@@ -8,6 +8,8 @@ import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,8 @@ public interface InfosPersoService {
   public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte administrateur
 
   public void deleteCompteAdministrateur(String infosPersoId); // 
+
+  public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
 
   public Collection<Compte> getInfosPersoComptes(String id);
 }

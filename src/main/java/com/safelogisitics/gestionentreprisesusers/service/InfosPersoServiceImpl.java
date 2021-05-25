@@ -15,6 +15,9 @@ import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
   RoleService roleService;
+
+  @Autowired
+  UserService userService;
 
   @Autowired
 	PasswordEncoder encoder;
@@ -144,6 +150,35 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       user.setStatut(0);
       userDao.save(user);
     });
+  }
+
+  public JwtResponse clientRegistration(RegisterRequest request) {
+    InfosPersoRequest infosPersoRequest = request;
+
+    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
+
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresentOrElse(compte -> {
+      compte.setDeleted(false);
+      compte.setStatut(1);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+    }, () -> {
+      Compte compte = new Compte(ECompteType.COMPTE_PARTICULIER, infosPerso.getId(), 1);
+      compteDao.save(compte);
+      infosPerso.addCompte(compte);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+      user.setStatut(1);
+      user.setUsername(request.getUsername());
+      user.setPassword(encoder.encode(request.getPassword()));
+      userDao.save(user);
+    }, () -> {
+      User user = new User(infosPerso, request.getUsername(), encoder.encode(request.getPassword()), 1);
+      userDao.save(user);
+    });
+
+    return userService.authenticate(new LoginRequest(request.getUsername(), request.getPassword()));
   }
 
   @Override
