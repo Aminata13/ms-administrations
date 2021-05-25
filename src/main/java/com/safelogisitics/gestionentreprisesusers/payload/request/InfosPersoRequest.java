@@ -15,7 +15,6 @@ public class InfosPersoRequest {
   @NotBlank
   protected String telephone;
 
-  @NotBlank
   protected String adresse;
 
   public String getPrenom() {
