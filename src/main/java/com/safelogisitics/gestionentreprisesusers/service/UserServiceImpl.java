@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
   JwtUtils jwtUtils;
-  
+
   @Override
   public JwtResponse authenticate(LoginRequest loginRequest) {
     Authentication authentication = authenticationManager.authenticate(

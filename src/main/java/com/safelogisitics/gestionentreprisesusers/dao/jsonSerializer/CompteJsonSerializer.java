@@ -13,19 +13,21 @@ import java.io.IOException;
 @JsonComponent
 public class CompteJsonSerializer extends JsonSerializer<Compte> {
 
-    @Override
-    public void serialize(Compte compte, JsonGenerator jsonGenerator, 
-      SerializerProvider serializerProvider) throws IOException, 
-      JsonProcessingException {
- 
+  @Override
+  public void serialize(Compte compte, JsonGenerator jsonGenerator, 
+    SerializerProvider serializerProvider) throws IOException, 
+    JsonProcessingException {
+      if (!compte.isDeleted()) {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("id", compte.getId());
         jsonGenerator.writeStringField("type", compte.getType().name());
         jsonGenerator.writeStringField("infosPersoId", compte.getInfosPersoId());
         jsonGenerator.writeStringField("entreprise", compte.getEntreprise() != null ? compte.getEntreprise().getId() : null);
         jsonGenerator.writeObjectField("role", compte.getCustomRoleFields("id"));
+        jsonGenerator.writeNumberField("statut", compte.getStatut());
         jsonGenerator.writeObjectField("services", compte.getServices());
 
-        jsonGenerator.writeEndObject();
-    }
+        jsonGenerator.writeEndObject(); 
+      }
+  }
 }

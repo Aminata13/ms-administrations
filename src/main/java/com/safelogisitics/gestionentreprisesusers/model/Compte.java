@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.annotation.Id;
@@ -41,10 +42,23 @@ public class Compte {
   @Field(value = "statut")
   private int statut;
 
+  @JsonIgnore
+  @Field(value = "deleted")
+  private boolean deleted;
+
   @Field(value = "dateCreation")
   private Date dateCreation;
 
   public Compte() {
+    this.deleted = false;
+    this.dateCreation = new Date();
+  }
+
+  public Compte(ECompteType type, String infosPersoId, int statut) {
+    this.type = type;
+    this.infosPersoId = infosPersoId;
+    this.statut = statut;
+    this.deleted = false;
     this.dateCreation = new Date();
   }
 
@@ -53,6 +67,7 @@ public class Compte {
     this.infosPersoId = infosPersoId;
     this.role = role;
     this.statut = statut;
+    this.deleted = false;
     this.dateCreation = new Date();
   }
 
@@ -129,6 +144,14 @@ public class Compte {
 
   public void setStatut(int statut) {
     this.statut = statut;
+  }
+
+  public boolean isDeleted() {
+    return this.deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
   }
 
   public Date getDateCreation() {

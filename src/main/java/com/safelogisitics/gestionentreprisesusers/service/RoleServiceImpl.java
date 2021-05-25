@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-  
+
   @Autowired
   private PrivilegeDao privilegeDao;
 
@@ -31,6 +31,10 @@ public class RoleServiceImpl implements RoleService {
 
   public Collection<Role> getRoles(ECompteType type) {
     return roleDao.findByTypeAndEditableIsTrue(type);
+  }
+
+  public Optional<Role> getRoleById(String id) {
+    return roleDao.findById(id);
   }
 
   @Override

@@ -8,23 +8,27 @@ import com.safelogisitics.gestionentreprisesusers.dao.RefreshTokenDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
 import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RefreshTokenServiceImpl  implements RefreshTokenService {
   
-  @Value("${security.jwt.refreshExpirationMs}")
-  private Long refreshTokenDurationMs;
+  private final JwtConfig jwtConfig;
 
   @Autowired
   private RefreshTokenDao refreshTokenDao;
 
   @Autowired
   private UserDao userDao;
+
+  public RefreshTokenServiceImpl(JwtConfig jwtConfig) {
+    this.jwtConfig = jwtConfig;
+  }
+
 
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenDao.findByToken(token);
@@ -36,7 +40,7 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
     RefreshToken refreshToken = new RefreshToken();
 
     refreshToken.setUser(userDao.findById(userId).get());
-    refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+    refreshToken.setExpiryDate(Instant.now().plusMillis(jwtConfig.getRefreshTokenDuration()));
     refreshToken.setToken(UUID.randomUUID().toString());
 
     refreshToken = refreshTokenDao.save(refreshToken);

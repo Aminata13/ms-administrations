@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Privilege;
@@ -13,6 +14,8 @@ public interface RoleService {
   public Collection<Role> getRoles();
 
   public Collection<Role> getRoles(ECompteType type);
+
+  public Optional<Role> getRoleById(String id);
   
   public Role createRole(RoleRequest roleRequest);
 

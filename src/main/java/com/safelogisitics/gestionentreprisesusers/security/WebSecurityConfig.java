@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.safelogisitics.gestionentreprisesusers.security.jwt.AuthEntryPointJwt;
@@ -28,6 +29,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
+
+  @Autowired
+	private CustomPermissionEvaluator customPermissionEvaluator;
+
+  // private final String defaultRolePrefix = "COMPTE_";
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -48,6 +54,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+  @Bean
+	public DefaultWebSecurityExpressionHandler userSecurityExpressionHandler() {
+		DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+		handler.setPermissionEvaluator(customPermissionEvaluator);
+    // handler.setDefaultRolePrefix(defaultRolePrefix);
+		return handler;
 	}
 
 	@Override

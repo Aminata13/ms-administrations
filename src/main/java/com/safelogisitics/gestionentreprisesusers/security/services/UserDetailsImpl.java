@@ -110,7 +110,6 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
   public static List<GrantedAuthority> getGrantedAuthorities(List<String> typeAndPrivileges) {
-
     List<GrantedAuthority> _authorities = new ArrayList<>();
 
     for (String _authority : typeAndPrivileges) {

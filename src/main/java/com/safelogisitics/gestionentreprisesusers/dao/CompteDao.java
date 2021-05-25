@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.dao;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
-  Optional<Compte> findByInfosPersoId(String infosPersoId);
+  Collection<Compte> findByInfosPersoId(String infosPersoId);
 
   Optional<Compte> findByInfosPersoIdAndType(String infosPerso, ECompteType type);
   

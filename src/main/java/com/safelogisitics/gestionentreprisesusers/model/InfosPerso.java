@@ -6,7 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,9 +26,11 @@ public class InfosPerso {
   @Field(value = "nom")
   private String nom;
 
+  @Indexed
   @Field(value = "email")
   private String email;
 
+  @Indexed
   @Field(value = "telephone")
   private String telephone;
 
@@ -40,6 +45,7 @@ public class InfosPerso {
   private Date dateCreation;
 
   public InfosPerso() {
+    this.dateCreation = new Date();
   }
 
   public InfosPerso(String prenom, String nom, String email, String telephone, String adresse) {
@@ -109,6 +115,13 @@ public class InfosPerso {
     }
   }
 
+  public void updateCompte(Compte compte) {
+    if (this.comptes.contains(compte)) {
+      this.comptes.remove(compte);
+    }
+    this.comptes.add(compte);
+  }
+
   public Date getDateCreation() {
     return this.dateCreation;
   }
@@ -117,21 +130,29 @@ public class InfosPerso {
     this.dateCreation = dateCreation;
   }
 
+  @JsonIgnore
   public List<String> getTypeAndPrivileges() {
-    List<String> _authorities = new ArrayList<>();
+    List<String> authorities = new ArrayList<>();
 
     for (Compte compte : comptes) {
-      _authorities.add(compte.getType().name());
-      if (compte.getRole() != null) {
-        for (Privilege privilege: compte.getRole().getPrivileges()) {
-          _authorities.add(privilege.getValeur().name());
-        }
+      if (compte.isDeleted()) {
+        continue;
+      }
+
+      authorities.add(compte.getType().name());
+
+      if (compte.getRole() == null || compte.getRole().getPrivileges().isEmpty()) {
+        continue;
+      }
+      for (Privilege privilege : compte.getRole().getPrivileges()) {
+        authorities.add(privilege.getValeur().name());
       }
     }
 
-    return _authorities;
+    return authorities;
   }
 
+  @JsonIgnore
   public Object getDefaultFields() {
     Object defaultFields = new Object() {
       public final String id = getId();
