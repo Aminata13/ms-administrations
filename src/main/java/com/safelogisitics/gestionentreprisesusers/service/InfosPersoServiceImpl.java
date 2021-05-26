@@ -59,7 +59,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public Page<InfosPerso> getInfosPersos(ECompteType type, Pageable pageable) {
-    List<String> ids = compteDao.findByType(type)
+    List<String> ids = compteDao.findByTypeAndDeletedIsFalse(type)
       .stream()
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
@@ -79,7 +79,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoRequest.getAdresse()
     );
 
-    return infosPersoDao.save(infosPerso);
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
   }
 
   @Override
@@ -98,7 +100,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.setTelephone(infosPersoRequest.getTelephone());
     infosPerso.setAdresse(infosPersoRequest.getAdresse());
 
-    return infosPersoDao.save(infosPerso);
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
   }
 
   @Override
@@ -121,10 +125,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       compte.setStatut(request.getStatut());
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
     }, () -> {
       Compte compte = new Compte(ECompteType.COMPTE_ADMINISTRATEUR, infosPerso.getId(), role, request.getStatut());
       compteDao.save(compte);
       infosPerso.addCompte(compte);
+      infosPersoDao.save(infosPerso);
     });
 
     userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
@@ -157,6 +163,16 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       user.setStatut(0);
       userDao.save(user);
     });
+  }
+
+  @Override
+  public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
+    return null;
+  }
+
+  @Override
+  public void deleteCompteAgent(String infosPersoId) {
+
   }
 
   public JwtResponse clientRegistration(RegisterRequest request) {

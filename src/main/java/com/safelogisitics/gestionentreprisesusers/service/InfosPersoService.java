@@ -28,7 +28,11 @@ public interface InfosPersoService {
 
   public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte administrateur
 
-  public void deleteCompteAdministrateur(String infosPersoId); // 
+  public void deleteCompteAdministrateur(String infosPersoId); // Suppression d'un admnistrateur (Soft delete)
+
+  public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
+
+  public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
   public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
 
