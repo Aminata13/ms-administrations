@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+
 @RestController
 @RequestMapping("/roles")
 @PreAuthorize("hasAuthority('COMPTE_ADMINISTRATEUR')")
+@Api(tags = "roles", description = "Api gestion des roles & privilèges")
 public class RoleController {
 
   @Autowired

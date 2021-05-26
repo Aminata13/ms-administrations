@@ -137,12 +137,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       user.setStatut(1);
       userDao.save(user);
     }, () -> {
-      // Génération du mot de passe
       String password = alphaNumericString(1, 8);
-
       User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
       userDao.save(user);
-
       System.out.println("MOT DE PASSE =====> "+password);
     });
 
@@ -157,6 +154,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       compte.setDeleted(true);
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
     });
 
     userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
@@ -167,12 +165,51 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
-    return null;
+    InfosPersoRequest infosPersoRequest = request;
+
+    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
+
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresentOrElse(compte -> {
+      compte.setDeleted(false);
+      compte.setStatut(request.getStatut());
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    }, () -> {
+      Compte compte = new Compte(ECompteType.COMPTE_COURSIER, infosPerso.getId(), request.getStatut());
+      compteDao.save(compte);
+      infosPerso.addCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+      user.setStatut(1);
+      userDao.save(user);
+    }, () -> {
+      String password = alphaNumericString(1, 8);
+      User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
+      userDao.save(user);
+      System.out.println("MOT DE PASSE =====> "+password);
+    });
+
+    return infosPerso;
   }
 
   @Override
   public void deleteCompteAgent(String infosPersoId) {
+    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
 
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresent(compte -> {
+      compte.setDeleted(true);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+      user.setStatut(0);
+      userDao.save(user);
+    });
   }
 
   public JwtResponse clientRegistration(RegisterRequest request) {
@@ -185,10 +222,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       compte.setStatut(1);
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
     }, () -> {
       Compte compte = new Compte(ECompteType.COMPTE_PARTICULIER, infosPerso.getId(), 1);
       compteDao.save(compte);
       infosPerso.addCompte(compte);
+      infosPersoDao.save(infosPerso);
     });
 
     userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {

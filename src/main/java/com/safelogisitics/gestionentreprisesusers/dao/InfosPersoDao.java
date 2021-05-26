@@ -12,9 +12,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, String> {
-  // @Query("{ 'comptes': { $exists:true, $size:0 }}")
-  
-  // @Query(value = "{'comptes': ?0}", fields = "{'comptes' : 0}")
   Page<InfosPerso> findByComptesIsNull(Pageable pageable);
 
   Page<InfosPerso> findByIdIn(List<String> ids, Pageable pageable);
