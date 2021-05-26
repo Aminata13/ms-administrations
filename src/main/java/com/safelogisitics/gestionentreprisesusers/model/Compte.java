@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -163,13 +164,17 @@ public class Compte {
   }
 
   public Object getCustomRoleFields(String privilegeData) {
+    if (role == null) {
+      return new ArrayList<>();
+    }
     Object customRoleField = new Object() {
       public final String id = role.getId();
       public final String libelle = role.getLibelle();
       public final ECompteType type = role.getType();
-      public final List<String> privileges = role.getPrivileges().stream().map(privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name())
-      .collect(Collectors.toList());
-      
+      private List<String> privileges = role.getPrivileges().stream().map((privilege) -> {
+        return privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name();
+      }).collect(Collectors.toList());
+
       @Override
       public String toString() {
         return String.format("%s %s %s %s", id, libelle, type, privileges); 

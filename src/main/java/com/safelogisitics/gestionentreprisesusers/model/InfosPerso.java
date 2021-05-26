@@ -139,7 +139,7 @@ public class InfosPerso {
         continue;
       }
 
-      authorities.add(compte.getType().name());
+      authorities.add("ROLE_"+compte.getType().name());
 
       if (compte.getRole() == null || compte.getRole().getPrivileges().isEmpty()) {
         continue;
