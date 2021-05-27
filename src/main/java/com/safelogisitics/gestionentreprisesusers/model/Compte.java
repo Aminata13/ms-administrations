@@ -165,7 +165,6 @@ public class Compte {
 
   public Object getCustomRoleFields(String privilegeData) {
     if (role == null) {
-      System.out.println("======================>I'm null");
       return new ArrayList<>();
     }
     Object customRoleField = new Object() {
