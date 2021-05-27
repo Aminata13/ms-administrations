@@ -165,15 +165,16 @@ public class Compte {
 
   public Object getCustomRoleFields(String privilegeData) {
     if (role == null) {
+      System.out.println("======================>I'm null");
       return new ArrayList<>();
     }
     Object customRoleField = new Object() {
       public final String id = role.getId();
       public final String libelle = role.getLibelle();
       public final ECompteType type = role.getType();
-      private List<String> privileges = role.getPrivileges().stream().map((privilege) -> {
-        return privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name();
-      }).collect(Collectors.toList());
+      public final List<String> privileges = role.getPrivileges().stream().map(
+          privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name()
+        ).collect(Collectors.toList());
 
       @Override
       public String toString() {
