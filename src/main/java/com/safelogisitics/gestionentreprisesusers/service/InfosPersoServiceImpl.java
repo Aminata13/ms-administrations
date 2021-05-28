@@ -218,6 +218,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
 
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresentOrElse(compte -> {
+      if (!compte.isDeleted()) {
+        throw new IllegalArgumentException("User is already register!");
+      }
       compte.setDeleted(false);
       compte.setStatut(1);
       compteDao.save(compte);
