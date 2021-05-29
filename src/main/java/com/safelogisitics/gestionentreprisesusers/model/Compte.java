@@ -3,7 +3,9 @@ package com.safelogisitics.gestionentreprisesusers.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -164,23 +166,21 @@ public class Compte {
   }
 
   public Object getCustomRoleFields(String privilegeData) {
-    if (role == null) {
-      return new ArrayList<>();
-    }
-    Object customRoleField = new Object() {
-      public final String id = role.getId();
-      public final String libelle = role.getLibelle();
-      public final ECompteType type = role.getType();
-      public final List<String> privileges = role.getPrivileges().stream().map(
+    Map <String,Object> _customRoleField = new LinkedHashMap<>();
+
+    _customRoleField.put("id", getId());
+    _customRoleField.put("type", getType());
+    _customRoleField.put("role", "");
+    _customRoleField.put("privileges", new ArrayList<>());
+    if (role != null) {
+      _customRoleField.put("role", role.getLibelle());
+      List<String> privileges = role.getPrivileges().stream().map(
           privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name()
         ).collect(Collectors.toList());
+        _customRoleField.put("privileges", privileges);
+    }
 
-      @Override
-      public String toString() {
-        return String.format("%s %s %s %s", id, libelle, type, privileges); 
-      }
-    };
-    return customRoleField;
+    return _customRoleField;
   }
 
   public int hashCode() {
