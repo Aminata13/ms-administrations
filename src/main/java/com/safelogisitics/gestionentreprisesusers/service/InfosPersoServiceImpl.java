@@ -20,10 +20,12 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequ
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Autowired
 	PasswordEncoder encoder;
 
+  @Override
+  public InfosPerso getUserInfos() {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return infosPersoDao.findById(currentUser.getInfosPerso().getId()).get();
+  }
+
+  @Override
   public Optional<InfosPerso> findInfosPersoById(String id) {
     return infosPersoDao.findById(id);
   }

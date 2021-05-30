@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface InfosPersoService {
 
+  public InfosPerso getUserInfos();
+
   public Optional<InfosPerso> findInfosPersoById(String id); 
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte

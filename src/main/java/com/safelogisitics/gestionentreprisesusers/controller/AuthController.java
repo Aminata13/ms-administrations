@@ -11,6 +11,8 @@ import com.safelogisitics.gestionentreprisesusers.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +57,11 @@ public class AuthController {
 	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
     JwtResponse jwtRes = userService.refreshToken(request);
 		return ResponseEntity.ok(jwtRes);
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @GetMapping("/userinfos")
+	public ResponseEntity<?> userInfos() {
+		return ResponseEntity.ok(infosPersoService.getUserInfos());
   }
 }
