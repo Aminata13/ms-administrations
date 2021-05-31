@@ -9,6 +9,7 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 
 import org.springframework.data.domain.Page;
@@ -37,6 +38,8 @@ public interface InfosPersoService {
   public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
   public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
+
+  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
 
   public Collection<Compte> getInfosPersoComptes(String id);
 }

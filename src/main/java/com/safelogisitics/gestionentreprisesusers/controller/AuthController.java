@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.UserService;
@@ -63,5 +64,11 @@ public class AuthController {
   @GetMapping("/userinfos")
 	public ResponseEntity<?> userInfos() {
 		return ResponseEntity.ok(infosPersoService.getUserInfos());
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @PostMapping("/userinfos")
+	public ResponseEntity<?> updateUserInfos(@Valid @RequestBody UpdateInfosPersoRequest updateInfosPersoRequest) {
+		return ResponseEntity.ok(infosPersoService.updateUserInfos(updateInfosPersoRequest));
   }
 }

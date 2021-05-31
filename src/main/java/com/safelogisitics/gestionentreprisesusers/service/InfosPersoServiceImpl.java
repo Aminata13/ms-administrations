@@ -19,6 +19,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvec
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
@@ -221,6 +222,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     });
   }
 
+  @Override
   public JwtResponse clientRegistration(RegisterRequest request) {
     InfosPersoRequest infosPersoRequest = request;
 
@@ -253,6 +255,23 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     });
 
     return userService.authenticate(new LoginRequest(request.getUsername(), request.getPassword()));
+  }
+
+  @Override
+  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    
+    InfosPerso infosPerso = updateInfosPerso(currentUser.getInfosPerso().getId(), request);
+    
+    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+      user.setUsername(request.getUsername());
+      if (request.getPassword() != null) {
+        user.setPassword(encoder.encode(request.getPassword())); 
+      }
+      userDao.save(user);
+    });
+
+    return infosPerso;
   }
 
   @Override
