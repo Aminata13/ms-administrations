@@ -209,6 +209,55 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public void deleteCompteAgent(String infosPersoId) {
     InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
 
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresent(compte -> {
+      compte.setDeleted(true);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+      user.setStatut(0);
+      userDao.save(user);
+    });
+  }
+
+  @Override
+  public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request) {
+    InfosPersoRequest infosPersoRequest = request;
+
+    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
+
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresentOrElse(compte -> {
+      compte.setDeleted(false);
+      compte.setStatut(request.getStatut());
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    }, () -> {
+      Compte compte = new Compte(ECompteType.COMPTE_PRESTATAIRE, infosPerso.getId(), request.getStatut());
+      compteDao.save(compte);
+      infosPerso.addCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+      user.setStatut(1);
+      userDao.save(user);
+    }, () -> {
+      String password = alphaNumericString(1, 8);
+      User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
+      userDao.save(user);
+      System.out.println("MOT DE PASSE =====> "+password);
+    });
+
+    return infosPerso;
+  }
+
+  @Override
+  public void deleteComptePrestataire(String infosPersoId) {
+    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresent(compte -> {
       compte.setDeleted(true);
       compteDao.save(compte);

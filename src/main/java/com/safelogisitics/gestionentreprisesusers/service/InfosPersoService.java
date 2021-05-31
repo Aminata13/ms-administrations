@@ -37,6 +37,10 @@ public interface InfosPersoService {
 
   public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
+  public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
+
+  public void deleteComptePrestataire(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
+
   public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
 
   public InfosPerso updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)

@@ -112,4 +112,42 @@ public class ProfilController {
     infosPersoService.deleteCompteAgent(id);
 		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
 	}
+
+  @ApiOperation(value = "", tags = "prestataires")
+  @GetMapping("/prestataires/list")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+	public ResponseEntity<?> allPrestataires(@PageableDefault(size = 20) Pageable pageable) {
+    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PRESTATAIRE, pageable);
+    return ResponseEntity.status(HttpStatus.OK).body(roles);
+	}
+
+  @ApiOperation(value = "", tags = "prestataires")
+  @PostMapping("/prestataires/add")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+	public ResponseEntity<?> addPrestataire(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
+    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "", tags = "prestataires")
+  @PutMapping("/prestataires/update/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+	public ResponseEntity<?> updatePrestataire(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
+    if (!infosPersoService.findInfosPersoById(id).isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
+
+    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "Suppression d'un prestataire", tags = "prestataires")
+  @DeleteMapping("/prestataires/delete/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+	public ResponseEntity<?> deleteprestataire(@PathVariable(value = "id") String id) {
+    if (!infosPersoService.findInfosPersoById(id).isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
+
+    infosPersoService.deleteComptePrestataire(id);
+		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+	}
 }
