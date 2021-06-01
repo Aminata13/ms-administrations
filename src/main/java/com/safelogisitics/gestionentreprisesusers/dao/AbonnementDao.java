@@ -25,6 +25,8 @@ public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, St
 
   Optional<Abonnement> findByCompteClient(Compte typeAbonnement);
 
+  Optional<Abonnement> findByNumeroCarte(String numeroCarte);
+
   boolean existsByCompteClient(Compte compteClient);
 
   boolean existsByNumeroCarte(String numeroCarte);

@@ -1,6 +1,5 @@
 package com.safelogisitics.gestionentreprisesusers.dao;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
@@ -9,24 +8,28 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionDao extends PagingAndSortingRepository<Transaction, String> {
-  Collection<Transaction> findByAbonnementOrderByDateCreationDesc(Abonnement abonnement);
+  Page<Transaction> findByDateCreationOrderByDateCreationDesc(Date dateCreation, Pageable pageable);
 
-  Collection<Transaction> findByAbonnementAndDateCreationOrderByDateCreationDesc(Abonnement abonnement, Date dateCreation);
+  Page<Transaction> findByAbonnementOrderByDateCreationDesc(Abonnement abonnement, Pageable pageable);
 
-  Collection<Transaction> findByAbonnementAndActionOrderByDateCreationDesc(Abonnement abonnement, ETransactionAction action);
+  Page<Transaction> findByAbonnementAndDateCreationOrderByDateCreationDesc(Abonnement abonnement, Date dateCreation, Pageable pageable);
 
-  Collection<Transaction> findByAbonnementAndActionAndDateCreationOrderByDateCreationDesc(Abonnement abonnement, ETransactionAction action, Date dateCreation);
+  Page<Transaction> findByAbonnementAndActionOrderByDateCreationDesc(Abonnement abonnement, ETransactionAction action, Pageable pageable);
 
-  Collection<Transaction> findByCompteCreateurOrderByDateCreationDesc(Compte compteCreateur);
+  Page<Transaction> findByAbonnementAndActionAndDateCreationOrderByDateCreationDesc(Abonnement abonnement, ETransactionAction action, Date dateCreation, Pageable pageable);
 
-  Collection<Transaction> findByCompteCreateurAndDateCreationOrderByDateCreationDesc(Compte compteCreateur, Date dateCreation);
+  Page<Transaction> findByCompteCreateurOrderByDateCreationDesc(Compte compteCreateur, Pageable pageable);
 
-  Collection<Transaction> findByCompteCreateurAndActionAndDateCreationOrderByDateCreationDesc(Compte compteCreateur, ETransactionAction action, Date dateCreation);
+  Page<Transaction> findByCompteCreateurAndDateCreationOrderByDateCreationDesc(Compte compteCreateur, Date dateCreation, Pageable pageable);
+
+  Page<Transaction> findByCompteCreateurAndActionAndDateCreationOrderByDateCreationDesc(Compte compteCreateur, ETransactionAction action, Date dateCreation, Pageable pageable);
 
   Optional<Transaction> findByReference(String reference);
 

@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "transactions")
 public class Transaction {
-  
+
   @Id
   private String id;
 
@@ -30,6 +30,9 @@ public class Transaction {
 
   @Field(value = "montant")
   private BigDecimal montant;
+
+  @Field(value = "nouveauSolde")
+  private BigDecimal nouveauSolde;
 
   @Field(value = "dateCreation")
   private Date dateCreation;
@@ -93,6 +96,14 @@ public class Transaction {
 
   public void setMontant(BigDecimal montant) {
     this.montant = montant;
+  }
+
+  public BigDecimal getNouveauSolde() {
+    return this.nouveauSolde;
+  }
+
+  public void setNouveauSolde(BigDecimal nouveauSolde) {
+    this.nouveauSolde = nouveauSolde;
   }
 
   public Date getDateCreation() {
