@@ -2,7 +2,6 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
@@ -56,7 +55,7 @@ public class TransactionServiceImpl implements TransactionService {
 	PasswordEncoder encoder;
 
   @Override
-  public Page<Transaction> findByDateCreation(Date dateCreation, Pageable pageable) {
+  public Page<Transaction> findByDateCreation(LocalDate dateCreation, Pageable pageable) {
     return transactionDao.findByDateCreationOrderByDateCreationDesc(dateCreation, pageable);
   }
 
@@ -68,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, Date dateCreation, Pageable pageable) {
+  public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
     return transactionDao.findByAbonnementAndDateCreationOrderByDateCreationDesc(abonnement, dateCreation, pageable);
@@ -82,7 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, Date dateCreation, Pageable pageable) {
+  public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
     return transactionDao.findByAbonnementAndActionAndDateCreationOrderByDateCreationDesc(abonnement, action, dateCreation, pageable);
@@ -96,14 +95,14 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, Date dateCreation, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteAdmin(infosPersoId);
 
     return transactionDao.findByCompteCreateurAndDateCreationOrderByDateCreationDesc(compteAdmin, dateCreation, pageable);
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, Date dateCreation, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteAdmin(infosPersoId);
 
     return transactionDao.findByCompteCreateurAndActionAndDateCreationOrderByDateCreationDesc(compteAdmin, action, dateCreation, pageable);
@@ -123,6 +122,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted()) {
       throw new IllegalArgumentException("Abonnement with that client does not exist!");
+    }
+
+    if (abonnementExist.get().isCarteBloquer()) {
+      throw new IllegalArgumentException("Cette carte est bloqué!");
     }
 
     Abonnement abonnement = abonnementExist.get();
@@ -152,6 +155,10 @@ public class TransactionServiceImpl implements TransactionService {
       throw new IllegalArgumentException("Abonnement with that client does not exist!");
     }
 
+    if (abonnementExist.get().isCarteBloquer()) {
+      throw new IllegalArgumentException("Cette carte est bloqué!");
+    }
+
     Abonnement abonnement = abonnementExist.get();
 
     InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
@@ -159,7 +166,7 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<User> userExist = userDao.findByInfosPerso(infosPerso);
 
     if (!userExist.isPresent() || !encoder.matches(transactionRequest.getPassword(), userExist.get().getPassword())) {
-      throw new UsernameNotFoundException("Numero carte or password invalid!");
+      throw new UsernameNotFoundException("Numero carte ou mot de passe invalide!");
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

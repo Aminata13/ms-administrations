@@ -1,7 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 
@@ -35,10 +35,10 @@ public class Transaction {
   private BigDecimal nouveauSolde;
 
   @Field(value = "dateCreation")
-  private Date dateCreation;
+  private LocalDate dateCreation;
 
   public Transaction() {
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDate.now();
   }
 
   public Transaction(Abonnement abonnement, String reference, ETransactionAction action, Compte compteCreateur, BigDecimal montant) {
@@ -47,7 +47,7 @@ public class Transaction {
     this.action = action;
     this.compteCreateur = compteCreateur;
     this.montant = montant;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDate.now();
   }
 
   public String getId() {
@@ -106,12 +106,11 @@ public class Transaction {
     this.nouveauSolde = nouveauSolde;
   }
 
-  public Date getDateCreation() {
+  public LocalDate getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(Date dateCreation) {
+  public void setDateCreation(LocalDate dateCreation) {
     this.dateCreation = dateCreation;
   }
-
 }

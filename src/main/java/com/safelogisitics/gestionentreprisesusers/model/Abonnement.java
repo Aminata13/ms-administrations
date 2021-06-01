@@ -1,7 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -41,11 +41,11 @@ public class Abonnement {
   private boolean deleted;
 
   @Field(value = "dateCreation")
-  private Date dateCreation;
+  private LocalDate dateCreation;
 
   public Abonnement() {
     this.deleted = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDate.now();
   }
 
   public Abonnement(TypeAbonnement typeAbonnement, Compte compteClient, Compte compteCreateur, int statut) {
@@ -54,7 +54,7 @@ public class Abonnement {
     this.compteCreateur = compteCreateur;
     this.statut = statut;
     this.deleted = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDate.now();
   }
 
 
@@ -138,11 +138,11 @@ public class Abonnement {
     this.deleted = deleted;
   }
 
-  public Date getDateCreation() {
+  public LocalDate getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(Date dateCreation) {
+  public void setDateCreation(LocalDate dateCreation) {
     this.dateCreation = dateCreation;
   }
 
