@@ -3,21 +3,26 @@ package com.safelogisitics.gestionentreprisesusers.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "abonnements")
 public class Abonnement {
-  
+
   @Id
   private String id;
 
   @Field(value = "typeAbonnement")
   private TypeAbonnement typeAbonnement;
 
-  @Field(value = "compte")
-  private Compte compte;
+  @Field(value = "compteClient")
+  private Compte compteClient;
+
+  @Field(value = "compteCreateur")
+  private Compte compteCreateur;
 
   @Field(value = "numeroCarte")
   private String numeroCarte;
@@ -28,16 +33,27 @@ public class Abonnement {
   @Field(value = "solde")
   private BigDecimal solde;
 
+  @Field(value = "statut")
+  private int statut;
+
+  @JsonIgnore
+  @Field(value = "deleted")
+  private boolean deleted;
+
   @Field(value = "dateCreation")
   private Date dateCreation;
 
   public Abonnement() {
+    this.deleted = false;
     this.dateCreation = new Date();
   }
 
-  public Abonnement(TypeAbonnement typeAbonnement, Compte compte) {
+  public Abonnement(TypeAbonnement typeAbonnement, Compte compteClient, Compte compteCreateur, int statut) {
     this.typeAbonnement = typeAbonnement;
-    this.compte = compte;
+    this.compteClient = compteClient;
+    this.compteCreateur = compteCreateur;
+    this.statut = statut;
+    this.deleted = false;
     this.dateCreation = new Date();
   }
 
@@ -58,12 +74,20 @@ public class Abonnement {
     this.typeAbonnement = typeAbonnement;
   }
 
-  public Compte getCompte() {
-    return this.compte;
+  public Compte getCompteClient() {
+    return this.compteClient;
   }
 
-  public void setCompte(Compte compte) {
-    this.compte = compte;
+  public void setCompteClient(Compte compteClient) {
+    this.compteClient = compteClient;
+  }
+
+  public Compte getCompteCreateur() {
+    return this.compteCreateur;
+  }
+
+  public void setCompteCreateur(Compte compteCreateur) {
+    this.compteCreateur = compteCreateur;
   }
 
   public String getNumeroCarte() {
@@ -88,6 +112,22 @@ public class Abonnement {
 
   public void setSolde(BigDecimal solde) {
     this.solde = solde;
+  }
+
+  public int getStatut() {
+    return this.statut;
+  }
+
+  public void setStatut(int statut) {
+    this.statut = statut;
+  }
+
+  public boolean isDeleted() {
+    return this.deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
   }
 
   public Date getDateCreation() {
