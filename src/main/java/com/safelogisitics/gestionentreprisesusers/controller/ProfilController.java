@@ -184,7 +184,7 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
 
     InfosPerso infosPerso = infosPersoService.updateCompteClient(id, request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+		return ResponseEntity.status(HttpStatus.OK).body(infosPerso);
 	}
 
   @ApiOperation(value = "Suppression d'un Client", tags = "clients")
@@ -195,6 +195,6 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
 
     infosPersoService.deleteCompteClient(id);
-		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+		return ResponseEntity.status(HttpStatus.OK).body("DELETED");
 	}
 }

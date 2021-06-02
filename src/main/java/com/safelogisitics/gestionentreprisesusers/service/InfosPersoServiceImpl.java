@@ -278,33 +278,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createCompteClient(RegisterRequest request) {
-    return null;
-  }
-
-  @Override
-  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request) {
-    return null;
-  }
-
-  @Override
-  public void deleteCompteClient(String infosPersoId) {
-    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
-
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresent(compte -> {
-      compte.setDeleted(true);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
-
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
-      user.setStatut(0);
-      userDao.save(user);
-    });
-  }
-
-  @Override
-  public JwtResponse clientRegistration(RegisterRequest request) {
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
@@ -335,15 +308,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       userDao.save(user);
     });
 
-    return userService.authenticate(new LoginRequest(request.getUsername(), request.getPassword()));
+    return infosPerso;
   }
 
   @Override
-  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request) {
-    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    
-    InfosPerso infosPerso = updateInfosPerso(currentUser.getInfosPerso().getId(), request);
-    
+  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request) {
+    InfosPerso infosPerso = updateInfosPerso(id, request);
+
     userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
       user.setUsername(request.getUsername());
       if (request.getPassword() != null) {
@@ -351,6 +322,40 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       }
       userDao.save(user);
     });
+
+    return infosPerso;
+  }
+
+  @Override
+  public void deleteCompteClient(String infosPersoId) {
+    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresent(compte -> {
+      compte.setDeleted(true);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+      user.setStatut(0);
+      userDao.save(user);
+    });
+  }
+
+  @Override
+  public JwtResponse clientRegistration(RegisterRequest request) {
+
+    createCompteClient(request);
+
+    return userService.authenticate(new LoginRequest(request.getUsername(), request.getPassword()));
+  }
+
+  @Override
+  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    
+    InfosPerso infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
 
     return infosPerso;
   }
