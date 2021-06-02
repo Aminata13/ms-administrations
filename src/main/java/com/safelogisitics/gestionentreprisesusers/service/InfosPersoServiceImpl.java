@@ -58,6 +58,11 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone) {
+    return infosPersoDao.findByEmailOrTelephone(email, telephone);
+  }
+
+  @Override
   public Optional<InfosPerso> findInfosPersoById(String id) {
     return infosPersoDao.findById(id);
   }
@@ -259,6 +264,33 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
 
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresent(compte -> {
+      compte.setDeleted(true);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    });
+
+    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+      user.setStatut(0);
+      userDao.save(user);
+    });
+  }
+
+  @Override
+  public InfosPerso createCompteClient(RegisterRequest request) {
+    return null;
+  }
+
+  @Override
+  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request) {
+    return null;
+  }
+
+  @Override
+  public void deleteCompteClient(String infosPersoId) {
+    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+
+    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresent(compte -> {
       compte.setDeleted(true);
       compteDao.save(compte);
       infosPerso.updateCompte(compte);

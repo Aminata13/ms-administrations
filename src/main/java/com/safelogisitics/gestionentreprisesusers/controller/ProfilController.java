@@ -5,6 +5,8 @@ import javax.validation.Valid;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,13 @@ public class ProfilController {
 
   @Autowired
   private InfosPersoService infosPersoService;
+
+  @ApiOperation(value = "", tags = "profils")
+  @GetMapping("/search/{emailOrTelephone}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
+	}
 
   @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/personnels/list")
@@ -148,6 +157,44 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
 
     infosPersoService.deleteComptePrestataire(id);
+		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+	}
+
+  @ApiOperation(value = "", tags = "clients")
+  @GetMapping("/clients/list")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+	public ResponseEntity<?> allClients(@PageableDefault(size = 20) Pageable pageable) {
+    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
+    return ResponseEntity.status(HttpStatus.OK).body(roles);
+	}
+
+  @ApiOperation(value = "", tags = "clients")
+  @PostMapping("/clients/add")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+	public ResponseEntity<?> addClient(@Valid @RequestBody RegisterRequest request) {
+    InfosPerso infosPerso = infosPersoService.createCompteClient(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "", tags = "clients")
+  @PutMapping("/clients/update/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+	public ResponseEntity<?> updateClient(@PathVariable(value = "id") String id, @Valid @RequestBody UpdateInfosPersoRequest request) {
+    if (!infosPersoService.findInfosPersoById(id).isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
+
+    InfosPerso infosPerso = infosPersoService.updateCompteClient(id, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "Suppression d'un Client", tags = "clients")
+  @DeleteMapping("/clients/delete/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+	public ResponseEntity<?> deleteClient(@PathVariable(value = "id") String id) {
+    if (!infosPersoService.findInfosPersoById(id).isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
+
+    infosPersoService.deleteCompteClient(id);
 		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
 	}
 }

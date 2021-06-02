@@ -19,7 +19,9 @@ public interface InfosPersoService {
 
   public InfosPerso getUserInfos();
 
-  public Optional<InfosPerso> findInfosPersoById(String id); 
+  public Optional<InfosPerso> findInfosPersoById(String id);
+
+  public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone);
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
 
@@ -40,6 +42,12 @@ public interface InfosPersoService {
   public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
 
   public void deleteComptePrestataire(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
+
+  public InfosPerso createCompteClient(RegisterRequest request); // Création d'un infosPerso avec compte particulier (Client)
+
+  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request); // Modification d'un infosPerso avec compte particulier (Client)
+
+  public void deleteCompteClient(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
   public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
 
