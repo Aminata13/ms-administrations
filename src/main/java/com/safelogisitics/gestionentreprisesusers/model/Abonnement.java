@@ -115,11 +115,11 @@ public class Abonnement {
   }
 
   public void rechargerCarte(BigDecimal montant) {
-    this.solde.add(montant);
+    this.solde = this.solde.add(montant);
   }
 
   public void debiterCarte(BigDecimal montant) {
-    this.solde.subtract(montant);
+    this.solde = this.solde.subtract(montant);
   }
 
   public int getStatut() {
