@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-  private static final String S_S_S = "%ss%s";
+  private static final String S_S_S = "%s%s%s";
 
   private static final int LENGTH_REFERENCE = 7;
 
@@ -129,6 +129,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     Abonnement abonnement = abonnementExist.get();
+
+    System.out.println(transactionRequest.getMontant());
 
     BigDecimal montant = transactionRequest.getMontant();
 

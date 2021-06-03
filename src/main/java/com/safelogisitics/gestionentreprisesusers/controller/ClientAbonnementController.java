@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.dto.CreatePaiementDto;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +40,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Mon abonnement", description = "Api de gestion de mon abonnement")
 public class ClientAbonnementController {
 
+  private final KafkaTemplate<String, CreatePaiementDto> kakfaProducer;
+
   @Autowired
   private TransactionService transactionService;
 
@@ -46,6 +50,10 @@ public class ClientAbonnementController {
 
   @Autowired
   private CompteDao compteDao;
+
+  public ClientAbonnementController(KafkaTemplate<String, CreatePaiementDto> kakfaProducer) {
+    this.kakfaProducer = kakfaProducer;
+  }
 
   @ApiOperation(value = "Infos de mon abonnement", tags = "Mon abonnement")
   @GetMapping("/abonnement")
@@ -73,6 +81,18 @@ public class ClientAbonnementController {
   @PostMapping("/paiement-carte")
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
+
+    // CreatePaiementDto createPaiementDto = new CreatePaiementDto(
+    //   request.getTypePaiementId(),
+    //   transaction.getReference(),
+    //   request.getService(),
+    //   request.getServiceId(),
+    //   transaction.getAbonnement().getCompteClient().getId(),
+    //   transaction.getMontant()
+    // );
+
+    // kakfaProducer.send("paiement-events", createPaiementDto);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
 }

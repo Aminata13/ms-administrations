@@ -1,0 +1,17 @@
+[
+  {
+    "libelle": "Silver",
+    "reduction": 20,
+    "statut": 1
+  },
+  {
+    "libelle": "Gold",
+    "reduction": 10,
+    "statut": 1
+  },
+  {
+    "libelle": "Platinium",
+    "reduction": 1,
+    "statut": 1
+  }
+]

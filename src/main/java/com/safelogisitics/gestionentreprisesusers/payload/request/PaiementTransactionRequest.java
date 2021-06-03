@@ -3,7 +3,6 @@ package com.safelogisitics.gestionentreprisesusers.payload.request;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
@@ -16,11 +15,12 @@ public class PaiementTransactionRequest {
   @NotBlank
   private String password;
 
-  @DecimalMin(value = "0.0", inclusive = false)
-  @Digits(integer=3, fraction=2)
+  @DecimalMin(value = "0")
   private BigDecimal montant;
 
   @NotBlank
+  private String typePaiementId;
+
   private EServiceType service;
 
   @NotBlank
@@ -36,6 +36,10 @@ public class PaiementTransactionRequest {
 
   public BigDecimal getMontant() {
     return this.montant;
+  }
+
+  public String getTypePaiementId() {
+    return this.typePaiementId;
   }
 
   public EServiceType getService() {

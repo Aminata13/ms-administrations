@@ -11,11 +11,13 @@ import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.PrivilegeDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
+import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
+import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
@@ -54,7 +56,10 @@ public class InitDataCommand implements CommandLineRunner {
   private CompteDao compteDao;
 
   @Autowired
-	PasswordEncoder encoder;
+  private TypeAbonnementDao typeAbonnementDao;
+
+  @Autowired
+	private PasswordEncoder encoder;
 
 	/**
 	 * This method will be executed after the application context is loaded and
@@ -123,6 +128,20 @@ public class InitDataCommand implements CommandLineRunner {
     if (!_user.isPresent()) {
       User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode("azerty"), 1);
       userDao.save(user);
+    }
+
+    TypeAbonnement[] newTypeAbonnements = objectMapper.readValue(new FileInputStream("data/typeAbonnements.json"), TypeAbonnement[].class);
+
+    for (TypeAbonnement _typeAbonnement : newTypeAbonnements) {
+      typeAbonnementDao.findByLibelle(_typeAbonnement.getLibelle()).ifPresentOrElse((typeAbonnement) -> {
+        typeAbonnement.setLibelle(_typeAbonnement.getLibelle());
+        typeAbonnement.setReduction(_typeAbonnement.getReduction());
+        typeAbonnement.setStatut(_typeAbonnement.getStatut());
+        typeAbonnementDao.save(typeAbonnement);
+      }, () -> {
+        TypeAbonnement typeAbonnement = new TypeAbonnement(_typeAbonnement.getLibelle(), _typeAbonnement.getReduction(), _typeAbonnement.getStatut());
+        typeAbonnementDao.save(typeAbonnement);
+      });
     }
 	}
 }

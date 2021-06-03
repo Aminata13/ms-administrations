@@ -44,6 +44,7 @@ public class Abonnement {
   private LocalDate dateCreation;
 
   public Abonnement() {
+    this.solde = BigDecimal.valueOf(0);
     this.deleted = false;
     this.dateCreation = LocalDate.now();
   }
@@ -53,6 +54,7 @@ public class Abonnement {
     this.compteClient = compteClient;
     this.compteCreateur = compteCreateur;
     this.statut = statut;
+    this.solde = BigDecimal.valueOf(0);
     this.deleted = false;
     this.dateCreation = LocalDate.now();
   }
