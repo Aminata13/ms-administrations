@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class CreatePaiementDto {
 
   private String typePaiementId;

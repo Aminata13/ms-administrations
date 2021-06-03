@@ -17,13 +17,17 @@ import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +44,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Mon abonnement", description = "Api de gestion de mon abonnement")
 public class ClientAbonnementController {
 
-  private final KafkaTemplate<String, CreatePaiementDto> kakfaProducer;
+  @Autowired
+  private KafkaTemplate<String, CreatePaiementDto> createPaiementKafkaTemplate;
 
   @Autowired
   private TransactionService transactionService;
@@ -51,9 +56,9 @@ public class ClientAbonnementController {
   @Autowired
   private CompteDao compteDao;
 
-  public ClientAbonnementController(KafkaTemplate<String, CreatePaiementDto> kakfaProducer) {
-    this.kakfaProducer = kakfaProducer;
-  }
+  @Value(value = "${kafka.topics.createPaiement.name}")
+  private String createPaiementTopicName;
+
 
   @ApiOperation(value = "Infos de mon abonnement", tags = "Mon abonnement")
   @GetMapping("/abonnement")
@@ -82,16 +87,30 @@ public class ClientAbonnementController {
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 
-    // CreatePaiementDto createPaiementDto = new CreatePaiementDto(
-    //   request.getTypePaiementId(),
-    //   transaction.getReference(),
-    //   request.getService(),
-    //   request.getServiceId(),
-    //   transaction.getAbonnement().getCompteClient().getId(),
-    //   transaction.getMontant()
-    // );
+    CreatePaiementDto createPaiementDto = new CreatePaiementDto(
+      request.getTypePaiementId(),
+      transaction.getReference(),
+      request.getService(),
+      request.getServiceId(),
+      transaction.getAbonnement().getCompteClient().getId(),
+      transaction.getMontant()
+    );
 
-    // kakfaProducer.send("paiement-events", createPaiementDto);
+    ListenableFuture<SendResult<String, CreatePaiementDto>> future =  createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
+
+    future.addCallback(new ListenableFutureCallback<SendResult<String, CreatePaiementDto>>() {
+
+      @Override
+      public void onSuccess(SendResult<String, CreatePaiementDto> result) {
+          System.out.println("Sent message=[" + createPaiementDto + 
+            "] with offset=[" + result.getRecordMetadata().offset() + "]");
+      }
+      @Override
+      public void onFailure(Throwable ex) {
+          System.out.println("Unable to send message=[" 
+            + createPaiementDto + "] due to : " + ex.getMessage());
+      }
+    });
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
