@@ -151,7 +151,8 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
-    Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
+    String numeroCarte = transactionRequest.getNumeroCarte().replaceAll("\\D+","");
+    Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(numeroCarte);
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted()) {
       throw new IllegalArgumentException("Abonnement with that client does not exist!");
