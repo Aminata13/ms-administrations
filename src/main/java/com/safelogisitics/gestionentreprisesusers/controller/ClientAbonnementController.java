@@ -23,11 +23,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,21 +93,7 @@ public class ClientAbonnementController {
       transaction.getMontant()
     );
 
-    ListenableFuture<SendResult<String, CreatePaiementDto>> future =  createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
-
-    future.addCallback(new ListenableFutureCallback<SendResult<String, CreatePaiementDto>>() {
-
-      @Override
-      public void onSuccess(SendResult<String, CreatePaiementDto> result) {
-          System.out.println("Sent message=[" + createPaiementDto + 
-            "] with offset=[" + result.getRecordMetadata().offset() + "]");
-      }
-      @Override
-      public void onFailure(Throwable ex) {
-          System.out.println("Unable to send message=[" 
-            + createPaiementDto + "] due to : " + ex.getMessage());
-      }
-    });
+    createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
