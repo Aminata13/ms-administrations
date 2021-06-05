@@ -31,7 +31,7 @@ public class AbonnementRequest {
   }
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
   public boolean isCarteBloquer() {

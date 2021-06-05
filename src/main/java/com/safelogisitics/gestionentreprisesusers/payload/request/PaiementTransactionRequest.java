@@ -27,7 +27,7 @@ public class PaiementTransactionRequest {
   private String serviceId;
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
   public String getPassword() {

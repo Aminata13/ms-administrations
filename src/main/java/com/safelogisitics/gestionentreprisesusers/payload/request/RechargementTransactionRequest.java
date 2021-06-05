@@ -14,7 +14,7 @@ public class RechargementTransactionRequest {
   private BigDecimal montant;
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
   public BigDecimal getMontant() {
