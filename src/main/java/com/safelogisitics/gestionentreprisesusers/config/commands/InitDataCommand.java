@@ -1,6 +1,5 @@
 package com.safelogisitics.gestionentreprisesusers.config.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
@@ -70,7 +69,7 @@ public class InitDataCommand implements CommandLineRunner {
     
     ObjectMapper objectMapper = new ObjectMapper();
 
-    InfosPerso[] _newInfosPerso = objectMapper.readValue(new FileInputStream("data/infosPerso.json"), InfosPerso[].class);
+    InfosPerso[] _newInfosPerso = objectMapper.readValue(getClass().getResourceAsStream("/data/infosPerso.json"), InfosPerso[].class);
 
     InfosPerso newInfosPerso = _newInfosPerso[0];
 
@@ -81,7 +80,7 @@ public class InitDataCommand implements CommandLineRunner {
 
     InfosPerso infosPerso = infosPersoDao.findByEmail(newInfosPerso.getEmail()).get();
 
-    Privilege[] newPrivileges = objectMapper.readValue(new FileInputStream("data/privileges.json"), Privilege[].class);
+    Privilege[] newPrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/privileges.json"), Privilege[].class);
 
     for (Privilege privilege : newPrivileges) {
       if (!privilegeDao.existsByTypeAndValeur(privilege.getType(), privilege.getValeur())) {
@@ -130,7 +129,7 @@ public class InitDataCommand implements CommandLineRunner {
       userDao.save(user);
     }
 
-    TypeAbonnement[] newTypeAbonnements = objectMapper.readValue(new FileInputStream("data/typeAbonnements.json"), TypeAbonnement[].class);
+    TypeAbonnement[] newTypeAbonnements = objectMapper.readValue(getClass().getResourceAsStream("/data/typeAbonnements.json"), TypeAbonnement[].class);
 
     for (TypeAbonnement _typeAbonnement : newTypeAbonnements) {
       typeAbonnementDao.findByLibelle(_typeAbonnement.getLibelle()).ifPresentOrElse((typeAbonnement) -> {
