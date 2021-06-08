@@ -58,6 +58,18 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public Object findInfosPersoByCompteId(String id) {
+    Optional<Compte> compteExist = compteDao.findById(id);
+    if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
+      return null;
+    }
+
+    InfosPerso infosPerso = infosPersoDao.findById(compteExist.get().getInfosPersoId()).get();
+
+    return infosPerso.getDefaultFields();
+  }
+
+  @Override
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone) {
     return infosPersoDao.findByEmailOrTelephone(email, telephone);
   }

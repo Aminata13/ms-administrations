@@ -21,6 +21,8 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findInfosPersoById(String id);
 
+  public Object findInfosPersoByCompteId(String id);
+
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone);
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
