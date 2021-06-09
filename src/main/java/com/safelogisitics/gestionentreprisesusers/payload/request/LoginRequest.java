@@ -7,6 +7,8 @@ public class LoginRequest {
   @NotBlank
   private String username;
 
+  private String numeroEmei;
+
   @NotBlank
   private String password;
 
@@ -17,6 +19,10 @@ public class LoginRequest {
 
   public String getUsername() {
     return this.username;
+  }
+
+  public String getNumeroEmei() {
+    return this.numeroEmei;
   }
 
   public String getPassword() {

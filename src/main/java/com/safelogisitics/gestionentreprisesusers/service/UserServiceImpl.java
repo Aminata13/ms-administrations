@@ -8,6 +8,7 @@ import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshExceptio
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
 import com.safelogisitics.gestionentreprisesusers.model.User;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 
-		User userDetails = validateCompteUser(loginRequest.getUsername());
+		User userDetails = validateCompteUser(loginRequest.getUsername(), loginRequest.getNumeroEmei());
     if(userDetails == null) {
       return null;
     }
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
       .map(refreshTokenService::verifyExpiration)
       .map(RefreshToken::getUser)
       .map(user -> {
-        User userDetails = validateCompteUser(user.getUsername());
+        User userDetails = validateCompteUser(user.getUsername(), request.getNumeroEmei());
         if(userDetails == null) {
           return null;
         }
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User validateCompteUser(String username) {
+  public User validateCompteUser(String username, String numeroEmei) {
     Optional<User> userExist = userDao.findByUsername(username);
     
     if(!userExist.isPresent() || userExist.get().getStatut() == -1) {
@@ -87,9 +88,14 @@ public class UserServiceImpl implements UserService {
     User user = userExist.get();
 
     for (Compte compte : user.getInfosPerso().getComptes()) {
-      if (compte.isDeleted()) {
+      if (compte.isDeleted() || (numeroEmei != null && !compte.getType().equals(ECompteType.COMPTE_COURSIER))) {
         continue;
       }
+
+      if (numeroEmei != null && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei))) {
+        break;
+      }
+
       return user;
     }
 

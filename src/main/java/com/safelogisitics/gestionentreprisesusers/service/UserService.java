@@ -1,6 +1,8 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 
+import java.util.Optional;
+
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
@@ -12,5 +14,5 @@ public interface UserService {
 
   public JwtResponse refreshToken(TokenRefreshRequest request);
 
-  public User validateCompteUser(String username);
+  public User validateCompteUser(String username, String numeroEmei);
 }
