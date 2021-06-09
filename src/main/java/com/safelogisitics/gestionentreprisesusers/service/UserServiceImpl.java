@@ -1,14 +1,17 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 
+import java.util.Optional;
+
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
+import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtUtils;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,10 +45,9 @@ public class UserServiceImpl implements UserService {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
-		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    
-    if(!userDetails.isAccountNonLocked() || !userDetails.isEnabled()) {
+
+		User userDetails = validateCompteUser(loginRequest.getUsername());
+    if(userDetails == null) {
       return null;
     }
 
@@ -62,10 +64,35 @@ public class UserServiceImpl implements UserService {
       .map(refreshTokenService::verifyExpiration)
       .map(RefreshToken::getUser)
       .map(user -> {
+        User userDetails = validateCompteUser(user.getUsername());
+        if(userDetails == null) {
+          return null;
+        }
+
         String token = jwtUtils.generateJwtTokenFromUser(user);
         return new JwtResponse(token, requestRefreshToken);
       })
       .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
         "Refresh token is not not found!"));
+  }
+
+  @Override
+  public User validateCompteUser(String username) {
+    Optional<User> userExist = userDao.findByUsername(username);
+    
+    if(!userExist.isPresent() || userExist.get().getStatut() == -1) {
+      return null;
+    }
+
+    User user = userExist.get();
+
+    for (Compte compte : user.getInfosPerso().getComptes()) {
+      if (compte.isDeleted()) {
+        continue;
+      }
+      return user;
+    }
+
+    return null;
   }
 }

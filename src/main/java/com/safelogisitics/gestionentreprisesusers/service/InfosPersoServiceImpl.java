@@ -134,6 +134,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request) {
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent()) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
+
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
@@ -183,15 +189,16 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
     });
-
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
-      user.setStatut(0);
-      userDao.save(user);
-    });
   }
 
   @Override
   public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent()) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
+
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
@@ -232,15 +239,16 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
     });
-
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
-      user.setStatut(0);
-      userDao.save(user);
-    });
   }
 
   @Override
   public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request) {
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent()) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
+
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
@@ -281,15 +289,18 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
     });
-
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
-      user.setStatut(0);
-      userDao.save(user);
-    });
   }
 
   @Override
   public InfosPerso createCompteClient(RegisterRequest request) {
+    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
+
+    if (accessExist.isPresent() &&
+      (!accessExist.get().getInfosPerso().getEmail().equals(request.getEmail()) || !accessExist.get().getInfosPerso().getTelephone().equals(request.getTelephone()))
+    ) {
+      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
+    }
+
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
@@ -325,6 +336,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request) {
+    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
+
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(id)) {
+      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
+    }
+
     InfosPerso infosPerso = updateInfosPerso(id, request);
 
     userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
@@ -347,11 +364,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
-    });
-
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
-      user.setStatut(0);
-      userDao.save(user);
     });
   }
 
