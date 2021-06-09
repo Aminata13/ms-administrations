@@ -42,6 +42,9 @@ public class Compte {
   @Field(value = "services")
   private Set<Service> services = new HashSet<>();
 
+  @Field(value = "numeroEmei")
+  private String numeroEmei;
+
   @Field(value = "statut")
   private int statut;
 
@@ -139,6 +142,14 @@ public class Compte {
 
   public void setServices(Set<Service> services) {
     this.services = services;
+  }
+
+  public String getNumeroEmei() {
+    return this.numeroEmei;
+  }
+
+  public void setNumeroEmei(String numeroEmei) {
+    this.numeroEmei = numeroEmei;
   }
 
   public int getStatut() {

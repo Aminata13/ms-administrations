@@ -7,6 +7,8 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
 
   private String roleId;
 
+  private String numeroEmei;
+
   @NotNull
   private int statut;
 
@@ -16,6 +18,10 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
 
   public String getRoleId() {
     return this.roleId;
+  }
+
+  public String getNumeroEmei() {
+    return this.numeroEmei;
   }
 
   public int getStatut() {

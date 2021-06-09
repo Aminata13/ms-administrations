@@ -134,15 +134,15 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request) {
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent()) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
-    }
-
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
+
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
 
     Optional<Role> _role = roleService.getRoleById(request.getRoleId());
 
@@ -193,24 +193,36 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent()) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
+    if (request.getNumeroEmei().isEmpty()) {
+      throw new IllegalArgumentException("Numéro emei invalide!");
     }
 
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
 
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
+    
+    Optional<Compte> compteExist = compteDao.findByNumeroEmei(request.getNumeroEmei());
+
+    if (compteExist.isPresent() && !compteExist.get().getInfosPersoId().equals(infosPerso.getId())) {
+      throw new IllegalArgumentException("Numéro emei déjà utilisé!");
+    }
+
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresentOrElse(compte -> {
       compte.setDeleted(false);
       compte.setStatut(request.getStatut());
+      compte.setNumeroEmei(request.getNumeroEmei());
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
     }, () -> {
       Compte compte = new Compte(ECompteType.COMPTE_COURSIER, infosPerso.getId(), request.getStatut());
+      compte.setNumeroEmei(request.getNumeroEmei());
       compteDao.save(compte);
       infosPerso.addCompte(compte);
       infosPersoDao.save(infosPerso);
@@ -235,6 +247,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresent(compte -> {
       compte.setDeleted(true);
+      compte.setNumeroEmei(null);
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
@@ -243,15 +256,15 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request) {
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent()) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
-    }
-
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
+
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
+      throw new IllegalArgumentException("Email déjà utilisé!");
+    }
 
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresentOrElse(compte -> {
       compte.setDeleted(false);
