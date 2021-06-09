@@ -23,7 +23,7 @@ public class CompteJsonSerializer extends JsonSerializer<Compte> {
         jsonGenerator.writeStringField("type", compte.getType().name());
         jsonGenerator.writeStringField("infosPersoId", compte.getInfosPersoId());
         jsonGenerator.writeStringField("entreprise", compte.getEntreprise() != null ? compte.getEntreprise().getId() : null);
-        jsonGenerator.writeObjectField("role", compte.getCustomRoleFields("id"));
+        jsonGenerator.writeObjectField("role", compte.getCustomRoleFields());
         jsonGenerator.writeNumberField("statut", compte.getStatut());
         jsonGenerator.writeObjectField("services", compte.getServices());
 

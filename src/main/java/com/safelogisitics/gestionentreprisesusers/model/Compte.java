@@ -183,6 +183,23 @@ public class Compte {
     return _customRoleField;
   }
 
+  public Object getCustomRoleFields() {
+    Map <String,Object> _customRoleField = new LinkedHashMap<>();
+
+    _customRoleField.put("id", getRole().getId());
+    _customRoleField.put("type", getType());
+    _customRoleField.put("privileges", new ArrayList<>());
+    if (role != null) {
+      _customRoleField.put("role", role.getLibelle());
+      List<String> privileges = role.getPrivileges().stream().map(
+        privilege -> privilege.getId()
+       ).collect(Collectors.toList());
+      _customRoleField.put("privileges", privileges);
+    }
+
+    return _customRoleField;
+  }
+
   public int hashCode() {
     return Objects.hash(type, infosPersoId, entreprise, 1000);
   }
