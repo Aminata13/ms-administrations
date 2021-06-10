@@ -68,8 +68,8 @@ public class UserServiceImpl implements UserService {
     }
 
     User user = userExist.get();
-    // @TODO:: Blacklist old accessToken if exist
-    String oldToken = user.getCurrentAccessToken();
+    // Blacklist old accessToken if exist
+    jwtUtils.blacklistAccesstoken(user.getCurrentAccessToken());
     user.setAuthenticated(false);
     user.setCurrentAccessToken(null);
     userDao.save(user);

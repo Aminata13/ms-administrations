@@ -19,6 +19,9 @@ public class KafkaTopicConfig {
   @Value(value = "${kafka.topics.createPaiement.name}")
   private String createPaiementTopicName;
 
+  @Value(value = "${kafka.topics.blacklistAccesstoken.name}")
+  private String blacklistAccesstokenName;
+
   @Bean
   public KafkaAdmin kafkaAdmin() {
     Map<String, Object> configs = new HashMap<>();
@@ -29,6 +32,11 @@ public class KafkaTopicConfig {
   @Bean
   public NewTopic topic1() {
     return new NewTopic(createPaiementTopicName, 1, (short) 1);
+  }
+
+  @Bean
+  public NewTopic topic2() {
+    return new NewTopic(blacklistAccesstokenName, 1, (short) 1);
   }
 
 }

@@ -126,7 +126,7 @@ public class AbonnementController {
 
   @PutMapping("/update/{id}")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'WRITE')")
 	public ResponseEntity<?> updateAbonnement(@PathVariable(value = "id") String id, @Valid @RequestBody AbonnementRequest request) {
     Abonnement abonnement = abonnementService.updateAbonnement(id, request);
 		return ResponseEntity.status(HttpStatus.OK).body(abonnement);

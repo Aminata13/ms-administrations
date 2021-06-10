@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +23,12 @@ public class JwtUtils {
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
   private final JwtConfig jwtConfig;
+
+  @Autowired
+  private KafkaTemplate<String, String> blacklistTemplate;
+
+  @Value(value = "${kafka.topics.blacklistAccesstoken.name}")
+  private String blacklistAccesstokenName;
 
   public JwtUtils(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
@@ -58,8 +66,8 @@ public class JwtUtils {
       .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret())
       .compact();
 
-    // @TODO:: Blacklist old accessToken if exist
-    String oldToken = user.getCurrentAccessToken();
+    // Blacklist old accessToken if exist
+    blacklistAccesstoken(user.getCurrentAccessToken());
 
     user.setAuthenticated(true);
     user.setCurrentAccessToken(newAccessToken);
@@ -94,4 +102,11 @@ public class JwtUtils {
 
 		return false;
 	}
+
+  public void blacklistAccesstoken(String accessToken) {
+    if (accessToken == null || accessToken.isEmpty()) {
+      return;
+    }
+    blacklistTemplate.send(blacklistAccesstokenName, accessToken);
+  }
 }
