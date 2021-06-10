@@ -92,7 +92,10 @@ public class UserServiceImpl implements UserService {
         continue;
       }
 
-      if (numeroEmei != null && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei))) {
+      if (
+        (numeroEmei == null && compte.getType().equals(ECompteType.COMPTE_COURSIER)) ||
+        (numeroEmei != null && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei)))
+      ) {
         break;
       }
 

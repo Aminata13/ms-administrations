@@ -1,8 +1,5 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-
-import java.util.Optional;
-
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
