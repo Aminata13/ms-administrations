@@ -25,6 +25,9 @@ public class User {
   @Field(value = "password")
   private String password;
 
+  @Field(value = "authenticated")
+  private boolean authenticated;
+
   @Field(value = "statut")
   private int statut;
 
@@ -32,14 +35,17 @@ public class User {
   private Date dateCreation;
 
   public User() {
+    this.authenticated = false;
+    this.dateCreation = new Date();
   }
 
   public User(InfosPerso infosPerso, String username, String password, int statut) {
     this.infosPerso = infosPerso;
     this.username = username;
     this.password = password;
-    this.dateCreation = new Date();
     this.statut = statut;
+    this.authenticated = false;
+    this.dateCreation = new Date();
   }
 
   public String getId() {
@@ -72,6 +78,14 @@ public class User {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public boolean isAuthenticated() {
+    return this.authenticated;
+  }
+
+  public void setAuthenticated(boolean authenticated) {
+    this.authenticated = authenticated;
   }
 
   public int getStatut() {

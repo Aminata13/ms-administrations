@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public User validateCompteUser(String username, String numeroEmei) {
     Optional<User> userExist = userDao.findByUsername(username);
-    
+
     if(!userExist.isPresent() || userExist.get().getStatut() == -1) {
       return null;
     }

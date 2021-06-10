@@ -49,6 +49,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   UserService userService;
 
   @Autowired
+	EmailService emailService;
+
+  @Autowired
 	PasswordEncoder encoder;
 
   @Override
@@ -173,7 +176,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       String password = alphaNumericString(1, 8);
       User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
       userDao.save(user);
-      System.out.println("MOT DE PASSE =====> "+password);
+
+      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
+      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que administrateur. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
+      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
     });
 
     return infosPerso;
@@ -235,7 +241,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       String password = alphaNumericString(1, 8);
       User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
       userDao.save(user);
-      System.out.println("MOT DE PASSE =====> "+password);
+
+      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
+      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que agent. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
+      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
     });
 
     return infosPerso;
@@ -286,7 +295,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       String password = alphaNumericString(1, 8);
       User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
       userDao.save(user);
-      System.out.println("MOT DE PASSE =====> "+password);
+
+      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
+      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que prestataire de service. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
+      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
     });
 
     return infosPerso;
@@ -343,6 +355,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       User user = new User(infosPerso, request.getUsername(), encoder.encode(request.getPassword()), 1);
       userDao.save(user);
     });
+
+    emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
+      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Nous sommes ravis de vous compter parmis nos clients.",
+      infosPerso.getPrenom(), infosPerso.getNom()));
 
     return infosPerso;
   }
