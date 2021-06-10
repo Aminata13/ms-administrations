@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface RefreshTokenDao extends PagingAndSortingRepository<RefreshToken, String> {
   Optional<RefreshToken> findByToken(String token);
 
+  Optional<RefreshToken> findByUser(User user);
+
   Optional<RefreshToken> deleteByUser(User user);
 }

@@ -14,6 +14,8 @@ public interface UserDao extends PagingAndSortingRepository<User, String> {
 
   Optional<User> findByInfosPerso(InfosPerso infosPerso);
 
+  Optional<User> findByCurrentAccessToken(String accessToken);
+
   boolean existsByUsername(String username);
 
   boolean existsByInfosPerso(InfosPerso infosPerso);

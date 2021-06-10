@@ -28,6 +28,9 @@ public class User {
   @Field(value = "authenticated")
   private boolean authenticated;
 
+  @Field(value = "currentAccessToken")
+  private String currentAccessToken;
+
   @Field(value = "statut")
   private int statut;
 
@@ -86,6 +89,14 @@ public class User {
 
   public void setAuthenticated(boolean authenticated) {
     this.authenticated = authenticated;
+  }
+
+  public String getCurrentAccessToken() {
+    return this.currentAccessToken;
+  }
+
+  public void setCurrentAccessToken(String currentAccessToken) {
+    this.currentAccessToken = currentAccessToken;
   }
 
   public int getStatut() {

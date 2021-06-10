@@ -13,6 +13,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtUtils;
+import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,17 +45,36 @@ public class UserServiceImpl implements UserService {
     Authentication authentication = authenticationManager.authenticate(
 			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-
 		User userDetails = validateCompteUser(loginRequest.getUsername(), loginRequest.getNumeroEmei());
     if(userDetails == null) {
       return null;
     }
 
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
+
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
 		return new JwtResponse(jwt, refreshToken.getToken());
+  }
+
+  @Override
+  public void logout() {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    Optional<User> userExist = userDao.findByInfosPerso(currentUser.getInfosPerso());
+    if (!userExist.isPresent()) {
+      return;
+    }
+
+    User user = userExist.get();
+    // @TODO:: Blacklist old accessToken if exist
+    String oldToken = user.getCurrentAccessToken();
+    user.setAuthenticated(false);
+    user.setCurrentAccessToken(null);
+    userDao.save(user);
+
+    refreshTokenService.deleteByUserId(user.getId());
   }
 
   @Override
@@ -70,6 +90,7 @@ public class UserServiceImpl implements UserService {
           return null;
         }
 
+        user.setAuthenticated(false);
         String token = jwtUtils.generateJwtTokenFromUser(user);
         return new JwtResponse(token, requestRefreshToken);
       })

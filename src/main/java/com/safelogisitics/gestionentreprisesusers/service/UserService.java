@@ -9,6 +9,8 @@ public interface UserService {
 
   public JwtResponse authenticate(LoginRequest loginRequest);
 
+  public void logout();
+
   public JwtResponse refreshToken(TokenRefreshRequest request);
 
   public User validateCompteUser(String username, String numeroEmei);

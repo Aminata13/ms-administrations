@@ -8,6 +8,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.RefreshTokenDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
 import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,12 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
   }
 
 
+  @Override
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenDao.findByToken(token);
   }
 
+  @Override
   public RefreshToken createRefreshToken(String userId) {
     deleteByUserId(userId);
 
@@ -47,6 +50,11 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
     return refreshToken;
   }
 
+  @Override
+  public Optional<RefreshToken> findByUser(User user) {
+    return refreshTokenDao.findByUser(user);
+  }
+
   public RefreshToken verifyExpiration(RefreshToken token) {
     if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
       refreshTokenDao.delete(token);
@@ -56,8 +64,13 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
     return token;
   }
 
+  @Override
   @Transactional
   public void deleteByUserId(String userId) {
-    refreshTokenDao.deleteByUser(userDao.findById(userId).get());
+    try {
+      refreshTokenDao.deleteByUser(userDao.findById(userId).get());
+    } catch (Exception e) {
+      System.out.println("Error during deleting old refresh token");
+    }
   }
 }

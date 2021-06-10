@@ -11,6 +11,8 @@ import com.safelogisitics.gestionentreprisesusers.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +42,21 @@ public class AuthController {
 		return ResponseEntity.ok(jwtRes);
 	}
 
+  @GetMapping("/logout")
+  @PreAuthorize("isAuthenticated()")
+	public ResponseEntity<?> logoutUser() {
+
+		userService.logout();
+
+		return ResponseEntity.ok("OK");
+	}
+
+  @PostMapping("/refreshtoken")
+	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    JwtResponse jwtRes = userService.refreshToken(request);
+		return ResponseEntity.ok(jwtRes);
+  }
+
   @PostMapping("/register")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
 
@@ -50,10 +67,4 @@ public class AuthController {
 
 		return ResponseEntity.ok(jwtRes);
 	}
-
-  @PostMapping("/refreshtoken")
-	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-    JwtResponse jwtRes = userService.refreshToken(request);
-		return ResponseEntity.ok(jwtRes);
-  }
 }
