@@ -91,7 +91,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public Page<InfosPerso> getInfosPersos(ECompteType type, Pageable pageable) {
     List<String> ids = compteDao.findByTypeAndDeletedIsFalse(type)
       .stream()
-      .filter(compte -> compte.getRole() != null && !compte.isDeleted() && compte.getRole().isEditable())
+      .filter(compte -> !compte.isDeleted() && (compte.getRole() == null || (compte.getRole() != null && compte.getRole().isEditable())))
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
