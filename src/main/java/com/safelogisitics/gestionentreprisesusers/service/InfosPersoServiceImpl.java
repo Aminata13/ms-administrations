@@ -169,7 +169,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoDao.save(infosPerso);
     });
 
-    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
       user.setStatut(1);
       userDao.save(user);
     }, () -> {
@@ -234,7 +234,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoDao.save(infosPerso);
     });
 
-    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
       user.setStatut(1);
       userDao.save(user);
     }, () -> {
@@ -288,7 +288,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoDao.save(infosPerso);
     });
 
-    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
       user.setStatut(1);
       userDao.save(user);
     }, () -> {
@@ -346,7 +346,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoDao.save(infosPerso);
     });
 
-    userDao.findByInfosPerso(infosPerso).ifPresentOrElse(user -> {
+    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
       user.setStatut(1);
       user.setUsername(request.getUsername());
       user.setPassword(encoder.encode(request.getPassword()));
@@ -373,7 +373,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     InfosPerso infosPerso = updateInfosPerso(id, request);
 
-    userDao.findByInfosPerso(infosPerso).ifPresent(user -> {
+    userDao.findByInfosPersoId(infosPerso.getId()).ifPresent(user -> {
       user.setUsername(request.getUsername());
       if (request.getPassword() != null) {
         user.setPassword(encoder.encode(request.getPassword())); 

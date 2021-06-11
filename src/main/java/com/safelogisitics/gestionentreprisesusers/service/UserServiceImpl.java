@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
   public void logout() {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    Optional<User> userExist = userDao.findByInfosPerso(currentUser.getInfosPerso());
+    Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
     if (!userExist.isPresent()) {
       return;
     }

@@ -165,7 +165,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
-    Optional<User> userExist = userDao.findByInfosPerso(infosPerso);
+    Optional<User> userExist = userDao.findByInfosPersoId(infosPerso.getId());
 
     if (!userExist.isPresent() || !encoder.matches(transactionRequest.getPassword(), userExist.get().getPassword())) {
       throw new UsernameNotFoundException("Numero carte ou mot de passe invalide!");

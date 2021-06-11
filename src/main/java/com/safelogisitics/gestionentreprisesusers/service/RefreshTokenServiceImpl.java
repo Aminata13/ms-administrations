@@ -52,7 +52,7 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
 
   @Override
   public Optional<RefreshToken> findByUser(User user) {
-    return refreshTokenDao.findByUser(user);
+    return refreshTokenDao.findByUserId(user.getId());
   }
 
   public RefreshToken verifyExpiration(RefreshToken token) {
@@ -68,7 +68,7 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
   @Transactional
   public void deleteByUserId(String userId) {
     try {
-      refreshTokenDao.deleteByUser(userDao.findById(userId).get());
+      refreshTokenDao.deleteByUserId(userId);
     } catch (Exception e) {
       System.out.println("Error during deleting old refresh token");
     }

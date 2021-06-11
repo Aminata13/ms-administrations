@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -20,11 +19,11 @@ public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
 
   Optional<Compte> findByNumeroEmei(String numeroEmei);
   
-  Optional<Compte> findByInfosPersoIdAndEntreprise(String infosPersoId, Entreprise entreprise);
+  Optional<Compte> findByInfosPersoIdAndEntrepriseId(String infosPersoId, String entrepriseId);
 
   boolean existsByInfosPersoId(String infosPersoId);
   
-  boolean existsByInfosPersoIdAndEntreprise(String infosPersoId, Entreprise entreprise);
+  boolean existsByInfosPersoIdAndEntrepriseId(String infosPersoId, String entrepriseId);
 
   boolean existsByInfosPersoIdAndType(String infosPersoId, ECompteType type);
 
