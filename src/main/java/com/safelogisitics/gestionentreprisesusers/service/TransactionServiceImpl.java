@@ -63,49 +63,49 @@ public class TransactionServiceImpl implements TransactionService {
   public Page<Transaction> findByAbonnement(String infosPersoId, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementOrderByDateCreationDesc(abonnement, pageable);
+    return transactionDao.findByAbonnementIdOrderByDateCreationDesc(abonnement.getId(), pageable);
   }
 
   @Override
   public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementAndDateCreationOrderByDateCreationDesc(abonnement, dateCreation, pageable);
+    return transactionDao.findByAbonnementIdAndDateCreationOrderByDateCreationDesc(abonnement.getId(), dateCreation, pageable);
   }
 
   @Override
   public Page<Transaction> findByAbonnementAndAction(String infosPersoId, ETransactionAction action, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementAndActionOrderByDateCreationDesc(abonnement, action, pageable);
+    return transactionDao.findByAbonnementIdAndActionOrderByDateCreationDesc(abonnement.getId(), action, pageable);
   }
 
   @Override
   public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementAndActionAndDateCreationOrderByDateCreationDesc(abonnement, action, dateCreation, pageable);
+    return transactionDao.findByAbonnementIdAndActionAndDateCreationOrderByDateCreationDesc(abonnement.getId(), action, dateCreation, pageable);
   }
 
   @Override
   public Page<Transaction> findByCompteCreateur(String infosPersoId, Pageable pageable) {
     Compte compteAdmin = getCompteAdmin(infosPersoId);
 
-    return transactionDao.findByCompteCreateurOrderByDateCreationDesc(compteAdmin, pageable);
+    return transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
   }
 
   @Override
   public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteAdmin(infosPersoId);
 
-    return transactionDao.findByCompteCreateurAndDateCreationOrderByDateCreationDesc(compteAdmin, dateCreation, pageable);
+    return transactionDao.findByCompteCreateurIdAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), dateCreation, pageable);
   }
 
   @Override
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteAdmin(infosPersoId);
 
-    return transactionDao.findByCompteCreateurAndActionAndDateCreationOrderByDateCreationDesc(compteAdmin, action, dateCreation, pageable);
+    return transactionDao.findByCompteCreateurIdAndActionAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), action, dateCreation, pageable);
   }
 
   @Override
