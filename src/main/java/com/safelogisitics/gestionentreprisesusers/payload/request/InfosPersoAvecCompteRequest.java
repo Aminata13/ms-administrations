@@ -9,6 +9,8 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
 
   private String numeroEmei;
 
+  private String numeroReference;
+
   @NotNull
   private int statut;
 
@@ -24,7 +26,20 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
     return this.numeroEmei;
   }
 
+  public String getNumeroReference() {
+    return this.numeroReference;
+  }
+
   public int getStatut() {
     return this.statut;
+  }
+
+  public boolean valideFieldsCompteAgent() {
+    if (
+      (this.getNumeroEmei() == null || this.getNumeroEmei().isEmpty()) || (this.getNumeroReference() == null || this.getNumeroReference().isEmpty()) ||
+      (this.getNumeroPermis() == null || this.getNumeroPermis().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty())
+    ) return false;
+
+    return true;
   }
 }

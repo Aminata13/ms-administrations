@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,9 @@ import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsI
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,6 +57,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
 	PasswordEncoder encoder;
+
+  @Autowired
+  MongoTemplate mongoTemplate;
 
   @Override
   public InfosPerso getUserInfos() {
@@ -100,14 +107,38 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest) {
-    Optional<InfosPerso> _infosPerso = infosPersoDao.findByEmailOrTelephone(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone());
+    final Query query = new Query();
+    final List<Criteria> listCriteria = new ArrayList<>();
+    
+    if (infosPersoRequest.getEmail() != null && !infosPersoRequest.getEmail().isEmpty())
+      listCriteria.add(Criteria.where("email").is(infosPersoRequest.getEmail()));
 
-    InfosPerso infosPerso = _infosPerso.isPresent() ? updateInfosPerso(_infosPerso.get().getId(), infosPersoRequest) : new InfosPerso(
+    if (infosPersoRequest.getTelephone() != null && !infosPersoRequest.getTelephone().isEmpty())
+      listCriteria.add(Criteria.where("telephone").is(infosPersoRequest.getTelephone()));
+
+    if (infosPersoRequest.getNumeroPermis() != null && !infosPersoRequest.getNumeroPermis().isEmpty())
+      listCriteria.add(Criteria.where("numeroPermis").is(infosPersoRequest.getNumeroPermis()));
+
+    if (infosPersoRequest.getNumeroPiece() != null && !infosPersoRequest.getNumeroPiece().isEmpty())
+      listCriteria.add(Criteria.where("numeroPiece").is(infosPersoRequest.getNumeroPiece()));
+
+    if (listCriteria.isEmpty())
+      throw new IllegalArgumentException("Il faut au moins l'email ou le numero de téléphone ou le numéro de piece ou le numéro de permis!");
+
+    query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
+    query.limit(1);
+
+    InfosPerso _infosPerso = mongoTemplate.findOne(query, InfosPerso.class);
+
+    InfosPerso infosPerso = _infosPerso != null &&_infosPerso.getId() != null ? updateInfosPerso(_infosPerso.getId(), infosPersoRequest) : new InfosPerso(
       infosPersoRequest.getPrenom(),
       infosPersoRequest.getNom(),
       infosPersoRequest.getEmail(),
       infosPersoRequest.getTelephone(),
-      infosPersoRequest.getAdresse()
+      infosPersoRequest.getAdresse(),
+      infosPersoRequest.getDateNaissance(),
+      infosPersoRequest.getNumeroPermis(),
+      infosPersoRequest.getNumeroPiece()
     );
 
     infosPersoDao.save(infosPerso);
@@ -130,6 +161,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.setEmail(infosPersoRequest.getEmail());
     infosPerso.setTelephone(infosPersoRequest.getTelephone());
     infosPerso.setAdresse(infosPersoRequest.getAdresse());
+    infosPerso.setDateNaissance(infosPersoRequest.getDateNaissance());
+    infosPerso.setNumeroPermis(infosPersoRequest.getNumeroPermis());
+    infosPerso.setNumeroPiece(infosPersoRequest.getNumeroPiece());
 
     infosPersoDao.save(infosPerso);
 
@@ -200,36 +234,43 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
-    if (request.getNumeroEmei().isEmpty()) {
-      throw new IllegalArgumentException("Numéro emei invalide!");
-    }
+    if (!request.valideFieldsCompteAgent())
+      throw new IllegalArgumentException("Informations agent manquant!");
 
     InfosPersoRequest infosPersoRequest = request;
 
     InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
 
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
-    }
+    final Query query = new Query();
+    final List<Criteria> listCriteria = new ArrayList<>();
     
-    Optional<Compte> compteExist = compteDao.findByNumeroEmei(request.getNumeroEmei());
+    listCriteria.add(Criteria.where("numeroEmei").is(request.getNumeroEmei()));
+    listCriteria.add(Criteria.where("numeroReference").is(request.getNumeroReference()));
+    query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
+    query.limit(1);
+    
+    // Validation de l'unicité des infos de la compte agent
+    Compte _compte = mongoTemplate.findOne(query, Compte.class);
+    if (_compte != null && !_compte.getInfosPersoId().equals(infosPerso.getId()))
+      throw new IllegalArgumentException("Numéro emei ou référence déjà utilisé!");
 
-    if (compteExist.isPresent() && !compteExist.get().getInfosPersoId().equals(infosPerso.getId())) {
-      throw new IllegalArgumentException("Numéro emei déjà utilisé!");
-    }
+    // Validations des accès de l'agent
+    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId()))
+      throw new IllegalArgumentException("Email déjà utilisé comme nom d'utilisateur!");
 
     compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresentOrElse(compte -> {
       compte.setDeleted(false);
       compte.setStatut(request.getStatut());
       compte.setNumeroEmei(request.getNumeroEmei());
+      compte.setNumeroReference(request.getNumeroReference());
       compteDao.save(compte);
       infosPerso.updateCompte(compte);
       infosPersoDao.save(infosPerso);
     }, () -> {
       Compte compte = new Compte(ECompteType.COMPTE_COURSIER, infosPerso.getId(), request.getStatut());
       compte.setNumeroEmei(request.getNumeroEmei());
+      compte.setNumeroReference(request.getNumeroReference());
       compteDao.save(compte);
       infosPerso.addCompte(compte);
       infosPersoDao.save(infosPerso);

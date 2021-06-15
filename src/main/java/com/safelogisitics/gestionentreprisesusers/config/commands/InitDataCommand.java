@@ -1,7 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.config.commands;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -74,7 +74,7 @@ public class InitDataCommand implements CommandLineRunner {
     InfosPerso newInfosPerso = _newInfosPerso[0];
 
     if (!infosPersoDao.existsByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone())) {
-      newInfosPerso.setDateCreation(new Date());
+      newInfosPerso.setDateCreation(LocalDateTime.now());
       infosPersoDao.save(newInfosPerso);
     }
 

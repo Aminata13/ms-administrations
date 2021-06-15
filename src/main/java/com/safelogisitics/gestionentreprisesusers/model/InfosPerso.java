@@ -1,7 +1,8 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,24 +38,38 @@ public class InfosPerso {
   @Field(value = "adresse")
   private String adresse;
 
+  @Field(value = "dateNaissance")
+  private LocalDate dateNaissance;
+
+  @Indexed
+  @Field(value = "numeroPermis")
+  private String numeroPermis;
+
+  @Indexed
+  @Field(value = "numeroPiece")
+  private String numeroPiece;
+
   @DBRef
   @Field(value = "comptes")
   private Set<Compte> comptes = new HashSet<>();
 
   @Field(value = "dateCreation")
-  private Date dateCreation;
+  private LocalDateTime dateCreation;
 
   public InfosPerso() {
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
   }
 
-  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse) {
+  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece) {
     this.prenom = prenom;
     this.nom = nom;
     this.email = email;
     this.telephone = telephone;
     this.adresse = adresse;
-    this.dateCreation = new Date();
+    this.dateNaissance = dateNaissance;
+    this.numeroPermis = numeroPermis;
+    this.numeroPiece = numeroPiece;
+    this.dateCreation = LocalDateTime.now();
   }
 
   public String getId() {
@@ -105,6 +120,30 @@ public class InfosPerso {
     this.adresse = adresse;
   }
 
+  public LocalDate getDateNaissance() {
+    return this.dateNaissance;
+  }
+
+  public void setDateNaissance(LocalDate dateNaissance) {
+    this.dateNaissance = dateNaissance;
+  }
+
+  public String getNumeroPermis() {
+    return this.numeroPermis;
+  }
+
+  public void setNumeroPermis(String numeroPermis) {
+    this.numeroPermis = numeroPermis;
+  }
+
+  public String getNumeroPiece() {
+    return this.numeroPiece;
+  }
+
+  public void setNumeroPiece(String numeroPiece) {
+    this.numeroPiece = numeroPiece;
+  }
+
   public Set<Compte> getComptes() {
     return this.comptes;
   }
@@ -122,11 +161,11 @@ public class InfosPerso {
     this.comptes.add(compte);
   }
 
-  public Date getDateCreation() {
+  public LocalDateTime getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(Date dateCreation) {
+  public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
   }
 

@@ -1,5 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.payload.request;
 
+import java.time.LocalDate;
+
 import javax.validation.constraints.NotBlank;
 
 public class InfosPersoRequest {
@@ -16,6 +18,12 @@ public class InfosPersoRequest {
   protected String telephone;
 
   protected String adresse;
+
+  private LocalDate dateNaissance;
+
+  private String numeroPermis;
+
+  private String numeroPiece;
 
   public String getPrenom() {
     return this.prenom;
@@ -35,5 +43,17 @@ public class InfosPersoRequest {
 
   public String getAdresse() {
     return this.adresse;
+  }
+
+  public LocalDate getDateNaissance() {
+    return this.dateNaissance;
+  }
+
+  public String getNumeroPermis() {
+    return this.numeroPermis;
+  }
+
+  public String getNumeroPiece() {
+    return this.numeroPiece;
   }
 }

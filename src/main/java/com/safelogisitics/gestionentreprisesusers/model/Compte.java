@@ -45,6 +45,9 @@ public class Compte {
   @Field(value = "numeroEmei")
   private String numeroEmei;
 
+  @Field(value = "numeroReference")
+  private String numeroReference;
+
   @Field(value = "statut")
   private int statut;
 
@@ -150,6 +153,14 @@ public class Compte {
 
   public void setNumeroEmei(String numeroEmei) {
     this.numeroEmei = numeroEmei;
+  }
+
+  public String getNumeroReference() {
+    return this.numeroReference;
+  }
+
+  public void setNumeroReference(String numeroReference) {
+    this.numeroReference = numeroReference;
   }
 
   public int getStatut() {
