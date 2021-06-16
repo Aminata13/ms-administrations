@@ -14,6 +14,7 @@ public class AbonnementRequest {
   @NotNull
   private int statut;
 
+  @NotBlank
   private String numeroCarte;
 
   private boolean carteBloquer = false;

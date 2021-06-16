@@ -1,12 +1,16 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
@@ -28,6 +32,9 @@ public class AbonnementServiceImpl implements AbonnementService {
   private TypeAbonnementDao typeAbonnementDao;
 
   @Autowired
+  private NumeroCarteDao numeroCarteDao;
+
+  @Autowired
   private CompteDao compteDao;
 
   @Override
@@ -37,17 +44,17 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Page<Abonnement> getAbonnements(TypeAbonnement typeAbonnement, Pageable pageable) {
-    return abonnementDao.findByTypeAbonnementAndDeletedIsFalse(typeAbonnement, pageable);
+    return abonnementDao.findByTypeAbonnementIdAndDeletedIsFalse(typeAbonnement.getId(), pageable);
   }
 
   @Override
   public Optional<Abonnement> getAbonnementByCompteClient(Compte client) {
-    return abonnementDao.findByCompteClientAndDeletedIsFalse(client);
+    return abonnementDao.findByCompteClientIdAndDeletedIsFalse(client.getId());
   }
 
   @Override
   public Page<Abonnement> getAbonnementByCompteCreateur(Compte createur, Pageable pageable) {
-    return abonnementDao.findByCompteCreateurAndDeletedIsFalse(createur, pageable);
+    return abonnementDao.findByCompteCreateurIdAndDeletedIsFalse(createur.getId(), pageable);
   }
 
   @Override
@@ -56,82 +63,72 @@ public class AbonnementServiceImpl implements AbonnementService {
   }
 
   @Override
-  public Abonnement createAbonnement(AbonnementRequest abonnementRequest) {
-    Optional<TypeAbonnement> typeAbonnementExist = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId());
-    Optional<Compte> compteClientExist = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER);
+  public Abonnement createAbonnement(AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur) {
+    NumeroCarte numeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
-    if (!typeAbonnementExist.isPresent() || !compteClientExist.isPresent() || compteClientExist.get().isDeleted()) {
-      throw new IllegalArgumentException("TypeAbonnement or CompteClient with that id does not exists!");
-    }
+    TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    if (abonnementRequest.getNumeroCarte() != null && abonnementDao.existsByNumeroCarte(abonnementRequest.getNumeroCarte())) {
-      throw new IllegalArgumentException("Abonnement with that numeroCarte already exist!");
-    }
+    Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
 
-    Compte compteClient = compteClientExist.get();
+    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClientId(compteClient.getId());
 
-    TypeAbonnement typeAbonnement = typeAbonnementExist.get();
-
-    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClient(compteClient);
-
-    if (abonnementExist.isPresent() && !abonnementExist.get().isDeleted()) {
-      throw new IllegalArgumentException("Abonnement with that client already exist!");
-    }
+    if (abonnementExist.isPresent() && !abonnementExist.get().isDeleted())
+      throw new IllegalArgumentException("Client déjà abonné!");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
+    Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
 
-    if (abonnementExist.isPresent() && abonnementExist.get().isDeleted()) {
-      Abonnement abonnement = abonnementExist.get();
-      abonnement.setDeleted(false);
+    Abonnement abonnement;
+
+    if (abonnementExist.isPresent()) {
+      abonnement = abonnementExist.get();
       abonnement.setCompteCreateur(compteCreateur);
-      abonnementDao.save(abonnement);
-      return updateAbonnement(abonnement.getId(), abonnementRequest);
+      abonnement.setDeleted(false);
+      abonnement.setSolde(BigDecimal.valueOf(0));
+    } else {
+      abonnement = new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut());
     }
 
-    Abonnement abonnement = new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut());
-    
-    if (abonnementRequest.getNumeroCarte() != null) {
-      abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
-      abonnement.setCarteBloquer(abonnementRequest.isCarteBloquer());
-    }
-
+    abonnement.setTypeAbonnement(typeAbonnement);
+    abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
+    abonnement.setCarteBloquer(false);
     abonnementDao.save(abonnement);
+
+    numeroCarte.setActive(true);
+    numeroCarteDao.save(numeroCarte);
 
     return abonnement;
   }
 
   @Override
-  public Abonnement updateAbonnement(String id, AbonnementRequest abonnementRequest) {
+  public Abonnement changerAbonnement(String id, AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur) {
     Optional<Abonnement> abonnementExist = abonnementDao.findById(id);
 
-    if (!abonnementExist.isPresent() || !abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted()) {
-      throw new IllegalArgumentException("Abonnement with that does not exist!");
-    }
+    if (!abonnementExist.isPresent() || !abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted())
+      throw new IllegalArgumentException("Cette abonnement n'existe pas!");
+
+    NumeroCarte newNumeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
     Abonnement abonnement = abonnementExist.get();
 
-    Optional<TypeAbonnement> typeAbonnementExist = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId());
+    TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    if (!typeAbonnementExist.isPresent()) {
-      throw new IllegalArgumentException("TypeAbonnement with that id does not exists!");
-    }
+    if (abonnement.getTypeAbonnement().getId().equals(typeAbonnement.getId()))
+      throw new IllegalArgumentException("Ce client est déjà inscrit sur ce type d'abonnement!");
+    
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
 
-    if (abonnementRequest.getNumeroCarte() != null && abonnement.getNumeroCarte() != abonnementRequest.getNumeroCarte() && abonnementDao.existsByNumeroCarte(abonnementRequest.getNumeroCarte())) {
-      throw new IllegalArgumentException("Abonnement with that numeroCarte already exist!");
-    }
-
-    TypeAbonnement typeAbonnement = typeAbonnementExist.get();
+    NumeroCarte oldNumeroCarte = numeroCarteDao.findByNumero(abonnement.getNumeroCarte()).get();
 
     abonnement.setTypeAbonnement(typeAbonnement);
-    abonnement.setStatut(abonnementRequest.getStatut());
-    
-    if (abonnementRequest.getNumeroCarte() != null) {
-      abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
-      abonnement.setCarteBloquer(abonnementRequest.isCarteBloquer());
-    }
-
+    abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
+    abonnement.setCompteCreateur(compteCreateur);
     abonnementDao.save(abonnement);
+
+    newNumeroCarte.setActive(true);
+    oldNumeroCarte.setActive(false);
+    numeroCarteDao.saveAll(Arrays.asList(newNumeroCarte, oldNumeroCarte));
 
     return abonnement;
   }
@@ -140,16 +137,43 @@ public class AbonnementServiceImpl implements AbonnementService {
   public void deleteAbonnement(String id) {
     Optional<Compte> compteClientExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
 
-    if (!compteClientExist.isPresent()) {
-      throw new IllegalArgumentException("CompteClient with that id does not exists!");
-    }
+    if (!compteClientExist.isPresent() || compteClientExist.get().isDeleted())
+      throw new IllegalArgumentException("Ce compte client n'existe pas!");
 
-    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClient(compteClientExist.get());
+    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClientId(compteClientExist.get().getId());
 
-    if (abonnementExist.isPresent()) {
+    if (abonnementExist.isPresent() && !abonnementExist.get().isDeleted()) {
       Abonnement abonnement = abonnementExist.get();
+      NumeroCarte oldNumeroCarte = numeroCarteDao.findByNumero(abonnement.getNumeroCarte()).get();
+
       abonnement.setDeleted(true);
+      abonnement.setNumeroCarte(null);
+      abonnement.setTypeAbonnement(null);
       abonnementDao.save(abonnement);
+
+      oldNumeroCarte.setActive(false);
+      numeroCarteDao.save(oldNumeroCarte);
     }
+  }
+
+  private NumeroCarte validateNewCarteAbonnement(AbonnementRequest abonnementRequest) {
+    if (!compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER))
+      throw new IllegalArgumentException("Cette compte client n'existe pas!");
+
+    if (!typeAbonnementDao.existsById(abonnementRequest.getTypeAbonnementId()))
+      throw new IllegalArgumentException("Ce type d'abonnement n'existe pas!");
+
+    Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(abonnementRequest.getNumeroCarte());
+
+    if (!numeroCarteExist.isPresent())
+      throw new IllegalArgumentException("Cette carte n'existe pas!");
+
+    if (!numeroCarteExist.get().getTypeAbonnementId().equals(abonnementRequest.getTypeAbonnementId()))
+      throw new IllegalArgumentException("Cette carte ne correspond avec ce type d'abonnement!");
+
+    if (numeroCarteExist.get().isActive())
+      throw new IllegalArgumentException("Cette carte est déjà activé!");
+
+    return numeroCarteExist.get();
   }
 }

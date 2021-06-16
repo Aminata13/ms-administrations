@@ -120,15 +120,15 @@ public class AbonnementController {
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> addAbonnement(@Valid @RequestBody AbonnementRequest request) {
-    Abonnement abonnement = abonnementService.createAbonnement(request);
+    Abonnement abonnement = abonnementService.createAbonnement(request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
 	}
 
-  @PutMapping("/update/{id}")
+  @PutMapping("/changer/{id}")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'WRITE')")
 	public ResponseEntity<?> updateAbonnement(@PathVariable(value = "id") String id, @Valid @RequestBody AbonnementRequest request) {
-    Abonnement abonnement = abonnementService.updateAbonnement(id, request);
+    Abonnement abonnement = abonnementService.changerAbonnement(id, request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.OK).body(abonnement);
 	}
 

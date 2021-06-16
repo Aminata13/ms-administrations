@@ -212,7 +212,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     Compte compteClient = compteClientExist.get();
 
-    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClient(compteClient);
+    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClientId(compteClient.getId());
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted()) {
       throw new IllegalArgumentException("Abonnement with that client does not exist!");

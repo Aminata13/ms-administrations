@@ -79,7 +79,7 @@ public class EntrepriseController {
 
   @ApiOperation(value = "Suppression d'une entreprise")
   @PutMapping("/delete/{id}")
-	public ResponseEntity<?> deleteEntreprise(@PathVariable(value = "id") String id, @Valid @RequestBody String commentaire) {
+	public ResponseEntity<?> deleteEntreprise(@PathVariable(value = "id") String id) {
     entrepriseService.deleteEntreprise(id);
     return ResponseEntity.status(HttpStatus.OK).body("OK!");
 	}

@@ -21,10 +21,14 @@ public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
   
   Optional<Compte> findByInfosPersoIdAndEntrepriseId(String infosPersoId, String entrepriseId);
 
+  Optional<Compte> findByInfosPersoIdAndTypeAndDeletedIsFalse(String infosPersoId, ECompteType type);
+
   boolean existsByInfosPersoId(String infosPersoId);
   
   boolean existsByInfosPersoIdAndEntrepriseId(String infosPersoId, String entrepriseId);
 
   boolean existsByInfosPersoIdAndType(String infosPersoId, ECompteType type);
+
+  boolean existsByInfosPersoIdAndTypeAndDeletedIsFalse(String infosPersoId, ECompteType type);
 
 }

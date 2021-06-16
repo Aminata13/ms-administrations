@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 
 import org.springframework.data.domain.Page;
@@ -22,9 +23,9 @@ public interface AbonnementService {
 
   public Optional<Abonnement> getAbonnementById(String id);
   
-  public Abonnement createAbonnement(AbonnementRequest abonnementRequest);
+  public Abonnement createAbonnement(AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur);
 
-  public Abonnement updateAbonnement(String id, AbonnementRequest abonnementRequest);
+  public Abonnement changerAbonnement(String id, AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur);
 
   public void deleteAbonnement(String id);
 }
