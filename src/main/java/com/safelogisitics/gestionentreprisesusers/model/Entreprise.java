@@ -1,6 +1,12 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,15 +14,27 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "entreprises")
 public class Entreprise {
-  
+
   @Id
   private String id;
-  
+
+  @Field(value = "typeEntreprise")
+  private ETypeEntreprise typeEntreprise;
+
+  @Field(value = "typePartenariats")
+  private Set<ETypePartenariat> typePartenariats = new HashSet<>();
+
   @Field(value = "denomination")
   private String denomination;
 
   @Field(value = "ninea")
   private String ninea;
+
+  @Field(value = "raisonSociale")
+  private String raisonSociale;
+
+  @Field(value = "gerant")
+  private String gerantId;
 
   @Field(value = "email")
   private String email;
@@ -27,19 +45,27 @@ public class Entreprise {
   @Field(value = "adresse")
   private String adresse;
 
+  @JsonIgnore
+  @Field(value = "deleted")
+  private boolean deleted;
+
   @Field(value = "dateCreation")
-  private Date dateCreation;
+  private LocalDateTime dateCreation;
 
   public Entreprise() {
+    this.deleted = false;
+    this.dateCreation = LocalDateTime.now();
   }
 
-  public Entreprise(String denomination, String ninea, String email, String telephone, String adresse) {
+  public Entreprise(String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse) {
     this.denomination = denomination;
     this.ninea = ninea;
+    this.raisonSociale = raisonSociale;
     this.email = email;
     this.telephone = telephone;
     this.adresse = adresse;
-    this.dateCreation = new Date();
+    this.deleted = false;
+    this.dateCreation = LocalDateTime.now();
   }
 
   public String getId() {
@@ -48,6 +74,22 @@ public class Entreprise {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public ETypeEntreprise getTypeEntreprise() {
+    return this.typeEntreprise;
+  }
+
+  public void setTypeEntreprise(ETypeEntreprise typeEntreprise) {
+    this.typeEntreprise = typeEntreprise;
+  }
+
+  public Set<ETypePartenariat> getTypePartenariats() {
+    return this.typePartenariats;
+  }
+
+  public void setTypePartenariats(Set<ETypePartenariat> typePartenariats) {
+    this.typePartenariats = typePartenariats;
   }
 
   public String getDenomination() {
@@ -64,6 +106,22 @@ public class Entreprise {
 
   public void setNinea(String ninea) {
     this.ninea = ninea;
+  }
+
+  public String getRaisonSociale() {
+    return this.raisonSociale;
+  }
+
+  public void setRaisonSociale(String raisonSociale) {
+    this.raisonSociale = raisonSociale;
+  }
+
+  public String getGerantId() {
+    return this.gerantId;
+  }
+
+  public void setGerantId(String gerantId) {
+    this.gerantId = gerantId;
   }
 
   public String getEmail() {
@@ -90,11 +148,19 @@ public class Entreprise {
     this.adresse = adresse;
   }
 
-  public Date getDateCreation() {
+  public boolean isDeleted() {
+    return this.deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
+  }
+
+  public LocalDateTime getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(Date dateCreation) {
+  public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
   }
 }

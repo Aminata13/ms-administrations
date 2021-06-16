@@ -9,7 +9,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EntrepriseDao extends PagingAndSortingRepository<Entreprise, String> {
-  Optional<Entreprise> findByDenomination(String denomination);
+  Optional<Entreprise> findByDenominationAndDeletedIsFalse(String denomination);
 
-  boolean existsByDenomination(String denomination);
+  Optional<Entreprise> findByDenominationOrNineaAndDeletedIsFalse(String denomination, String ninea);
+
+  boolean existsByDenominationAndDeletedIsFalse(String denomination);
+
+  boolean existsByDenominationOrNineaAndDeletedIsFalse(String denomination, String ninea);
 }
