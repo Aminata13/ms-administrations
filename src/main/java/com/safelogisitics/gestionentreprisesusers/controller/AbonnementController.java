@@ -124,6 +124,14 @@ public class AbonnementController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
 	}
 
+  // @PostMapping("/agents/add")
+  // @PostAuthorize("hasRole('COMPTE_COURSIER')")
+  // // @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+	// public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody AbonnementRequest request) {
+  //   Abonnement abonnement = abonnementService.createAbonnement(request, ECompteType.COMPTE_COURSIER);
+	// 	return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
+	// }
+
   @PutMapping("/changer/{id}")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'WRITE')")

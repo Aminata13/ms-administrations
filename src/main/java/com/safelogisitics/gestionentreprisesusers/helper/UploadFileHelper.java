@@ -12,19 +12,27 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UploadFileHelper {
 
-  public static String uploadFile(MultipartFile file, String url) {
-    // Create to upload file if not exist
-    final Path fileStorageLocation = Paths.get(url).toAbsolutePath().normalize();
+  public static void init(String uploadPath) {
     try {
-      Files.createDirectories(fileStorageLocation);
-    } catch (Exception ex) {
-      throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+      Files.createDirectories(Paths.get(uploadPath));
+    } catch (IOException ex) {
+      throw new RuntimeException(ex.toString());
     }
+  }
 
-    String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+  public static String uploadFile(MultipartFile file, String url) {
     String fileName = "";
 
-		try {
+    try {
+      final Path fileStorageLocation = Paths.get(url);
+
+      // Create to upload file if not exist
+      if (!Files.exists(fileStorageLocation)) {
+        init(url);
+      }
+
+      String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+
       if(originalFileName.contains("..")) {
         throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
       }
@@ -36,7 +44,7 @@ public class UploadFileHelper {
         throw new RuntimeException("Sorry! Filename is invalid. " + originalFileName);
       }
 
-      fileName = UUID.randomUUID().toString() + "-teaser" + fileExtension;
+      fileName = UUID.randomUUID().toString() + fileExtension;
       Path targetLocation = fileStorageLocation.resolve(fileName);
 
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);

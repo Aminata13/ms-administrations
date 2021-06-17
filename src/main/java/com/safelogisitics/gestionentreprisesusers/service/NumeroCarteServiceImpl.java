@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class NumeroCarteServiceImpl implements NumeroCarteService {
+
+  @Value("${upload.tmp_path}")
+  private String uploadPath;
 
   @Autowired
   NumeroCarteDao numeroCarteDao;
@@ -75,10 +79,11 @@ public class NumeroCarteServiceImpl implements NumeroCarteService {
       @Override
       public void run() {
         try {
-          String tmpDirectory = String.format("src/main/resources/tmp-excels");
-          String tmpFileName = UploadFileHelper.uploadFile(file, tmpDirectory);
+          String tmpFileName = UploadFileHelper.uploadFile(file, uploadPath);
     
-          Workbook workbook = WorkbookFactory.create(new File(String.format("%s/%s", tmpDirectory, tmpFileName)));
+          File fileData = new File(String.format("%s/%s", uploadPath, tmpFileName));
+    
+          Workbook workbook = WorkbookFactory.create(fileData);
     
           Sheet sheet = workbook.getSheetAt(0);
           Iterator<Row> rows = sheet.iterator();
