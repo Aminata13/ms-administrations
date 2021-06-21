@@ -18,4 +18,6 @@ public interface UserDao extends PagingAndSortingRepository<User, String> {
   boolean existsByUsername(String username);
 
   boolean existsByInfosPersoId(String infosPersoId);
+
+  Optional<User> deleteByInfosPersoId(String userId);
 }

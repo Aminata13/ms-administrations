@@ -33,15 +33,15 @@ public interface InfosPersoService {
 
   public InfosPerso updateInfosPerso(String id, InfosPersoRequest infosPersoRequest); // Ajout d'un infos perso sans compte
 
-  public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte administrateur
+  public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request); // Création ou Modification d'un infosPerso avec compte administrateur
 
   public void deleteCompteAdministrateur(String infosPersoId); // Suppression d'un admnistrateur (Soft delete)
 
-  public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
+  public InfosPerso createOrUpdateCompteAgent(String id, InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
 
   public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
-  public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
+  public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
 
   public void deleteComptePrestataire(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 

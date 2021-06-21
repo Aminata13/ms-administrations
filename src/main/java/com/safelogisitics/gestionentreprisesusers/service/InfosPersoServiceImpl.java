@@ -30,9 +30,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class InfosPersoServiceImpl implements InfosPersoService {
@@ -60,6 +62,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
   MongoTemplate mongoTemplate;
+
+  @Autowired
+  AbonnementService abonnementService;
 
   @Override
   public InfosPerso getUserInfos() {
@@ -107,30 +112,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest) {
-    final Query query = new Query();
-    final List<Criteria> listCriteria = new ArrayList<>();
-    
-    if (infosPersoRequest.getEmail() != null && !infosPersoRequest.getEmail().isEmpty())
-      listCriteria.add(Criteria.where("email").is(infosPersoRequest.getEmail()));
+    InfosPerso _infosPerso = findInfosPerso(infosPersoRequest);
 
-    if (infosPersoRequest.getTelephone() != null && !infosPersoRequest.getTelephone().isEmpty())
-      listCriteria.add(Criteria.where("telephone").is(infosPersoRequest.getTelephone()));
+    if (_infosPerso != null &&_infosPerso.getId() != null)
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existe déjà!");
 
-    if (infosPersoRequest.getNumeroPermis() != null && !infosPersoRequest.getNumeroPermis().isEmpty())
-      listCriteria.add(Criteria.where("numeroPermis").is(infosPersoRequest.getNumeroPermis()));
-
-    if (infosPersoRequest.getNumeroPiece() != null && !infosPersoRequest.getNumeroPiece().isEmpty())
-      listCriteria.add(Criteria.where("numeroPiece").is(infosPersoRequest.getNumeroPiece()));
-
-    if (listCriteria.isEmpty())
-      throw new IllegalArgumentException("Il faut au moins l'email ou le numero de téléphone ou le numéro de piece ou le numéro de permis!");
-
-    query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
-    query.limit(1);
-
-    InfosPerso _infosPerso = mongoTemplate.findOne(query, InfosPerso.class);
-
-    InfosPerso infosPerso = _infosPerso != null &&_infosPerso.getId() != null ? updateInfosPerso(_infosPerso.getId(), infosPersoRequest) : new InfosPerso(
+    InfosPerso infosPerso = new InfosPerso(
       infosPersoRequest.getPrenom(),
       infosPersoRequest.getNom(),
       infosPersoRequest.getEmail(),
@@ -149,9 +136,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public InfosPerso updateInfosPerso(String id, InfosPersoRequest infosPersoRequest) {
     Optional<InfosPerso> _infosPerso = infosPersoDao.findById(id);
+    InfosPerso _infosPersoExist = findInfosPerso(infosPersoRequest);
 
     if (!_infosPerso.isPresent()) {
       throw new IllegalArgumentException("InfosPerso with that id does not exists!");
+    }
+
+    if (!_infosPerso.get().getId().equals(_infosPersoExist.getId())) {
+      throw new IllegalArgumentException("Ces informations existent déjà!");
     }
 
     InfosPerso infosPerso = _infosPerso.get();
@@ -171,236 +163,134 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public InfosPerso createOrUpdateCompteAdministrateur(InfosPersoAvecCompteRequest request) {
-    InfosPersoRequest infosPersoRequest = request;
-
-    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
-
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
-    }
+  public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request) {
+    if (request.getRoleId() == null || request.getRoleId().isEmpty())
+      throw new IllegalArgumentException("Role est requis!");
 
     Optional<Role> _role = roleService.getRoleById(request.getRoleId());
 
-    if (!_role.isPresent() || !_role.get().getType().equals(ECompteType.COMPTE_ADMINISTRATEUR)) {
+    if (!_role.isPresent() || !_role.get().getType().equals(ECompteType.COMPTE_ADMINISTRATEUR))
       throw new IllegalArgumentException("Role invalide!");
+
+    InfosPerso infosPerso = null;
+
+    if (id == null) {
+      infosPerso = createCompte(request, ECompteType.COMPTE_ADMINISTRATEUR, null, null);
+      id = infosPerso.getId();
+    } else {
+      infosPerso = updateCompte(id, request, ECompteType.COMPTE_ADMINISTRATEUR);
     }
+
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
 
     Role role = _role.get();
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ADMINISTRATEUR).ifPresentOrElse(compte -> {
-      compte.setDeleted(false);
-      compte.setRole(role);
-      compte.setStatut(request.getStatut());
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    }, () -> {
-      Compte compte = new Compte(ECompteType.COMPTE_ADMINISTRATEUR, infosPerso.getId(), role, request.getStatut());
-      compteDao.save(compte);
-      infosPerso.addCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
-
-    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
-      user.setStatut(1);
-      userDao.save(user);
-    }, () -> {
-      String password = alphaNumericString(1, 8);
-      User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
-      userDao.save(user);
-
-      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
-      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que administrateur. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
-      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
-    });
+    compte.setRole(role);
+    compte.setStatut(request.getStatut());
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteCompteAdministrateur(String infosPersoId) {
-    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+    Optional<InfosPerso> infosPerso = infosPersoDao.findById(infosPersoId);
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ADMINISTRATEUR).ifPresent(compte -> {
-      compte.setDeleted(true);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    if (infosPerso.isPresent()) {
+      deleteCompte(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
+    }
   }
 
   @Override
-  public InfosPerso createOrUpdateCompteAgent(InfosPersoAvecCompteRequest request) {
+  public InfosPerso createOrUpdateCompteAgent(String id, InfosPersoAvecCompteRequest request) {
     if (!request.valideFieldsCompteAgent())
       throw new IllegalArgumentException("Informations agent manquant!");
 
-    InfosPersoRequest infosPersoRequest = request;
-
-    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
-
     final Query query = new Query();
     final List<Criteria> listCriteria = new ArrayList<>();
-    
+
     listCriteria.add(Criteria.where("numeroEmei").is(request.getNumeroEmei()));
     listCriteria.add(Criteria.where("numeroReference").is(request.getNumeroReference()));
     query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
-    query.limit(1);
-    
+    query.addCriteria(Criteria.where("deleted").is(false));
+
     // Validation de l'unicité des infos de la compte agent
-    Compte _compte = mongoTemplate.findOne(query, Compte.class);
-    if (_compte != null && !_compte.getInfosPersoId().equals(infosPerso.getId()))
+    Collection<Compte> _comptes = mongoTemplate.find(query, Compte.class);
+    if (_comptes != null && _comptes.size() > 0 && (_comptes.size() > 1 || (id == null && _comptes.size() == 1) || (id != null && !_comptes.iterator().next().getInfosPersoId().equals(id))))
       throw new IllegalArgumentException("Numéro emei ou référence déjà utilisé!");
 
-    // Validations des accès de l'agent
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId()))
-      throw new IllegalArgumentException("Email déjà utilisé comme nom d'utilisateur!");
+    InfosPerso infosPerso = null;
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresentOrElse(compte -> {
-      compte.setDeleted(false);
-      compte.setStatut(request.getStatut());
-      compte.setNumeroEmei(request.getNumeroEmei());
-      compte.setNumeroReference(request.getNumeroReference());
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    }, () -> {
-      Compte compte = new Compte(ECompteType.COMPTE_COURSIER, infosPerso.getId(), request.getStatut());
-      compte.setNumeroEmei(request.getNumeroEmei());
-      compte.setNumeroReference(request.getNumeroReference());
-      compteDao.save(compte);
-      infosPerso.addCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    if (id == null) {
+      infosPerso = createCompte(request, ECompteType.COMPTE_COURSIER, null, null);
+      id = infosPerso.getId();
+    } else {
+      infosPerso = updateCompte(id, request, ECompteType.COMPTE_COURSIER);
+    }
 
-    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
-      user.setStatut(1);
-      userDao.save(user);
-    }, () -> {
-      String password = alphaNumericString(1, 8);
-      User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
-      userDao.save(user);
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
 
-      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
-      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que agent. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
-      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
-    });
+    compte.setNumeroEmei(request.getNumeroEmei());
+    compte.setNumeroReference(request.getNumeroReference());
+    compte.setStatut(request.getStatut());
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteCompteAgent(String infosPersoId) {
-    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+    Optional<InfosPerso> infosPerso = infosPersoDao.findById(infosPersoId);
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresent(compte -> {
-      compte.setDeleted(true);
-      compte.setNumeroEmei(null);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    if (infosPerso.isPresent()) {
+      deleteCompte(infosPersoId, ECompteType.COMPTE_COURSIER);
+    }
   }
 
   @Override
-  public InfosPerso createOrUpdateComptePrestataire(InfosPersoAvecCompteRequest request) {
-    InfosPersoRequest infosPersoRequest = request;
+  public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request) {
+    InfosPerso infosPerso = null;
 
-    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
-
-    Optional<User> accessExist = userDao.findByUsername(request.getEmail());
-
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(infosPerso.getId())) {
-      throw new IllegalArgumentException("Email déjà utilisé!");
+    if (id == null) {
+      infosPerso = createCompte(request, ECompteType.COMPTE_PRESTATAIRE, null, null);
+      id = infosPerso.getId();
+    } else {
+      infosPerso = updateCompte(id, request, ECompteType.COMPTE_PRESTATAIRE);
     }
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).ifPresentOrElse(compte -> {
-      compte.setDeleted(false);
-      compte.setStatut(request.getStatut());
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    }, () -> {
-      Compte compte = new Compte(ECompteType.COMPTE_PRESTATAIRE, infosPerso.getId(), request.getStatut());
-      compteDao.save(compte);
-      infosPerso.addCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
 
-    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
-      user.setStatut(1);
-      userDao.save(user);
-    }, () -> {
-      String password = alphaNumericString(1, 8);
-      User user = new User(infosPerso, infosPerso.getEmail(), encoder.encode(password), 1);
-      userDao.save(user);
-
-      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
-      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que prestataire de service. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
-      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
-    });
+    compte.setStatut(request.getStatut());
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteComptePrestataire(String infosPersoId) {
-    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+    Optional<InfosPerso> infosPerso = infosPersoDao.findById(infosPersoId);
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).ifPresent(compte -> {
-      compte.setDeleted(true);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    if (infosPerso.isPresent()) {
+      deleteCompte(infosPersoId, ECompteType.COMPTE_PRESTATAIRE);
+    }
   }
 
   @Override
   public InfosPerso createCompteClient(RegisterRequest request) {
-    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
+    InfosPerso infosPerso = createCompte(request, ECompteType.COMPTE_PARTICULIER, request.getUsername(), request.getPassword());
 
-    if (accessExist.isPresent() &&
-      (!accessExist.get().getInfosPerso().getEmail().equals(request.getEmail()) || !accessExist.get().getInfosPerso().getTelephone().equals(request.getTelephone()))
-    ) {
-      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
-    }
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
 
-    InfosPersoRequest infosPersoRequest = request;
-
-    InfosPerso infosPerso = createInfosPerso(infosPersoRequest);
-
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresentOrElse(compte -> {
-      if (!compte.isDeleted()) {
-        throw new IllegalArgumentException("User is already register!");
-      }
-      compte.setDeleted(false);
-      compte.setStatut(1);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    }, () -> {
-      Compte compte = new Compte(ECompteType.COMPTE_PARTICULIER, infosPerso.getId(), 1);
-      compteDao.save(compte);
-      infosPerso.addCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
-
-    userDao.findByInfosPersoId(infosPerso.getId()).ifPresentOrElse(user -> {
-      user.setStatut(1);
-      user.setUsername(request.getUsername());
-      user.setPassword(encoder.encode(request.getPassword()));
-      userDao.save(user);
-    }, () -> {
-      User user = new User(infosPerso, request.getUsername(), encoder.encode(request.getPassword()), 1);
-      userDao.save(user);
-    });
-
-    emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
-      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Nous sommes ravis de vous compter parmis nos clients.",
-      infosPerso.getPrenom(), infosPerso.getNom()));
+    compte.setStatut(1);
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
 
     return infosPerso;
   }
@@ -428,14 +318,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public void deleteCompteClient(String infosPersoId) {
-    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+    Optional<InfosPerso> infosPerso = infosPersoDao.findById(infosPersoId);
 
-    compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).ifPresent(compte -> {
-      compte.setDeleted(true);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    });
+    if (infosPerso.isPresent()) {
+      abonnementService.deleteAbonnement(infosPersoId);
+      deleteCompte(infosPersoId, ECompteType.COMPTE_PARTICULIER);
+    }
   }
 
   @Override
@@ -473,5 +361,129 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       returnValue.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length())));
     }
     return new String(returnValue);
+  }
+
+  private InfosPerso findInfosPerso(InfosPersoRequest infosPersoRequest) {
+    final Query query = new Query();
+    final List<Criteria> listCriteria = new ArrayList<>();
+
+    if (infosPersoRequest.getEmail() != null && !infosPersoRequest.getEmail().isEmpty())
+      listCriteria.add(Criteria.where("email").is(infosPersoRequest.getEmail()));
+
+    if (infosPersoRequest.getTelephone() != null && !infosPersoRequest.getTelephone().isEmpty())
+      listCriteria.add(Criteria.where("telephone").is(infosPersoRequest.getTelephone()));
+
+    if (infosPersoRequest.getNumeroPermis() != null && !infosPersoRequest.getNumeroPermis().isEmpty())
+      listCriteria.add(Criteria.where("numeroPermis").is(infosPersoRequest.getNumeroPermis()));
+
+    if (infosPersoRequest.getNumeroPiece() != null && !infosPersoRequest.getNumeroPiece().isEmpty())
+      listCriteria.add(Criteria.where("numeroPiece").is(infosPersoRequest.getNumeroPiece()));
+
+    if (listCriteria.isEmpty())
+      throw new IllegalArgumentException("Il faut au moins l'email ou le numero de téléphone ou le numéro de piece ou le numéro de permis!");
+
+    query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
+
+    Collection<InfosPerso> results = mongoTemplate.find(query, InfosPerso.class);
+
+    if (results.size() == 0)
+      return null;
+
+    if (results.size() > 1)
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "L'email ou le numero téléphone ou le numéro permis ou le numéro pièce existe déjà!");
+
+    return results.iterator().next();
+  }
+
+  private InfosPerso createCompte(InfosPersoRequest request, ECompteType compteType, String _username, String _password) {
+
+    InfosPerso infosPerso = findInfosPerso(request);
+
+    Compte compte;
+
+    if (infosPerso != null) {
+      Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
+
+      if (_compte.isPresent() && !_compte.get().isDeleted())
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette utilisateur a déjà un compte administrateur!");
+
+      compte = _compte.get();
+      compte.setDeleted(false);
+      compteDao.save(compte);
+      infosPerso.updateCompte(compte);
+      infosPersoDao.save(infosPerso);
+    } else {
+      if (userDao.existsByUsername(request.getEmail()))
+        throw new IllegalArgumentException("Email déjà utilisé!");
+
+      infosPerso = createInfosPerso(request);
+
+      compte = new Compte(compteType, infosPerso.getId());
+      compteDao.save(compte);
+      infosPerso.addCompte(compte);
+      infosPersoDao.save(infosPerso);
+    }
+
+    if (userDao.existsByInfosPersoId(infosPerso.getId())) {
+      String username = _username != null ? _username : infosPerso.getEmail();
+      String password = _password != null ? _password : alphaNumericString(1, 8);
+      User user = new User(infosPerso, username, encoder.encode(password), 1);
+      userDao.save(user);
+
+      emailService.sendSimpleMessage(infosPerso.getEmail(),"Support Safe Logistics",
+      String.format("Bonjour %s %s, \nBienvenue dans Safe Logistics. Vous êtes ajouté en tant que membre. \nVotre login est %s votre mot de passe est %s. Une fois connecté veuillez changer votre mot de passe.",
+      infosPerso.getPrenom(), infosPerso.getNom(), user.getUsername(), password));
+    }
+
+    return infosPerso;
+  }
+
+  private InfosPerso updateCompte(String id, InfosPersoAvecCompteRequest request, ECompteType compteType) {
+    Optional<InfosPerso> infosPersoExist = infosPersoDao.findById(id);
+    if (!infosPersoExist.isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cette utilisateur n'existe pas!");
+
+    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, compteType);
+
+    if (!_compte.isPresent() || _compte.get().isDeleted())
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette utilisateur n'a pas de compte administrateur!");
+
+    InfosPersoRequest infosPersoRequest = request;
+
+    InfosPerso _infosPerso = findInfosPerso(infosPersoRequest);
+
+    if (_infosPerso != null && !infosPersoExist.get().getId().equals(_infosPerso.getId()))
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existent déjà!");
+
+    InfosPerso infosPerso = infosPersoExist.get();
+
+    infosPerso = updateInfosPerso(id, infosPersoRequest);
+
+    Compte compte = _compte.get();
+    compte.setStatut(request.getStatut());
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
+  }
+
+  private void deleteCompte(String infosPersoId, ECompteType compteType) {
+    InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+
+    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
+
+    if (!_compte.isPresent())
+      return;
+
+    Compte compte = _compte.get();
+    compte.setDeleted(true);
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
+
+    if (compteDao.countByInfosPersoIdAndDeletedIsFalse(infosPersoId) == 0) {
+      userDao.deleteByInfosPersoId(infosPersoId);
+    }
   }
 }

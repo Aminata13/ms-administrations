@@ -23,6 +23,7 @@ public class InfosPersoRequest {
 
   private String numeroPermis;
 
+  @NotBlank
   private String numeroPiece;
 
   public String getPrenom() {

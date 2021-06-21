@@ -63,6 +63,13 @@ public class Compte {
     this.dateCreation = new Date();
   }
 
+  public Compte(ECompteType type, String infosPersoId) {
+    this.type = type;
+    this.infosPersoId = infosPersoId;
+    this.deleted = false;
+    this.dateCreation = new Date();
+  }
+
   public Compte(ECompteType type, String infosPersoId, int statut) {
     this.type = type;
     this.infosPersoId = infosPersoId;

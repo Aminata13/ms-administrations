@@ -58,7 +58,7 @@ public class ProfilController {
   @PostMapping("/personnels/add")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
 	public ResponseEntity<?> addPersonnel(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -66,10 +66,7 @@ public class ProfilController {
   @PutMapping("/personnels/update/{id}")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
 	public ResponseEntity<?> updatePersonnel(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    if (!infosPersoService.findInfosPersoById(id).isPresent())
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Personnel with that id does not exists!");
-
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -96,7 +93,7 @@ public class ProfilController {
   @PostMapping("/agents/add")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
 	public ResponseEntity<?> addAgent(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -104,10 +101,7 @@ public class ProfilController {
   @PutMapping("/agents/update/{id}")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
 	public ResponseEntity<?> updateAgent(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    if (!infosPersoService.findInfosPersoById(id).isPresent())
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent with that id does not exists!");
-
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -134,7 +128,7 @@ public class ProfilController {
   @PostMapping("/prestataires/add")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
 	public ResponseEntity<?> addPrestataire(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -142,10 +136,7 @@ public class ProfilController {
   @PutMapping("/prestataires/update/{id}")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
 	public ResponseEntity<?> updatePrestataire(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    if (!infosPersoService.findInfosPersoById(id).isPresent())
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
-
-    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(request);
+    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
