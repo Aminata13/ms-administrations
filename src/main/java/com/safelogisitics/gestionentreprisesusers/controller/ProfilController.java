@@ -46,6 +46,13 @@ public class ProfilController {
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
 	}
 
+  @ApiOperation(value = "", tags = "profils")
+  @GetMapping("/get/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+	public ResponseEntity<?> getOne(@PathVariable(value = "id") String id) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoById(id) );
+	}
+
   @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/personnels/list")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
