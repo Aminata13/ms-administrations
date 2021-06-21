@@ -19,6 +19,8 @@ public interface AbonnementService {
 
   public Optional<Abonnement> getAbonnementByCompteClient(Compte client);
 
+  public Optional<Abonnement> getByCompteClientInfosPersoId(String infosPerso);
+
   public Page<Abonnement> getAbonnementByCompteCreateur(Compte createur, Pageable pageable);
 
   public Optional<Abonnement> getAbonnementById(String id);

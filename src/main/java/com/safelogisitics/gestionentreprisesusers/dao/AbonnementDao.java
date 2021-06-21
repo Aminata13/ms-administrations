@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,8 @@ public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, St
   Optional<Abonnement> findByCompteClientIdAndDeletedIsFalse(String compteClientId);
 
   Optional<Abonnement> findByCompteClientId(String compteClientId);
+
+  Optional<Abonnement> findByCompteClientInfosPersoIdAndDeletedIsFalse(String infosPersoId, ECompteType type);
 
   Optional<Abonnement> findByNumeroCarte(String numeroCarte);
 

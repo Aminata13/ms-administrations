@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
@@ -73,8 +74,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     InfosPerso infosPerso = infosPersoDao.findById(currentUser.getInfosPerso().getId()).get();
     User user = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId()).get();
+    Abonnement abonnement = null;
+    Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(currentUser.getInfosPerso().getId());
+    if (_abonnement.isPresent()) {
+      abonnement = _abonnement.get();
+    }
 
-    return new UserInfosResponse(infosPerso, user);
+    return new UserInfosResponse(infosPerso, abonnement, user);
   }
 
   @Override
