@@ -22,6 +22,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +68,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   AbonnementService abonnementService;
 
   @Override
-  public InfosPerso getUserInfos() {
+  public UserInfosResponse getUserInfos() {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return infosPersoDao.findById(currentUser.getInfosPerso().getId()).get();
+
+    InfosPerso infosPerso = infosPersoDao.findById(currentUser.getInfosPerso().getId()).get();
+    User user = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId()).get();
+
+    return new UserInfosResponse(infosPerso, user);
   }
 
   @Override
@@ -125,8 +130,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoRequest.getAdresse(),
       infosPersoRequest.getDateNaissance(),
       infosPersoRequest.getNumeroPermis(),
-      infosPersoRequest.getNumeroPiece()
-    );
+      infosPersoRequest.getNumeroPiece(),
+      infosPersoRequest.getPhotoProfil()
+    );      
 
     infosPersoDao.save(infosPerso);
 
@@ -150,6 +156,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     infosPerso.setPrenom(infosPersoRequest.getPrenom());
     infosPerso.setNom(infosPersoRequest.getNom());
+    infosPerso.setPhotoProfil(infosPersoRequest.getPhotoProfil());
     infosPerso.setEmail(infosPersoRequest.getEmail());
     infosPerso.setTelephone(infosPersoRequest.getTelephone());
     infosPerso.setAdresse(infosPersoRequest.getAdresse());
@@ -424,7 +431,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoDao.save(infosPerso);
     }
 
-    if (userDao.existsByInfosPersoId(infosPerso.getId())) {
+    if (!userDao.existsByInfosPersoId(infosPerso.getId())) {
       String username = _username != null ? _username : infosPerso.getEmail();
       String password = _password != null ? _password : alphaNumericString(1, 8);
       User user = new User(infosPerso, username, encoder.encode(password), 1);

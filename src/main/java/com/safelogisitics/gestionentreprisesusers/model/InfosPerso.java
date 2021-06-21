@@ -27,6 +27,9 @@ public class InfosPerso {
   @Field(value = "nom")
   private String nom;
 
+  @Field(value = "photoProfil")
+  private String photoProfil;
+
   @Indexed
   @Field(value = "email")
   private String email;
@@ -60,7 +63,7 @@ public class InfosPerso {
     this.dateCreation = LocalDateTime.now();
   }
 
-  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece) {
+  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece, String photoProfil) {
     this.prenom = prenom;
     this.nom = nom;
     this.email = email;
@@ -69,6 +72,7 @@ public class InfosPerso {
     this.dateNaissance = dateNaissance;
     this.numeroPermis = numeroPermis;
     this.numeroPiece = numeroPiece;
+    this.photoProfil = photoProfil;
     this.dateCreation = LocalDateTime.now();
   }
 
@@ -94,6 +98,14 @@ public class InfosPerso {
 
   public void setNom(String nom) {
     this.nom = nom;
+  }
+
+  public String getPhotoProfil() {
+    return this.photoProfil;
+  }
+
+  public void setPhotoProfil(String photoProfil) {
+    this.photoProfil = photoProfil;
   }
 
   public String getEmail() {

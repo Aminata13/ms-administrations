@@ -11,6 +11,8 @@ public class InfosPersoRequest {
   @NotBlank
   protected String nom;
 
+  private String photoProfil;
+
   @NotBlank
   protected String email;
 
@@ -32,6 +34,10 @@ public class InfosPersoRequest {
 
   public String getNom() {
     return this.nom;
+  }
+
+  public String getPhotoProfil() {
+    return this.photoProfil;
   }
 
   public String getEmail() {

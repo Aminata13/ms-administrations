@@ -11,13 +11,14 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequ
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface InfosPersoService {
 
-  public InfosPerso getUserInfos();
+  public UserInfosResponse getUserInfos();
 
   public Optional<InfosPerso> findInfosPersoById(String id);
 
