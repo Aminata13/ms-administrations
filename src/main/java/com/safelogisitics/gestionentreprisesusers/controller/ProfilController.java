@@ -47,10 +47,17 @@ public class ProfilController {
 	}
 
   @ApiOperation(value = "", tags = "profils")
-  @GetMapping("/get/{id}")
+  @GetMapping("/get-by-infosperso/{id}")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
-	public ResponseEntity<?> getOne(@PathVariable(value = "id") String id) {
+	public ResponseEntity<?> getByInfosPersoId(@PathVariable(value = "id") String id) {
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoById(id) );
+	}
+
+  @ApiOperation(value = "", tags = "profils")
+  @GetMapping("/get-by-compte/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+	public ResponseEntity<?> getByCompteId(@PathVariable(value = "id") String id) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoByCompteId(id) );
 	}
 
   @ApiOperation(value = "", tags = "personnels")
