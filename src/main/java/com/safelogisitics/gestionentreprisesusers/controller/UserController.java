@@ -7,6 +7,7 @@ import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,16 +33,16 @@ public class UserController {
 
   @GetMapping("/infos")
 	public ResponseEntity<?> infos() {
-		return ResponseEntity.ok(infosPersoService.getUserInfos());
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getUserInfos());
   }
 
   @GetMapping("/infos/{id}")
 	public ResponseEntity<?> infosById(@PathVariable(value = "id") String id) {
-		return ResponseEntity.ok(infosPersoService.findInfosPersoByCompteId(id));
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoByCompteId(id));
   }
 
   @PostMapping("/infos")
 	public ResponseEntity<?> updateInfos(@Valid @RequestBody UpdateInfosPersoRequest updateInfosPersoRequest) {
-		return ResponseEntity.ok(infosPersoService.updateUserInfos(updateInfosPersoRequest));
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.updateUserInfos(updateInfosPersoRequest));
   }
 }

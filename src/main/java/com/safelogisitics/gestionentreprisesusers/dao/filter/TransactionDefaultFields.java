@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.dao.filter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,8 @@ public interface TransactionDefaultFields {
   public String getReference();
 
   public ETransactionAction getAction();
+
+  public EServiceType getService();
 
   @Value("#{target.getCompteCreateur().getId()}")
   public String getCompteCreateur();
