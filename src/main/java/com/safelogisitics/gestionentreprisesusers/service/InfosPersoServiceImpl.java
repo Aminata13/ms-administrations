@@ -353,9 +353,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
 
-    if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword())) {
+    if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
       throw new IllegalArgumentException("Encien mot de passe invalide!");
-    }
 
     InfosPerso infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
 
