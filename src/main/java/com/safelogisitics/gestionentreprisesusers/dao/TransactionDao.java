@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.dao;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface TransactionDao extends PagingAndSortingRepository<Transaction, String> {
   Page<Transaction> findByDateCreationOrderByDateCreationDesc(LocalDate dateCreation, Pageable pageable);
 
-  Page<Transaction> findByAbonnementIdOrderByDateCreationDesc(String abonnementId, Pageable pageable);
+  Page<TransactionDefaultFields> findByAbonnementIdOrderByDateCreationDesc(String abonnementId, Pageable pageable);
 
   Page<Transaction> findByAbonnementIdAndDateCreationOrderByDateCreationDesc(String abonnementId, LocalDate dateCreation, Pageable pageable);
 

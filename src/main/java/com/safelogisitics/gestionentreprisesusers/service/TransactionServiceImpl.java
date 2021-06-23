@@ -10,6 +10,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TransactionDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
@@ -60,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByAbonnement(String infosPersoId, Pageable pageable) {
+  public Page<TransactionDefaultFields> findByAbonnement(String infosPersoId, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
     return transactionDao.findByAbonnementIdOrderByDateCreationDesc(abonnement.getId(), pageable);
@@ -197,6 +198,8 @@ public class TransactionServiceImpl implements TransactionService {
     Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.PAIEMENT, compteClient, montant);
 
     transaction.setNouveauSolde(abonnement.getSolde());
+
+    transaction.setService(transactionRequest.getService());
 
     transactionDao.save(transaction);
 

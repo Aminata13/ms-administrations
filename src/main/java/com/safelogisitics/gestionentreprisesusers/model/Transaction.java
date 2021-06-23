@@ -1,8 +1,9 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 
 import org.springframework.data.annotation.Id;
@@ -25,6 +26,8 @@ public class Transaction {
   @Field(value = "action")
   private ETransactionAction action;
 
+  private EServiceType service;
+
   @Field(value = "compteCreateur")
   private Compte compteCreateur;
 
@@ -35,10 +38,10 @@ public class Transaction {
   private BigDecimal nouveauSolde;
 
   @Field(value = "dateCreation")
-  private LocalDate dateCreation;
+  private LocalDateTime dateCreation;
 
   public Transaction() {
-    this.dateCreation = LocalDate.now();
+    this.dateCreation = LocalDateTime.now();
   }
 
   public Transaction(Abonnement abonnement, String reference, ETransactionAction action, Compte compteCreateur, BigDecimal montant) {
@@ -47,7 +50,7 @@ public class Transaction {
     this.action = action;
     this.compteCreateur = compteCreateur;
     this.montant = montant;
-    this.dateCreation = LocalDate.now();
+    this.dateCreation = LocalDateTime.now();
   }
 
   public String getId() {
@@ -82,6 +85,14 @@ public class Transaction {
     this.action = action;
   }
 
+  public EServiceType getService() {
+    return this.service;
+  }
+
+  public void setService(EServiceType service) {
+    this.service = service;
+  }
+
   public Compte getCompteCreateur() {
     return this.compteCreateur;
   }
@@ -106,11 +117,11 @@ public class Transaction {
     this.nouveauSolde = nouveauSolde;
   }
 
-  public LocalDate getDateCreation() {
+  public LocalDateTime getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(LocalDate dateCreation) {
+  public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
   }
 }

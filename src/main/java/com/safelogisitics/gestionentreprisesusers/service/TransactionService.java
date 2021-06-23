@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
@@ -15,7 +16,7 @@ public interface TransactionService {
 
   public Page<Transaction> findByDateCreation(LocalDate dateCreation, Pageable pageable);
   
-  public Page<Transaction> findByAbonnement(String infosPersoId, Pageable pageable);
+  public Page<TransactionDefaultFields> findByAbonnement(String infosPersoId, Pageable pageable);
 
   public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable);
 
