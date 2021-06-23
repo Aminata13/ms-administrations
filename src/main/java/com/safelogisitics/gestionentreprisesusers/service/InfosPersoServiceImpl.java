@@ -275,7 +275,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPerso = updateCompte(id, request, ECompteType.COMPTE_PRESTATAIRE);
     }
 
-    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).get();
 
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
@@ -298,7 +298,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public InfosPerso createCompteClient(RegisterRequest request) {
     InfosPerso infosPerso = createCompte(request, ECompteType.COMPTE_PARTICULIER, request.getUsername(), request.getPassword());
 
-    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
 
     compte.setStatut(1);
     compteDao.save(compte);
@@ -351,10 +351,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public InfosPerso updateUserInfos(UpdateInfosPersoRequest request) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
+    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
 
-    if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
-      throw new IllegalArgumentException("Encien mot de passe invalide!");
+      if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
+        throw new IllegalArgumentException("Encien mot de passe invalide!");
+    }
 
     InfosPerso infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
 

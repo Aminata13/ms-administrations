@@ -8,7 +8,6 @@ public class UpdateInfosPersoRequest extends InfosPersoRequest {
 
   private String oldPassword;
 
-
   private String password;
 
   public String getUsername() {
