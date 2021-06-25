@@ -13,6 +13,9 @@ public class TypeAbonnement {
   @Field(value = "libelle")
   private String libelle;
 
+  @Field(value = "icon")
+  private String icon;
+
   @Field(value = "reduction")
   private int reduction;
 
@@ -41,6 +44,14 @@ public class TypeAbonnement {
 
   public void setLibelle(String libelle) {
     this.libelle = libelle;
+  }
+
+  public String getIcon() {
+    return this.icon;
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
   }
 
   public int getReduction() {

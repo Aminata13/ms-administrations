@@ -134,6 +134,7 @@ public class InitDataCommand implements CommandLineRunner {
     for (TypeAbonnement _typeAbonnement : newTypeAbonnements) {
       typeAbonnementDao.findByLibelle(_typeAbonnement.getLibelle()).ifPresentOrElse((typeAbonnement) -> {
         typeAbonnement.setLibelle(_typeAbonnement.getLibelle());
+        typeAbonnement.setIcon(_typeAbonnement.getIcon());
         typeAbonnement.setReduction(_typeAbonnement.getReduction());
         typeAbonnement.setStatut(_typeAbonnement.getStatut());
         typeAbonnementDao.save(typeAbonnement);

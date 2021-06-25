@@ -2,16 +2,19 @@
   {
     "libelle": "Silver",
     "reduction": 20,
-    "statut": 1
+    "statut": 1,
+    "icon": "silver"
   },
   {
     "libelle": "Gold",
     "reduction": 10,
-    "statut": 1
+    "statut": 1,
+    "icon": "gold"
   },
   {
     "libelle": "Platinium",
     "reduction": 1,
-    "statut": 1
+    "statut": 1,
+    "icon": "platinium"
   }
 ]
