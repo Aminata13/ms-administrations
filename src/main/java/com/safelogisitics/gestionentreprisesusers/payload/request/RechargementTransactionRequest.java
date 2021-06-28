@@ -13,6 +13,11 @@ public class RechargementTransactionRequest {
   @DecimalMin(value = "0")
   private BigDecimal montant;
 
+  public RechargementTransactionRequest(String numeroCarte, BigDecimal montant) {
+    this.numeroCarte = numeroCarte;
+    this.montant = montant;
+  }
+
   public String getNumeroCarte() {
     return this.numeroCarte.replaceAll("\\D+","");
   }

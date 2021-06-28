@@ -54,7 +54,12 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Optional<Abonnement> getByCompteClientInfosPersoId(String infosPerso) {
-    return abonnementDao.findByCompteClientInfosPersoIdAndDeletedIsFalse(infosPerso, ECompteType.COMPTE_PARTICULIER);
+    return abonnementDao.findByCompteClientInfosPersoIdAndDeletedIsFalse(infosPerso);
+  }
+
+  @Override
+  public Optional<Abonnement> getByNumeroCarte(String numeroCarte) {
+    return abonnementDao.findByNumeroCarte(numeroCarte);
   }
 
   @Override

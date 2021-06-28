@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
@@ -32,7 +33,7 @@ public interface TransactionService {
 
   public Optional<Transaction> findByReference(String reference);
   
-  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType compteCreateur);
 
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest);
 }

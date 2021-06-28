@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,18 +9,24 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
@@ -51,6 +58,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   UserDao userDao;
 
   @Autowired
+  NumeroCarteDao numeroCarteDao;
+
+  @Autowired
+  AbonnementDao abonnementDao;
+
+  @Autowired
   RoleService roleService;
 
   @Autowired
@@ -60,13 +73,16 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 	EmailService emailService;
 
   @Autowired
-	PasswordEncoder encoder;
+  AbonnementService abonnementService;
+
+  @Autowired
+  TransactionService transactionService;
 
   @Autowired
   MongoTemplate mongoTemplate;
 
   @Autowired
-  AbonnementService abonnementService;
+	PasswordEncoder encoder;
 
   @Override
   public UserInfosResponse getUserInfos() {
@@ -97,7 +113,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone) {
-    return infosPersoDao.findByEmailOrTelephone(email, telephone);
+    Optional<InfosPerso> infosPerso = infosPersoDao.findByEmailOrTelephone(email, telephone);
+
+    if (infosPerso.isPresent() && !compteDao.existsByInfosPersoIdAndDeletedIsFalse(infosPerso.get().getId()) && infosPerso.get().getStatutProspect() != 0 ) {
+      return null;
+    }
+    return infosPerso;
   }
 
   @Override
@@ -123,7 +144,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest) {
-    InfosPerso _infosPerso = findInfosPerso(infosPersoRequest);
+    InfosPerso _infosPerso = findInfosPerso(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone(), infosPersoRequest.getNumeroPermis(), infosPersoRequest.getNumeroPiece());
 
     if (_infosPerso != null &&_infosPerso.getId() != null)
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existe déjà!");
@@ -148,7 +169,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public InfosPerso updateInfosPerso(String id, InfosPersoRequest infosPersoRequest) {
     Optional<InfosPerso> _infosPerso = infosPersoDao.findById(id);
-    InfosPerso _infosPersoExist = findInfosPerso(infosPersoRequest);
+    InfosPerso _infosPersoExist = findInfosPerso(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone(), infosPersoRequest.getNumeroPermis(), infosPersoRequest.getNumeroPiece());
 
     if (!_infosPerso.isPresent()) {
       throw new IllegalArgumentException("InfosPerso with that id does not exists!");
@@ -364,6 +385,72 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public InfosPerso newEnrollment(EnrollmentRequest enrollmentRequest) {
+    Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(enrollmentRequest.getNumeroCarte());
+
+    if (!numeroCarteExist.isPresent())
+      throw new IllegalArgumentException("Cette carte n'existe pas!");
+
+    NumeroCarte carte = numeroCarteExist.get();
+
+    InfosPerso infosPerso = findInfosPerso(enrollmentRequest.getEmail(), enrollmentRequest.getTelephone(), null, enrollmentRequest.getNumeroPiece());
+
+    Compte compte = null;
+
+    Abonnement abonnement = null;
+
+    if (
+      infosPerso != null && 
+      abonnementDao.existsByCompteClientInfosPersoIdOrNumeroCarte(infosPerso.getId(), carte.getNumero()) &&
+      !abonnementDao.existsByCompteClientInfosPersoIdAndNumeroCarteAndDeletedIsFalse(infosPerso.getId(), carte.getNumero())
+    ) {
+        throw new IllegalArgumentException("Cette carte et les informations fournie ne sont pas conforme!");
+    }
+
+    if (infosPerso == null && !enrollmentRequest.isRegistrationDataValid())
+      return null;
+
+    if (infosPerso == null || !compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER)) {
+      // On crée un compte client en assurant de ne pas modifier ses accès s'il est déjà membre
+      RegisterRequest registerRequest = new RegisterRequest(
+        enrollmentRequest.getPrenom(),
+        enrollmentRequest.getNom(),
+        enrollmentRequest.getEmail(),
+        enrollmentRequest.getTelephone(),
+        enrollmentRequest.getUsername(),
+        enrollmentRequest.getPassword(),
+        enrollmentRequest.getAdresse(),
+        enrollmentRequest.getDateNaissance(),
+        null,
+        enrollmentRequest.getNumeroPiece(),
+        null);
+
+      infosPerso = createCompteClient(registerRequest);
+    }
+
+    if (!abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId())) {
+      // On creée un abonnement s'il n'a pas d'abonnement
+      abonnementService.createAbonnement(
+        new AbonnementRequest(carte.getTypeAbonnementId(), infosPerso.getId(), 1, carte.getNumero(), false),
+        ECompteType.COMPTE_COURSIER
+      );
+    }
+
+    compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
+
+    abonnement = abonnementService.getAbonnementByCompteClient(compte).get();
+
+    if (enrollmentRequest.getMontant() != null && enrollmentRequest.getMontant().compareTo(BigDecimal.valueOf(0)) != -1) {
+      transactionService.createRechargementTransaction(
+        new RechargementTransactionRequest(abonnement.getNumeroCarte(), enrollmentRequest.getMontant()),
+        ECompteType.COMPTE_COURSIER
+      );
+    }
+
+    return infosPerso;
+  }
+
+  @Override
   public Collection<Compte> getInfosPersoComptes(String id) {
     return compteDao.findByInfosPersoId(id);
   }
@@ -383,21 +470,21 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     return new String(returnValue);
   }
 
-  private InfosPerso findInfosPerso(InfosPersoRequest infosPersoRequest) {
+  private InfosPerso findInfosPerso(String email, String telephone, String numeroPermis, String numeroPiece) {
     final Query query = new Query();
     final List<Criteria> listCriteria = new ArrayList<>();
 
-    if (infosPersoRequest.getEmail() != null && !infosPersoRequest.getEmail().isEmpty())
-      listCriteria.add(Criteria.where("email").is(infosPersoRequest.getEmail()));
+    if (email != null && !email.isEmpty())
+      listCriteria.add(Criteria.where("email").is(email));
 
-    if (infosPersoRequest.getTelephone() != null && !infosPersoRequest.getTelephone().isEmpty())
-      listCriteria.add(Criteria.where("telephone").is(infosPersoRequest.getTelephone()));
+    if (telephone != null && !telephone.isEmpty())
+      listCriteria.add(Criteria.where("telephone").is(telephone));
 
-    if (infosPersoRequest.getNumeroPermis() != null && !infosPersoRequest.getNumeroPermis().isEmpty())
-      listCriteria.add(Criteria.where("numeroPermis").is(infosPersoRequest.getNumeroPermis()));
+    if (numeroPermis != null && !numeroPermis.isEmpty())
+      listCriteria.add(Criteria.where("numeroPermis").is(numeroPermis));
 
-    if (infosPersoRequest.getNumeroPiece() != null && !infosPersoRequest.getNumeroPiece().isEmpty())
-      listCriteria.add(Criteria.where("numeroPiece").is(infosPersoRequest.getNumeroPiece()));
+    if (numeroPiece != null && !numeroPiece.isEmpty())
+      listCriteria.add(Criteria.where("numeroPiece").is(numeroPiece));
 
     if (listCriteria.isEmpty())
       throw new IllegalArgumentException("Il faut au moins l'email ou le numero de téléphone ou le numéro de piece ou le numéro de permis!");
@@ -417,7 +504,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   private InfosPerso createCompte(InfosPersoRequest request, ECompteType compteType, String _username, String _password) {
 
-    InfosPerso infosPerso = findInfosPerso(request);
+    InfosPerso infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 
     Compte compte;
 
@@ -468,16 +555,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!_compte.isPresent() || _compte.get().isDeleted())
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette utilisateur n'a pas de compte administrateur!");
 
-    InfosPersoRequest infosPersoRequest = request;
-
-    InfosPerso _infosPerso = findInfosPerso(infosPersoRequest);
+    InfosPerso _infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 
     if (_infosPerso != null && !infosPersoExist.get().getId().equals(_infosPerso.getId()))
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existent déjà!");
 
     InfosPerso infosPerso = infosPersoExist.get();
 
-    infosPerso = updateInfosPerso(id, infosPersoRequest);
+    infosPerso = updateInfosPerso(id, request);
 
     Compte compte = _compte.get();
     compte.setStatut(request.getStatut());

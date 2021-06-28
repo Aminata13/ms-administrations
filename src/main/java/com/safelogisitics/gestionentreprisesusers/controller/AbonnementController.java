@@ -9,10 +9,12 @@ import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
@@ -124,13 +126,14 @@ public class AbonnementController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
 	}
 
-  // @PostMapping("/agents/add")
-  // @PostAuthorize("hasRole('COMPTE_COURSIER')")
-  // // @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
-	// public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody AbonnementRequest request) {
-  //   Abonnement abonnement = abonnementService.createAbonnement(request, ECompteType.COMPTE_COURSIER);
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
-	// }
+  @PostMapping("/add-by-agent")
+  @PostAuthorize("hasRole('COMPTE_COURSIER')")
+	public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody EnrollmentRequest request) {
+    InfosPerso infosPerso = infosPersoService.newEnrollment(request);
+    if (infosPerso == null)
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informaions d'inscription incomplet");
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
 
   @PutMapping("/changer/{id}")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
@@ -154,7 +157,7 @@ public class AbonnementController {
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> rechargerCarte(@Valid @RequestBody RechargementTransactionRequest request) {
-    Transaction transaction = transactionService.createRechargementTransaction(request);
+    Transaction transaction = transactionService.createRechargementTransaction(request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
 

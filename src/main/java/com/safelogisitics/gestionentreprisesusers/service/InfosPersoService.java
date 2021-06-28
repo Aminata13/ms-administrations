@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
@@ -53,6 +54,8 @@ public interface InfosPersoService {
   public void deleteCompteClient(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
   public JwtResponse clientRegistration(RegisterRequest request); // Inscription en tant que client (particulier)
+
+  public InfosPerso newEnrollment(EnrollmentRequest enrollmentRequest);
 
   public InfosPerso updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
 

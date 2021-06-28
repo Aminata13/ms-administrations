@@ -37,6 +37,9 @@ public class Transaction {
   @Field(value = "nouveauSolde")
   private BigDecimal nouveauSolde;
 
+  @Field(value = "rechargementApprouver")
+  private boolean rechargementApprouver;
+
   @Field(value = "dateCreation")
   private LocalDateTime dateCreation;
 
@@ -115,6 +118,14 @@ public class Transaction {
 
   public void setNouveauSolde(BigDecimal nouveauSolde) {
     this.nouveauSolde = nouveauSolde;
+  }
+
+  public boolean isRechargementApprouver() {
+    return this.rechargementApprouver;
+  }
+
+  public void setRechargementApprouver(boolean rechargementApprouver) {
+    this.rechargementApprouver = rechargementApprouver;
   }
 
   public LocalDateTime getDateCreation() {

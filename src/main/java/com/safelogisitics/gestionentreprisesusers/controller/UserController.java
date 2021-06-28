@@ -36,13 +36,18 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getUserInfos());
   }
 
+  @PostMapping("/infos")
+	public ResponseEntity<?> updateInfos(@Valid @RequestBody UpdateInfosPersoRequest updateInfosPersoRequest) {
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.updateUserInfos(updateInfosPersoRequest));
+  }
+
   @GetMapping("/infos/{id}")
 	public ResponseEntity<?> infosById(@PathVariable(value = "id") String id) {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoByCompteId(id));
   }
 
-  @PostMapping("/infos")
-	public ResponseEntity<?> updateInfos(@Valid @RequestBody UpdateInfosPersoRequest updateInfosPersoRequest) {
-		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.updateUserInfos(updateInfosPersoRequest));
-  }
+  @GetMapping("/infos/search/{emailOrTelephone}")
+	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
+	}
 }

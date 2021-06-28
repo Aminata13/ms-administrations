@@ -52,6 +52,12 @@ public class InfosPerso {
   @Field(value = "numeroPiece")
   private String numeroPiece;
 
+  @Field(value = "statutProspect")
+  private int statutProspect;
+
+  @Field(value = "prospecteur")
+  private String prospecteur;
+
   @DBRef
   @Field(value = "comptes")
   private Set<Compte> comptes = new HashSet<>();
@@ -154,6 +160,22 @@ public class InfosPerso {
 
   public void setNumeroPiece(String numeroPiece) {
     this.numeroPiece = numeroPiece;
+  }
+
+  public int getStatutProspect() {
+    return this.statutProspect;
+  }
+
+  public void setStatutProspect(int statutProspect) {
+    this.statutProspect = statutProspect;
+  }
+
+  public String getProspecteur() {
+    return this.prospecteur;
+  }
+
+  public void setProspecteur(String prospecteur) {
+    this.prospecteur = prospecteur;
   }
 
   public Set<Compte> getComptes() {

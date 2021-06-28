@@ -90,21 +90,21 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Page<Transaction> findByCompteCreateur(String infosPersoId, Pageable pageable) {
-    Compte compteAdmin = getCompteAdmin(infosPersoId);
+    Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
     return transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
   }
 
   @Override
   public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
-    Compte compteAdmin = getCompteAdmin(infosPersoId);
+    Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
     return transactionDao.findByCompteCreateurIdAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), dateCreation, pageable);
   }
 
   @Override
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
-    Compte compteAdmin = getCompteAdmin(infosPersoId);
+    Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
     return transactionDao.findByCompteCreateurIdAndActionAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), action, dateCreation, pageable);
   }
@@ -115,9 +115,9 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest) {
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType type) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Compte compteAdmin = getCompteAdmin(currentUser.getInfosPerso().getId());
+    Compte compteCreateur = getCompteByType(currentUser.getInfosPerso().getId(), type);
 
     Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
 
@@ -131,8 +131,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     Abonnement abonnement = abonnementExist.get();
 
-    System.out.println(transactionRequest.getMontant());
-
     BigDecimal montant = transactionRequest.getMontant();
 
     abonnement.rechargerCarte(montant);
@@ -141,9 +139,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
 
-    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.RECHARGEMENT, compteAdmin, montant);
+    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.RECHARGEMENT, compteCreateur, montant);
 
     transaction.setNouveauSolde(abonnement.getSolde());
+
+    transaction.setRechargementApprouver(type.equals(ECompteType.COMPTE_ADMINISTRATEUR) ? true : false);
 
     transactionDao.save(transaction);
 
@@ -224,11 +224,11 @@ public class TransactionServiceImpl implements TransactionService {
     return abonnementExist.get();
   }
 
-  private Compte getCompteAdmin(String infosPersoId) {
-    Optional<Compte> compteAdminExist = compteDao.findByInfosPersoIdAndType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
+  private Compte getCompteByType(String infosPersoId, ECompteType type) {
+    Optional<Compte> compteAdminExist = compteDao.findByInfosPersoIdAndType(infosPersoId, type);
 
     if (!compteAdminExist.isPresent() || compteAdminExist.get().isDeleted()) {
-      throw new IllegalArgumentException("CompteClient with that id does not exists!");
+      throw new IllegalArgumentException("Compte with that id does not exists!");
     }
 
     return compteAdminExist.get();

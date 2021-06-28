@@ -11,7 +11,7 @@ public class InfosPersoRequest {
   @NotBlank
   protected String nom;
 
-  private String photoProfil;
+  protected String photoProfil;
 
   @NotBlank
   protected String email;
@@ -21,12 +21,12 @@ public class InfosPersoRequest {
 
   protected String adresse;
 
-  private LocalDate dateNaissance;
+  protected LocalDate dateNaissance;
 
-  private String numeroPermis;
+  protected String numeroPermis;
 
   @NotBlank
-  private String numeroPiece;
+  protected String numeroPiece;
 
   public String getPrenom() {
     return this.prenom;

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EPrivilege;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -78,5 +79,14 @@ public class Role {
 
   public void setPrivileges(Set<Privilege> privileges) {
     this.privileges = privileges;
+  }
+
+  public boolean hasPrivilege(EPrivilege _privilege) {
+    for (Privilege privilege : privileges) {
+      if (privilege.getValeur().equals(_privilege)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
