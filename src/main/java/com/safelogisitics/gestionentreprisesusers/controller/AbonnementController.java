@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.dto.CreatePaiementDto;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
@@ -15,16 +16,19 @@ import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +48,12 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/abonnements")
 @Api(tags = "Gestion des abonnements", description = "Api gestion des abonnements")
 public class AbonnementController {
+
+  @Autowired
+  private KafkaTemplate<String, CreatePaiementDto> createPaiementKafkaTemplate;
+
+  @Value(value = "${kafka.topics.createPaiement.name}")
+  private String createPaiementTopicName;
 
   @Autowired
   private InfosPersoService infosPersoService;
@@ -158,6 +168,26 @@ public class AbonnementController {
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> rechargerCarte(@Valid @RequestBody RechargementTransactionRequest request) {
     Transaction transaction = transactionService.createRechargementTransaction(request, ECompteType.COMPTE_ADMINISTRATEUR);
+		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
+	}
+
+  @PostMapping("/paiement-carte")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
+    Transaction transaction = transactionService.createPaiementTransaction(request);
+
+    CreatePaiementDto createPaiementDto = new CreatePaiementDto(
+      request.getTypePaiementId(),
+      transaction.getReference(),
+      request.getService(),
+      request.getServiceId(),
+      transaction.getAbonnement().getCompteClient().getId(),
+      transaction.getMontant()
+    );
+
+    createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
 

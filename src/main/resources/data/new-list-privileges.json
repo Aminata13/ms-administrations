@@ -1,0 +1,98 @@
+[
+  {
+    "libelle": "Gestion des Personnels",
+    "valeur": "GESTION_PERSONNELS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des agents",
+    "valeur": "GESTION_AGENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des clients",
+    "valeur": "GESTION_CLIENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des commandes de livraisons",
+    "valeur": "GESTION_COMMANDE_LIVRAISONS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "action": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ASSIGN",
+      "TRACK"
+    ]
+  },
+  {
+    "libelle": "Gestion des abonnements",
+    "valeur": "GESTION_ABONNEMENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des transactions",
+    "valeur": "GESTION_TRANSACTIONS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des tarifs",
+    "valeur": "GESTION_TARIFS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ACTIVATE"
+    ]
+  }
+]

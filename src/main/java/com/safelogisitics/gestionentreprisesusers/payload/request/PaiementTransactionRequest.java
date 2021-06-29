@@ -26,6 +26,8 @@ public class PaiementTransactionRequest {
   @NotBlank
   private String serviceId;
 
+  private String clientInfosPersoId;
+
   public String getNumeroCarte() {
     return this.numeroCarte.replaceAll("\\D+","");
   }
@@ -48,5 +50,9 @@ public class PaiementTransactionRequest {
 
   public String getServiceId() {
     return this.serviceId;
+  }
+
+  public String getClientInfosPersoId() {
+    return this.clientInfosPersoId;
   }
 }

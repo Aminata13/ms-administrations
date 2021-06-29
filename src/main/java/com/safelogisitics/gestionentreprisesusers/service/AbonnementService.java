@@ -23,6 +23,8 @@ public interface AbonnementService {
 
   public Optional<Abonnement> getByNumeroCarte(String numeroCarte);
 
+  public Object getCustomResponseByNumeroCarte(String numeroCarte);
+
   public Page<Abonnement> getAbonnementByCompteCreateur(Compte createur, Pageable pageable);
 
   public Optional<Abonnement> getAbonnementById(String id);

@@ -18,6 +18,19 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+/*
+Lister => READ, Créer => CREATE, Editer => UPDATE, Valider => VALIDATE, Affecter => ASSIGN, Tracker => TRACK
+[
+  gestions des Personnels: [READ, CREATE, UPDATE, ACTIVATE],
+  gestions des Agents: [READ, CREATE, UPDATE, ACTIVATE],
+  gestions des Clients: [READ, CREATE, UPDATE, ACTIVATE],
+  gestions des Commandes de livraisons: [READ, CREATE, UPDATE, VALIDATE, ASSIGN, TRACK],
+  gestions des Abonnements: [READ, CREATE, UPDATE, VALIDATE],
+  gestions des Rechargements: [READ, CREATE, UPDATE, VALIDATE],
+  gestions des Tarifs: [READ, CREATE, UPDATE, VALIDATE]
+]
+*/
+
 @Document(collection = "comptes")
 public class Compte {
 

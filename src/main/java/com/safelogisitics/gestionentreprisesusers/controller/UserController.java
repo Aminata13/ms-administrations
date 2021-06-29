@@ -3,12 +3,14 @@ package com.safelogisitics.gestionentreprisesusers.controller;
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,9 @@ public class UserController {
   @Autowired
 	InfosPersoService infosPersoService;
 
+  @Autowired
+	AbonnementService abonnementService;
+
   @GetMapping("/infos")
 	public ResponseEntity<?> infos() {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getUserInfos());
@@ -44,6 +49,12 @@ public class UserController {
   @GetMapping("/infos/{id}")
 	public ResponseEntity<?> infosById(@PathVariable(value = "id") String id) {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoByCompteId(id));
+  }
+
+  @PostAuthorize("hasRole('COMPTE_COURSIER')")
+  @GetMapping("/client/abonnement/{numeroCarte}")
+	public ResponseEntity<?> getByNumeroCarte(@PathVariable(value = "numeroCarte") String numeroCarte) {
+		return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getCustomResponseByNumeroCarte(numeroCarte));
   }
 
   @GetMapping("/infos/search/{emailOrTelephone}")

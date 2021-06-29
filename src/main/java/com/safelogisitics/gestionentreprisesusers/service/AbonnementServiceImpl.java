@@ -2,6 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
@@ -60,6 +62,25 @@ public class AbonnementServiceImpl implements AbonnementService {
   @Override
   public Optional<Abonnement> getByNumeroCarte(String numeroCarte) {
     return abonnementDao.findByNumeroCarte(numeroCarte);
+  }
+
+  @Override
+  public Object getCustomResponseByNumeroCarte(String numeroCarte) {
+    Optional<Abonnement> _abonnement = abonnementDao.findByNumeroCarte(numeroCarte);
+    if (!_abonnement.isPresent() || _abonnement.get().isDeleted() || _abonnement.get().isCarteBloquer() || _abonnement.get().getCompteClient().isDeleted())
+      return null;
+
+    Abonnement abonnement = _abonnement.get();
+
+    Map <String,Object> customFields = new LinkedHashMap<>();
+    customFields.put("abonnementId", abonnement.getId());
+    customFields.put("typeAbonnement", abonnement.getTypeAbonnement());
+    customFields.put("compteClient", abonnement.getCompteClient().getId());
+    customFields.put("numeroCarte", abonnement.getNumeroCarte());
+    customFields.put("solde", abonnement.getSolde());
+    customFields.put("dateCreation", abonnement.getDateCreation());
+
+    return customFields;
   }
 
   @Override

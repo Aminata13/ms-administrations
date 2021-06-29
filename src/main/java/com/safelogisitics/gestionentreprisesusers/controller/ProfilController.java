@@ -47,6 +47,13 @@ public class ProfilController {
 	}
 
   @ApiOperation(value = "", tags = "personnels")
+  @PutMapping("/get-by-compte/{id}")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+	public ResponseEntity<?> getByCompte(@PathVariable(value = "id") String id) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPersoService.findByCompteId(id));
+	}
+
+  @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/personnels/list")
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
 	public ResponseEntity<?> allPersonnels(@PageableDefault(size = 20) Pageable pageable) {
