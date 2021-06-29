@@ -173,15 +173,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String clientInfosPersoId = null;
 
-    if (transactionRequest.getClientInfosPersoId() != null && compteDao.existsByInfosPersoIdAndType(clientInfosPersoId, ECompteType.COMPTE_ADMINISTRATEUR)) {
-      clientInfosPersoId = transactionRequest.getClientInfosPersoId();
+    Optional<Compte> compteClientExist = null;
+
+    if (transactionRequest.getClientId() != null) {
+      compteClientExist = compteDao.findByIdAndType(transactionRequest.getClientId(), ECompteType.COMPTE_ADMINISTRATEUR);
     } else {
-      clientInfosPersoId = currentUser.getInfosPerso().getId();
+      compteClientExist = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_PARTICULIER);
     }
-
-    Optional<Compte> compteClientExist = compteDao.findByInfosPersoIdAndType(clientInfosPersoId, ECompteType.COMPTE_PARTICULIER);
 
     if (!compteClientExist.isPresent() || compteClientExist.get().isDeleted()) {
       throw new IllegalArgumentException("CompteClient with that id does not exists!");
