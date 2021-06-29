@@ -6,14 +6,6 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 
 public class EnrollmentRequest {
-  
-  @NotBlank
-  private String agentPassword;
-
-  @NotBlank
-  private String numeroCarte;
-
-  private BigDecimal montant;
 
   @NotBlank
   protected String prenom;
@@ -22,6 +14,10 @@ public class EnrollmentRequest {
   protected String nom;
 
   @NotBlank
+  private String numeroCarte;
+
+  private BigDecimal montant;
+
   protected String email;
 
   @NotBlank
@@ -36,10 +32,6 @@ public class EnrollmentRequest {
   private String username;
 
   private String password;
-
-  public String getAgentPassword() {
-    return this.agentPassword;
-  }
 
   public String getNumeroCarte() {
     return this.numeroCarte;
@@ -86,6 +78,10 @@ public class EnrollmentRequest {
   }
 
   public boolean isRegistrationDataValid() {
-    return (numeroPiece != null && !numeroPiece.isEmpty()) && (username != null && !username.isEmpty()) && (password != null && !password.isEmpty());
+    return  (email != null && !email.isEmpty()) &&
+      (numeroPiece != null && !numeroPiece.isEmpty()) &&
+      (username != null && !username.isEmpty()) &&
+      (numeroPiece != null && !numeroPiece.isEmpty()) &&
+      (password != null && !password.isEmpty());
   }
 }
