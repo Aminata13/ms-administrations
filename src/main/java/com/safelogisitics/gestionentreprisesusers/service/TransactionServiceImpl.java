@@ -245,6 +245,22 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
+
+    if (transactionRequest.getAgentPassword() == null || !userExist.isPresent() || !encoder.matches(transactionRequest.getAgentPassword(), userExist.get().getPassword()))
+      throw new UsernameNotFoundException("Mot de passe invalide!");
+
+    ECompteType type = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
+
+    Transaction transaction = createRechargementTransaction(transactionRequest, type);
+
+    return transaction;
+  }
+
+  @Override
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
     Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
 

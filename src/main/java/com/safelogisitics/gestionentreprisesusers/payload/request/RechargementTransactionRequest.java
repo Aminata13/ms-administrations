@@ -13,6 +13,8 @@ public class RechargementTransactionRequest {
   @DecimalMin(value = "0")
   private BigDecimal montant;
 
+  private String agentPassword;
+
   public RechargementTransactionRequest(String numeroCarte, BigDecimal montant) {
     this.numeroCarte = numeroCarte;
     this.montant = montant;
@@ -24,5 +26,9 @@ public class RechargementTransactionRequest {
 
   public BigDecimal getMontant() {
     return this.montant;
+  }
+
+  public String getAgentPassword() {
+    return this.agentPassword;
   }
 }

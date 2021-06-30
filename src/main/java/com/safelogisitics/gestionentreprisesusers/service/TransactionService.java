@@ -44,5 +44,7 @@ public interface TransactionService {
   
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType compteCreateur);
 
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
+
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest);
 }

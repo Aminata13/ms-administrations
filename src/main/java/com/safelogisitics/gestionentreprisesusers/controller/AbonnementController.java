@@ -154,6 +154,13 @@ public class AbonnementController {
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getMyEnrollments(pageable));
 	}
 
+  @PostMapping("/recharger-carte-by-agent")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
+	public ResponseEntity<?> rechargerCarteByAgent(@Valid @RequestBody RechargementTransactionRequest request) {
+    Transaction transaction = transactionService.createRechargementTransaction(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
+	}
+
   @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
   @GetMapping("/rechargements/get-by-agent")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")

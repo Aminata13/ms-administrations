@@ -402,21 +402,27 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!numeroCarteExist.isPresent())
       throw new IllegalArgumentException("Cette carte n'existe pas!");
 
-    NumeroCarte carte = numeroCarteExist.get();
+    if (numeroCarteExist.get().isActive())
+      throw new IllegalArgumentException("Cette carte est déjà activé!");
 
     InfosPerso infosPerso = findInfosPerso(enrollmentRequest.getEmail(), enrollmentRequest.getTelephone(), null, enrollmentRequest.getNumeroPiece());
+
+    if (infosPerso != null && abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId()))
+      throw new IllegalArgumentException("Cet utilisateur est déjà abonné!");
+    
+    NumeroCarte carte = numeroCarteExist.get();
 
     Compte compte = null;
 
     Abonnement abonnement = null;
 
-    if (
-      infosPerso != null && 
-      abonnementDao.existsByCompteClientInfosPersoIdOrNumeroCarte(infosPerso.getId(), carte.getNumero()) &&
-      !abonnementDao.existsByCompteClientInfosPersoIdAndNumeroCarteAndDeletedIsFalse(infosPerso.getId(), carte.getNumero())
-    ) {
-        throw new IllegalArgumentException("Cette carte et les informations fournie ne sont pas conforme!");
-    }
+    // if (
+    //   infosPerso != null && 
+    //   abonnementDao.existsByCompteClientInfosPersoIdOrNumeroCarte(infosPerso.getId(), carte.getNumero()) &&
+    //   !abonnementDao.existsByCompteClientInfosPersoIdAndNumeroCarteAndDeletedIsFalse(infosPerso.getId(), carte.getNumero())
+    // ) {
+    //     throw new IllegalArgumentException("Cette carte et les informations fournie ne sont pas conforme!");
+    // }
 
     if (infosPerso == null && !enrollmentRequest.isRegistrationDataValid())
       return null;
