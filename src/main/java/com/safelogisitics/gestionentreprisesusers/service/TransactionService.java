@@ -31,6 +31,8 @@ public interface TransactionService {
 
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable);
 
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, LocalDate dateCreation, Pageable pageable);
+
   public Optional<Transaction> findByReference(String reference);
   
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType compteCreateur);

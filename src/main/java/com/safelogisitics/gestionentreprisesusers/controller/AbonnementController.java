@@ -14,6 +14,7 @@ import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
@@ -137,12 +138,30 @@ public class AbonnementController {
 	}
 
   @PostMapping("/add-by-agent")
-  @PostAuthorize("hasRole('COMPTE_COURSIER')")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
 	public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody EnrollmentRequest request) {
     InfosPerso infosPerso = infosPersoService.newEnrollment(request);
     if (infosPerso == null)
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informaions d'inscription incomplet");
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "Liste des abonnements crées par un admnistrateur ou agent", tags = "Gestion des abonnements")
+  @GetMapping("/get-by-agent")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
+	public ResponseEntity<?> getAbonnementByAgent(@PageableDefault(size = 20) Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getMyEnrollments(pageable));
+	}
+
+  @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
+  @GetMapping("/rechargements/get-by-agent")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
+	public ResponseEntity<?> getRechargementsByAgent(@RequestParam Optional<String> date, @PageableDefault(size = 20) Pageable pageable) {
+    LocalDate dateCreation = LocalDate.now();
+    if (date.isPresent()) {
+      dateCreation = LocalDate.parse(date.get());
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByCompteCreateurAndActionAndDateCreation(ETransactionAction.RECHARGEMENT, dateCreation, pageable));
 	}
 
   @PutMapping("/changer/{id}")

@@ -2,6 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -56,7 +58,8 @@ public class TransactionServiceImpl implements TransactionService {
 	PasswordEncoder encoder;
 
   @Override
-  public Page<Transaction> findByDateCreation(LocalDate dateCreation, Pageable pageable) {
+  public Page<Transaction> findByDateCreation(LocalDate _dateCreation, Pageable pageable) {
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
     return transactionDao.findByDateCreationOrderByDateCreationDesc(dateCreation, pageable);
   }
 
@@ -68,10 +71,12 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
+  public Page<Transaction> findByAbonnementAndDateCreation(String infosPersoId, LocalDate _dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementIdAndDateCreationOrderByDateCreationDesc(abonnement.getId(), dateCreation, pageable);
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
+
+    return transactionDao.findByAbonnementIdAndDateCreationGreaterThanEqual(abonnement.getId(), dateCreation, pageable);
   }
 
   @Override
@@ -82,10 +87,12 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
+  public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate _dateCreation, Pageable pageable) {
     Abonnement abonnement = getAbonnementByInfosPerso(infosPersoId);
 
-    return transactionDao.findByAbonnementIdAndActionAndDateCreationOrderByDateCreationDesc(abonnement.getId(), action, dateCreation, pageable);
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
+
+    return transactionDao.findByAbonnementIdAndActionAndDateCreationGreaterThanEqual(abonnement.getId(), action, dateCreation, pageable);
   }
 
   @Override
@@ -96,17 +103,33 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate _dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
-    return transactionDao.findByCompteCreateurIdAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), dateCreation, pageable);
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
+
+    return transactionDao.findByCompteCreateurIdAndDateCreationGreaterThanEqual(compteAdmin.getId(), dateCreation, pageable);
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate _dateCreation, Pageable pageable) {
     Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
-    return transactionDao.findByCompteCreateurIdAndActionAndDateCreationOrderByDateCreationDesc(compteAdmin.getId(), action, dateCreation, pageable);
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
+
+    return transactionDao.findByCompteCreateurIdAndActionAndDateCreationGreaterThanEqual(compteAdmin.getId(), action, dateCreation, pageable);
+  }
+
+  @Override
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, LocalDate _dateCreation, Pageable pageable) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    ECompteType compteType = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
+
+    Compte compteCreateur = getCompteByType(currentUser.getInfosPerso().getId(), compteType);
+
+    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
+
+    return transactionDao.findByCompteCreateurIdAndActionAndDateCreationGreaterThanEqual(compteCreateur.getId(), action, dateCreation, pageable);
   }
 
   @Override

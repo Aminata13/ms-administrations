@@ -59,6 +59,8 @@ public interface InfosPersoService {
 
   public InfosPerso newEnrollment(EnrollmentRequest enrollmentRequest);
 
+  public Page<?> getMyEnrollments(Pageable pageable);
+
   public InfosPerso updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
 
   public Collection<Compte> getInfosPersoComptes(String id);

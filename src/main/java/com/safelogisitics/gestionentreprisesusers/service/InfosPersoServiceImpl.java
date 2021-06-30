@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
@@ -438,11 +439,15 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPerso = createCompteClient(registerRequest);
     }
 
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    ECompteType compteType = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
+
     if (!abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId())) {
       // On creée un abonnement s'il n'a pas d'abonnement
       abonnementService.createAbonnement(
         new AbonnementRequest(carte.getTypeAbonnementId(), infosPerso.getId(), 1, carte.getNumero(), false),
-        ECompteType.COMPTE_COURSIER
+        compteType
       );
     }
 
@@ -453,11 +458,44 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (enrollmentRequest.getMontant() != null && enrollmentRequest.getMontant().compareTo(BigDecimal.valueOf(0)) != -1) {
       transactionService.createRechargementTransaction(
         new RechargementTransactionRequest(abonnement.getNumeroCarte(), enrollmentRequest.getMontant()),
-        ECompteType.COMPTE_COURSIER
+        compteType
       );
     }
 
     return infosPerso;
+  }
+
+  @Override
+  public Page<?> getMyEnrollments(Pageable pageable) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    ECompteType compteType = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
+
+    Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), compteType);
+
+    if (!compteExist.isPresent()) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN , "Accès non autorisé!");
+    }
+
+    Page<Abonnement> abonnements = abonnementService.getAbonnementByCompteCreateur(compteExist.get(), pageable);
+
+    if (abonnements.getContent().size() <= 0) {
+      return abonnements;
+    }
+
+    Page<UserInfosResponse> customData = abonnements.map(new Function<Abonnement, UserInfosResponse>() {
+      @Override
+      public UserInfosResponse apply(Abonnement abonnement) {
+        String infosPersoId = abonnement.getCompteClient().getInfosPersoId();
+
+        InfosPerso infosPerso = infosPersoDao.findById(infosPersoId).get();
+        User user = userDao.findByInfosPersoId(infosPersoId).get();
+
+        return new UserInfosResponse(infosPerso, abonnement, user);
+      }
+    });
+
+    return customData;
   }
 
   @Override

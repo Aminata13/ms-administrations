@@ -85,7 +85,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Page<Abonnement> getAbonnementByCompteCreateur(Compte createur, Pageable pageable) {
-    return abonnementDao.findByCompteCreateurIdAndDeletedIsFalse(createur.getId(), pageable);
+    return abonnementDao.findByCompteCreateurIdAndDeletedIsFalseOrderByDateCreationDesc(createur.getId(), pageable);
   }
 
   @Override

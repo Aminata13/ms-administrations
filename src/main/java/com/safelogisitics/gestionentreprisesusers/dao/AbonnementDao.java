@@ -17,7 +17,7 @@ public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, St
 
   Page<Abonnement> findByStatutAndDeletedIsFalse(int statut, Pageable pageable);
 
-  Page<Abonnement> findByCompteCreateurIdAndDeletedIsFalse(String CompteCreateurId, Pageable pageable);
+  Page<Abonnement> findByCompteCreateurIdAndDeletedIsFalseOrderByDateCreationDesc(String CompteCreateurId, Pageable pageable);
 
   Optional<Abonnement> findByCompteClientIdAndDeletedIsFalse(String compteClientId);
 
