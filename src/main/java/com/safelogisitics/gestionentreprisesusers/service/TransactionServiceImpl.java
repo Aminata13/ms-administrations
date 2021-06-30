@@ -127,15 +127,13 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, LocalDate _dateCreation, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, Pageable pageable) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     ECompteType compteType = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
 
     Compte compteCreateur = getCompteByType(currentUser.getInfosPerso().getId(), compteType);
 
-    LocalDateTime dateCreation = _dateCreation.atTime(LocalTime.parse("00:00"));
-
-    return transactionDao.findByCompteCreateurIdAndActionAndDateCreationGreaterThanEqual(compteCreateur.getId(), action, dateCreation, pageable);
+    return transactionDao.findByCompteCreateurIdAndActionOrderByDateCreationDesc(compteCreateur.getId(), action, pageable);
   }
 
   @Override

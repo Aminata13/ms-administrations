@@ -34,7 +34,7 @@ public interface TransactionService {
 
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable);
 
-  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, LocalDate dateCreation, Pageable pageable);
+  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, Pageable pageable);
 
   public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable);
 

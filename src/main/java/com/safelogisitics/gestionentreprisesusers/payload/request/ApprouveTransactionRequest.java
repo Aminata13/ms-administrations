@@ -2,14 +2,14 @@ package com.safelogisitics.gestionentreprisesusers.payload.request;
 
 import java.util.Set;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class ApprouveTransactionRequest {
   
-  @NotBlank
+  @NotNull
   private int approbation;
 
-  @NotBlank
+  @NotNull
   private Set<String> transactionIds;
 
   public int getApprobation() {

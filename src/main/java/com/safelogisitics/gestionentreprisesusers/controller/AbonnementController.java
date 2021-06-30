@@ -164,12 +164,8 @@ public class AbonnementController {
   @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
   @GetMapping("/rechargements/get-by-agent")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
-	public ResponseEntity<?> getRechargementsByAgent(@RequestParam Optional<String> date, @PageableDefault(size = 20) Pageable pageable) {
-    LocalDate dateCreation = LocalDate.now();
-    if (date.isPresent()) {
-      dateCreation = LocalDate.parse(date.get());
-    }
-    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByCompteCreateurAndActionAndDateCreation(ETransactionAction.RECHARGEMENT, dateCreation, pageable));
+	public ResponseEntity<?> getRechargementsByAgent(@PageableDefault(size = 20) Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByCompteCreateurAndActionAndDateCreation(ETransactionAction.RECHARGEMENT, pageable));
 	}
 
   @PutMapping("/changer/{id}")
