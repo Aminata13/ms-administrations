@@ -16,6 +16,7 @@ import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
@@ -219,5 +220,21 @@ public class AbonnementController {
       return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnementAndDateCreation(id, LocalDate.parse(date.get()), pageable));
     }
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnement(id, pageable));
+	}
+
+  @ApiOperation(value = "Liste des transactions à approuver", tags = "Gestion des abonnements")
+  @GetMapping("/transactions/approbations")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+	public ResponseEntity<?> listTransactionsEnApprobations(@PageableDefault(size = 20) Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findTransactionsEnApprobations(pageable));
+	}
+
+  @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id des transaction", tags = "Gestion des abonnements")
+  @PostMapping("/transactions/approbations")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+	public ResponseEntity<?> approuveTransaction(@Valid @RequestBody ApprouveTransactionRequest request) {
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.approuveTransaction(request));
 	}
 }

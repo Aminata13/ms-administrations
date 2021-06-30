@@ -1,12 +1,15 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 
@@ -32,6 +35,10 @@ public interface TransactionService {
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable);
 
   public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, LocalDate dateCreation, Pageable pageable);
+
+  public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable);
+
+  public Map<String, Set<String>> approuveTransaction(ApprouveTransactionRequest request);
 
   public Optional<Transaction> findByReference(String reference);
   

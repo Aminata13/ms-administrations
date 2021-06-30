@@ -4,8 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Function;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
@@ -20,6 +25,7 @@ import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
@@ -133,6 +139,79 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
+  public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable) {
+    Page<Transaction> transactions = transactionDao.findByApprobation(0, pageable);
+
+    Page<Map<String, Object>> customData = transactions.map(new Function<Transaction, Map<String, Object>>() {
+      @Override
+      public Map<String, Object> apply(Transaction transaction) {
+        Map<String, Object> customFields = new LinkedHashMap<>();
+        Map<String, Object> abonnement = new LinkedHashMap<>();
+
+        Abonnement _abonnement = transaction.getAbonnement();
+
+        abonnement.put("id", _abonnement.getId());
+        abonnement.put("numeroCarte", _abonnement.getNumeroCarte());
+        abonnement.put("typeAbonnement", _abonnement.getTypeAbonnement());
+        abonnement.put("solde", _abonnement.getSolde());
+        abonnement.put("compteCreateur", infosPersoDao.findById(_abonnement.getCompteClient().getInfosPersoId()));
+        abonnement.put("dateCreation", _abonnement.getDateCreation());
+
+        customFields.put("id", transaction.getId());
+        customFields.put("action", transaction.getAction());
+        customFields.put("reference", transaction.getReference());
+        customFields.put("abonnement", abonnement);
+        customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()));
+        customFields.put("montant", transaction.getMontant());
+        customFields.put("approbation", transaction.getApprobation());
+        customFields.put("dateCreation", transaction.getDateCreation());
+
+        return customFields;
+      }
+    });
+
+    return customData;
+  }
+
+  @Override
+  public Map<String, Set<String>> approuveTransaction(ApprouveTransactionRequest request) {
+    int approbation = request.getApprobation();
+    if (approbation != -1 && approbation != 1) {
+      throw new IllegalArgumentException("Approbation invalide!");
+    }
+
+    Set<String> traites = new HashSet<>();
+    Set<String> noTraites = new HashSet<>();
+
+    for (String transactionId : request.getTransactionIds()) {
+      Optional<Transaction> _transaction = transactionDao.findByIdAndApprobation(transactionId, 0);
+      if (!_transaction.isPresent()) {
+        noTraites.add(transactionId);
+        continue;
+      }
+      Transaction transaction = _transaction.get();
+      if (approbation == 1) {
+        Abonnement abonnement = transaction.getAbonnement();
+        BigDecimal montant = transaction.getMontant();
+        abonnement.rechargerCarte(montant);
+        abonnementDao.save(abonnement);
+        transaction.setNouveauSolde(abonnement.getSolde());
+        transaction.setApprobation(approbation);
+        transactionDao.save(transaction);
+      } else {
+        transactionDao.delete(transaction);
+      }
+      traites.add(transactionId);
+    }
+
+    Map<String, Set<String>> data = new LinkedHashMap<>();
+    data.put("traites", traites);
+    data.put("noTraites", noTraites);
+
+    return data;
+  }
+
+  @Override
   public Optional<Transaction> findByReference(String reference) {
     return transactionDao.findByReference(reference);
   }
@@ -152,21 +231,13 @@ public class TransactionServiceImpl implements TransactionService {
       throw new IllegalArgumentException("Cette carte est bloqué!");
     }
 
-    Abonnement abonnement = abonnementExist.get();
-
     BigDecimal montant = transactionRequest.getMontant();
-
-    abonnement.rechargerCarte(montant);
-
-    abonnementDao.save(abonnement);
 
     String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
 
-    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.RECHARGEMENT, compteCreateur, montant);
+    Transaction transaction = new Transaction(abonnementExist.get(), reference, ETransactionAction.RECHARGEMENT, compteCreateur, montant);
 
-    transaction.setNouveauSolde(abonnement.getSolde());
-
-    transaction.setRechargementApprouver(type.equals(ECompteType.COMPTE_ADMINISTRATEUR) ? true : false);
+    transaction.setApprobation(0);
 
     transactionDao.save(transaction);
 
