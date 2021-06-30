@@ -102,10 +102,12 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateur(String infosPersoId, Pageable pageable) {
+  public Page<Map<String, Object>> findByCompteCreateur(String infosPersoId, Pageable pageable) {
     Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
-    return transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
+    Page<Transaction> transactions = transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
+
+    return customTransactionsData(transactions);
   }
 
   @Override
@@ -139,36 +141,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable) {
     Page<Transaction> transactions = transactionDao.findByApprobation(0, pageable);
-
-    Page<Map<String, Object>> customData = transactions.map(new Function<Transaction, Map<String, Object>>() {
-      @Override
-      public Map<String, Object> apply(Transaction transaction) {
-        Map<String, Object> customFields = new LinkedHashMap<>();
-        Map<String, Object> abonnement = new LinkedHashMap<>();
-
-        Abonnement _abonnement = transaction.getAbonnement();
-
-        abonnement.put("id", _abonnement.getId());
-        abonnement.put("numeroCarte", _abonnement.getNumeroCarte());
-        abonnement.put("typeAbonnement", _abonnement.getTypeAbonnement());
-        abonnement.put("solde", _abonnement.getSolde());
-        abonnement.put("compteClient", infosPersoDao.findById(_abonnement.getCompteClient().getInfosPersoId()));
-        abonnement.put("dateCreation", _abonnement.getDateCreation());
-
-        customFields.put("id", transaction.getId());
-        customFields.put("action", transaction.getAction());
-        customFields.put("reference", transaction.getReference());
-        customFields.put("abonnement", abonnement);
-        customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()));
-        customFields.put("montant", transaction.getMontant());
-        customFields.put("approbation", transaction.getApprobation());
-        customFields.put("dateCreation", transaction.getDateCreation());
-
-        return customFields;
-      }
-    });
-
-    return customData;
+    return customTransactionsData(transactions);
   }
 
   @Override
@@ -362,5 +335,37 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     return referenceTransction;
+  }
+
+  private Page<Map<String, Object>> customTransactionsData(Page<Transaction> transactions) {
+    Page<Map<String, Object>> customData = transactions.map(new Function<Transaction, Map<String, Object>>() {
+      @Override
+      public Map<String, Object> apply(Transaction transaction) {
+        Map<String, Object> customFields = new LinkedHashMap<>();
+        Map<String, Object> abonnement = new LinkedHashMap<>();
+
+        Abonnement _abonnement = transaction.getAbonnement();
+
+        abonnement.put("id", _abonnement.getId());
+        abonnement.put("numeroCarte", _abonnement.getNumeroCarte());
+        abonnement.put("typeAbonnement", _abonnement.getTypeAbonnement());
+        abonnement.put("solde", _abonnement.getSolde());
+        abonnement.put("compteClient", infosPersoDao.findById(_abonnement.getCompteClient().getInfosPersoId()));
+        abonnement.put("dateCreation", _abonnement.getDateCreation());
+
+        customFields.put("id", transaction.getId());
+        customFields.put("action", transaction.getAction());
+        customFields.put("reference", transaction.getReference());
+        customFields.put("abonnement", abonnement);
+        customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()));
+        customFields.put("montant", transaction.getMontant());
+        customFields.put("approbation", transaction.getApprobation());
+        customFields.put("dateCreation", transaction.getDateCreation());
+
+        return customFields;
+      }
+    });
+
+    return customData;
   }
 }

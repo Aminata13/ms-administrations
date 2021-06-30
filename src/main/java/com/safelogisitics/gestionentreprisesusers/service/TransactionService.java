@@ -28,7 +28,7 @@ public interface TransactionService {
 
   public Page<Transaction> findByAbonnementAndActionAndDateCreation(String infosPersoId, ETransactionAction action, LocalDate dateCreation, Pageable pageable);
 
-  public Page<Transaction> findByCompteCreateur(String infosPersoId, Pageable pageable);
+  public Page<Map<String, Object>> findByCompteCreateur(String infosPersoId, Pageable pageable);
 
   public Page<Transaction> findByCompteCreateurAndDateCreation(String infosPersoId, LocalDate dateCreation, Pageable pageable);
 
