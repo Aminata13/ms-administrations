@@ -177,7 +177,7 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<Compte> compteClientExist = null;
 
     if (transactionRequest.getClientId() != null) {
-      compteClientExist = compteDao.findByIdAndType(transactionRequest.getClientId(), ECompteType.COMPTE_ADMINISTRATEUR);
+      compteClientExist = compteDao.findByIdAndType(transactionRequest.getClientId(), ECompteType.COMPTE_PARTICULIER);
     } else {
       compteClientExist = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_PARTICULIER);
     }
