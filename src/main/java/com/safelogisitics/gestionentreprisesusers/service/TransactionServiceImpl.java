@@ -102,12 +102,10 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Map<String, Object>> findByCompteCreateur(String infosPersoId, Pageable pageable) {
+  public Page<Transaction> findByCompteCreateur(String infosPersoId, Pageable pageable) {
     Compte compteAdmin = getCompteByType(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
 
-    Page<Transaction> transactions = transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
-
-    return customTransactionsData(transactions);
+    return transactionDao.findByCompteCreateurIdOrderByDateCreationDesc(compteAdmin.getId(), pageable);
   }
 
   @Override
@@ -129,13 +127,15 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<Transaction> findByCompteCreateurAndActionAndDateCreation(ETransactionAction action, Pageable pageable) {
+  public Page<Map<String, Object>> findByCompteCreateurAndAction(ETransactionAction action, Pageable pageable) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     ECompteType compteType = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
 
     Compte compteCreateur = getCompteByType(currentUser.getInfosPerso().getId(), compteType);
 
-    return transactionDao.findByCompteCreateurIdAndActionOrderByDateCreationDesc(compteCreateur.getId(), action, pageable);
+    Page<Transaction> transactions = transactionDao.findByCompteCreateurIdAndActionOrderByDateCreationDesc(compteCreateur.getId(), action, pageable);
+
+    return customTransactionsData(transactions);
   }
 
   @Override
@@ -350,14 +350,14 @@ public class TransactionServiceImpl implements TransactionService {
         abonnement.put("numeroCarte", _abonnement.getNumeroCarte());
         abonnement.put("typeAbonnement", _abonnement.getTypeAbonnement());
         abonnement.put("solde", _abonnement.getSolde());
-        abonnement.put("compteClient", infosPersoDao.findById(_abonnement.getCompteClient().getInfosPersoId()));
+        abonnement.put("compteClient", infosPersoDao.findById(_abonnement.getCompteClient().getInfosPersoId()).get().getDefaultFields());
         abonnement.put("dateCreation", _abonnement.getDateCreation());
 
         customFields.put("id", transaction.getId());
         customFields.put("action", transaction.getAction());
         customFields.put("reference", transaction.getReference());
         customFields.put("abonnement", abonnement);
-        customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()));
+        customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()).get().getDefaultFields());
         customFields.put("montant", transaction.getMontant());
         customFields.put("approbation", transaction.getApprobation());
         customFields.put("dateCreation", transaction.getDateCreation());

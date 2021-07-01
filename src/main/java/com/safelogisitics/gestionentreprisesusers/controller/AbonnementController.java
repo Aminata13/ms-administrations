@@ -165,7 +165,7 @@ public class AbonnementController {
   @GetMapping("/rechargements/get-by-agent")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
 	public ResponseEntity<?> getRechargementsByAgent(@PageableDefault(size = 20) Pageable pageable) {
-    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByCompteCreateurAndActionAndDateCreation(ETransactionAction.RECHARGEMENT, pageable));
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByCompteCreateurAndAction(ETransactionAction.RECHARGEMENT, pageable));
 	}
 
   @PutMapping("/changer/{id}")
