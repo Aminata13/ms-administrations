@@ -44,6 +44,9 @@ public class InfosPerso {
   @Field(value = "dateNaissance")
   private LocalDate dateNaissance;
 
+  @Field(value = "anneeNaissance")
+  private String anneeNaissance;
+
   @Indexed
   @Field(value = "numeroPermis")
   private String numeroPermis;
@@ -144,6 +147,14 @@ public class InfosPerso {
 
   public void setDateNaissance(LocalDate dateNaissance) {
     this.dateNaissance = dateNaissance;
+  }
+
+  public String getAnneeNaissance() {
+    return this.anneeNaissance;
+  }
+
+  public void setAnneeNaissance(String anneeNaissance) {
+    this.anneeNaissance = anneeNaissance;
   }
 
   public String getNumeroPermis() {

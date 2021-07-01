@@ -170,7 +170,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       infosPersoRequest.getNumeroPermis(),
       infosPersoRequest.getNumeroPiece(),
       infosPersoRequest.getPhotoProfil()
-    );      
+    );
+
+    infosPerso.setAnneeNaissance(infosPersoRequest.getAnneeNaissance());
 
     infosPersoDao.save(infosPerso);
 
@@ -199,6 +201,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.setTelephone(infosPersoRequest.getTelephone());
     infosPerso.setAdresse(infosPersoRequest.getAdresse());
     infosPerso.setDateNaissance(infosPersoRequest.getDateNaissance());
+    infosPerso.setAnneeNaissance(infosPersoRequest.getAnneeNaissance());
     infosPerso.setNumeroPermis(infosPersoRequest.getNumeroPermis());
     infosPerso.setNumeroPiece(infosPersoRequest.getNumeroPiece());
 

@@ -23,9 +23,10 @@ public class InfosPersoRequest {
 
   protected LocalDate dateNaissance;
 
+  protected String anneeNaissance;
+
   protected String numeroPermis;
 
-  @NotBlank
   protected String numeroPiece;
 
   public String getPrenom() {
@@ -62,5 +63,9 @@ public class InfosPersoRequest {
 
   public String getNumeroPiece() {
     return this.numeroPiece;
+  }
+
+  public String getAnneeNaissance() {
+    return this.anneeNaissance;
   }
 }
