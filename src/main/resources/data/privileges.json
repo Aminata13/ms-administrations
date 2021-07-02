@@ -42,6 +42,18 @@
     "statut": 1
   },
   {
+    "libelle": "Création des commandes de livraisons ",
+    "valeur": "GESTION_COMMANDE_LIVRAISONS_CREATION",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
+    "libelle": "Affectation des commandes de livraisons",
+    "valeur": "GESTION_COMMANDE_LIVRAISONS_AFFECTATION",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1
+  },
+  {
     "libelle": "Gestion des commandes de prestations",
     "valeur": "GESTION_COMMANDE_PRESTATIONS",
     "type": "COMPTE_ADMINISTRATEUR",

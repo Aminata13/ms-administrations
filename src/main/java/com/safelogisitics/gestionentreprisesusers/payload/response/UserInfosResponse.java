@@ -29,6 +29,8 @@ public class UserInfosResponse {
 
   private LocalDate dateNaissance;
 
+  private String anneeNaissance;
+
   private String numeroPiece;
 
   private String username;
@@ -43,7 +45,9 @@ public class UserInfosResponse {
     this.nom = infosPerso.getNom();
     this.email = infosPerso.getEmail();
     this.telephone = infosPerso.getTelephone();
+    this.adresse = infosPerso.getAdresse();
     this.dateNaissance = infosPerso.getDateNaissance();
+    this.anneeNaissance = infosPerso.getAnneeNaissance();
     this.numeroPiece = infosPerso.getNumeroPiece();
     this.comptes = infosPerso.getComptes();
     this.photoProfil = infosPerso.getPhotoProfil();
@@ -77,6 +81,10 @@ public class UserInfosResponse {
 
   public LocalDate getDateNaissance() {
     return this.dateNaissance;
+  }
+
+  public String getAnneeNaissance() {
+    return this.anneeNaissance;
   }
 
   public String getNumeroPiece() {

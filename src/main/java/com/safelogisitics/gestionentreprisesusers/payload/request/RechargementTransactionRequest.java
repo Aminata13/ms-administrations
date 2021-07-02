@@ -10,7 +10,7 @@ public class RechargementTransactionRequest {
   @NotBlank
   private String numeroCarte;
 
-  @DecimalMin(value = "0")
+  @DecimalMin(value = "1000", message = "Montant invalide")
   private BigDecimal montant;
 
   private String agentPassword;

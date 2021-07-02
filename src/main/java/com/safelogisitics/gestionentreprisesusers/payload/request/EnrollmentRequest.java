@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.payload.request;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 
 public class EnrollmentRequest {
@@ -16,6 +17,7 @@ public class EnrollmentRequest {
   @NotBlank
   private String numeroCarte;
 
+  @DecimalMin(value = "1000", message = "Montant invalide")
   private BigDecimal montant;
 
   protected String email;
@@ -79,9 +81,7 @@ public class EnrollmentRequest {
 
   public boolean isRegistrationDataValid() {
     return  (email != null && !email.isEmpty()) &&
-      (numeroPiece != null && !numeroPiece.isEmpty()) &&
       (username != null && !username.isEmpty()) &&
-      (numeroPiece != null && !numeroPiece.isEmpty()) &&
       (password != null && !password.isEmpty());
   }
 }

@@ -236,11 +236,11 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted()) {
-      throw new IllegalArgumentException("Abonnement with that client does not exist!");
+      throw new IllegalArgumentException("0");
     }
 
     if (abonnementExist.get().isCarteBloquer()) {
-      throw new IllegalArgumentException("Cette carte est bloqué!");
+      throw new IllegalArgumentException("0");
     }
 
     Abonnement abonnement = abonnementExist.get();
@@ -250,7 +250,7 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<User> userExist = userDao.findByInfosPersoId(infosPerso.getId());
 
     if (!userExist.isPresent() || !encoder.matches(transactionRequest.getPassword(), userExist.get().getPassword())) {
-      throw new UsernameNotFoundException("Numero carte ou mot de passe invalide!");
+      throw new UsernameNotFoundException("0");
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -264,7 +264,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     if (!compteClientExist.isPresent() || compteClientExist.get().isDeleted()) {
-      throw new IllegalArgumentException("CompteClient with that id does not exists!");
+      throw new IllegalArgumentException("0");
     }
 
     Compte compteClient = compteClientExist.get();
@@ -274,7 +274,7 @@ public class TransactionServiceImpl implements TransactionService {
     int res = abonnement.getSolde().compareTo(montant);
 
     if (res == -1) {
-      throw new IllegalArgumentException(String.format("Solde insuffisant, votre solde actuel est de %s !", abonnement.getSolde()));
+      throw new IllegalArgumentException(String.format("-1", abonnement.getSolde()));
     }
 
     abonnement.debiterCarte(montant);

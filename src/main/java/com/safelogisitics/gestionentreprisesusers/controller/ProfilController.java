@@ -90,7 +90,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "agents")
   @GetMapping("/agents/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_CREATION', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_AFFECTATION', 'READ')")
 	public ResponseEntity<?> allAgents(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_COURSIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);

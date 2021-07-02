@@ -200,16 +200,20 @@ public class AbonnementController {
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 
-    CreatePaiementDto createPaiementDto = new CreatePaiementDto(
-      request.getTypePaiementId(),
-      transaction.getReference(),
-      request.getService(),
-      request.getServiceId(),
-      transaction.getAbonnement().getCompteClient().getId(),
-      transaction.getMontant()
-    );
+    try {
+      CreatePaiementDto createPaiementDto = new CreatePaiementDto(
+        request.getTypePaiementId(),
+        transaction.getReference(),
+        request.getService(),
+        request.getServiceId(),
+        transaction.getAbonnement().getCompteClient().getId(),
+        transaction.getMontant()
+      );
 
-    createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
+      createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
+    } catch (Exception e) {
+      //TODO: handle exception
+    }
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
