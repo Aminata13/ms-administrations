@@ -412,20 +412,15 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     if (infosPerso != null && abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId()))
       throw new IllegalArgumentException("Cet utilisateur est déjà abonné!");
-    
+
+    if (enrollmentRequest.getMontant() == null || enrollmentRequest.getMontant().compareTo(BigDecimal.valueOf(2005)) == -1)
+      throw new IllegalArgumentException("Le montant à recharger est insuffisant!");
+
     NumeroCarte carte = numeroCarteExist.get();
 
     Compte compte = null;
 
     Abonnement abonnement = null;
-
-    // if (
-    //   infosPerso != null && 
-    //   abonnementDao.existsByCompteClientInfosPersoIdOrNumeroCarte(infosPerso.getId(), carte.getNumero()) &&
-    //   !abonnementDao.existsByCompteClientInfosPersoIdAndNumeroCarteAndDeletedIsFalse(infosPerso.getId(), carte.getNumero())
-    // ) {
-    //     throw new IllegalArgumentException("Cette carte et les informations fournie ne sont pas conforme!");
-    // }
 
     if (infosPerso == null && !enrollmentRequest.isRegistrationDataValid())
       return null;
@@ -464,12 +459,20 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     abonnement = abonnementService.getAbonnementByCompteClient(compte).get();
 
-    if (enrollmentRequest.getMontant() != null && enrollmentRequest.getMontant().compareTo(BigDecimal.valueOf(0)) != -1) {
-      transactionService.createRechargementTransaction(
-        new RechargementTransactionRequest(abonnement.getNumeroCarte(), enrollmentRequest.getMontant()),
-        compteType
-      );
-    }
+    BigDecimal prixCarte = BigDecimal.valueOf(2000);
+
+    // On soustrait deux mille comme prix de la carte
+    enrollmentRequest.setMontant(enrollmentRequest.getMontant().subtract(prixCarte));
+
+    abonnement.setPrixCarte(prixCarte);
+    abonnement.setDepotInitial(enrollmentRequest.getMontant());
+
+    abonnementDao.save(abonnement);
+
+    transactionService.createRechargementTransaction(
+      new RechargementTransactionRequest(abonnement.getNumeroCarte(), abonnement.getDepotInitial()),
+      compteType
+    );
 
     return infosPerso;
   }

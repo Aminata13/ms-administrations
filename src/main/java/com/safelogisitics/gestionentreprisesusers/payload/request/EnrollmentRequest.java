@@ -17,7 +17,7 @@ public class EnrollmentRequest {
   @NotBlank
   private String numeroCarte;
 
-  @DecimalMin(value = "1000", message = "Montant invalide")
+  @DecimalMin(value = "2000", message = "Montant invalide")
   private BigDecimal montant;
 
   protected String email;
@@ -41,6 +41,10 @@ public class EnrollmentRequest {
 
   public BigDecimal getMontant() {
     return this.montant;
+  }
+
+  public void setMontant(BigDecimal montant) {
+    this.montant = montant;
   }
 
   public String getPrenom() {

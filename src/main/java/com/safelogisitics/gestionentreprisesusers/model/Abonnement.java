@@ -33,6 +33,12 @@ public class Abonnement {
   @Field(value = "solde")
   private BigDecimal solde;
 
+  @Field(value = "prixCarte")
+  private BigDecimal prixCarte;
+
+  @Field(value = "depotInitial")
+  private BigDecimal depotInitial;
+
   @Field(value = "statut")
   private int statut;
 
@@ -122,6 +128,22 @@ public class Abonnement {
 
   public void debiterCarte(BigDecimal montant) {
     this.solde = this.solde.subtract(montant);
+  }
+
+  public BigDecimal getPrixCarte() {
+    return this.prixCarte;
+  }
+
+  public void setPrixCarte(BigDecimal prixCarte) {
+    this.prixCarte = prixCarte;
+  }
+
+  public BigDecimal getDepotInitial() {
+    return this.depotInitial;
+  }
+
+  public void setDepotInitial(BigDecimal depotInitial) {
+    this.depotInitial = depotInitial;
   }
 
   public int getStatut() {

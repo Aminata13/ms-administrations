@@ -212,7 +212,7 @@ public class AbonnementController {
 
       createPaiementKafkaTemplate.send(createPaiementTopicName, createPaiementDto);
     } catch (Exception e) {
-      //TODO: handle exception
+      System.out.println(e.getMessage());
     }
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
