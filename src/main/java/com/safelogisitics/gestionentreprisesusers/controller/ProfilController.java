@@ -160,7 +160,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "clients")
   @GetMapping("/clients/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> allClients(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -168,7 +168,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "clients")
   @PostMapping("/clients/add")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> addClient(@Valid @RequestBody RegisterRequest request) {
     InfosPerso infosPerso = infosPersoService.createCompteClient(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
