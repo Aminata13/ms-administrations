@@ -140,7 +140,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable) {
-    Page<Transaction> transactions = transactionDao.findByApprobation(0, pageable);
+    Page<Transaction> transactions = transactionDao.findByActionAndApprobation(ETransactionAction.RECHARGEMENT, 0, pageable);
     return customTransactionsData(transactions);
   }
 
