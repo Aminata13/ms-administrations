@@ -464,7 +464,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     // On soustrait deux mille comme prix de la carte
     enrollmentRequest.setMontant(enrollmentRequest.getMontant().subtract(prixCarte));
 
-    abonnement.setPrixCarte(prixCarte);
     abonnement.setDepotInitial(enrollmentRequest.getMontant());
 
     abonnementDao.save(abonnement);

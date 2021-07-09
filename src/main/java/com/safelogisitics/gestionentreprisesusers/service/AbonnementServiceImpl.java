@@ -123,6 +123,9 @@ public class AbonnementServiceImpl implements AbonnementService {
     abonnement.setTypeAbonnement(typeAbonnement);
     abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
     abonnement.setCarteBloquer(false);
+
+    abonnement.setPrixCarte(BigDecimal.valueOf(2000));
+    abonnement.setDepotInitial(BigDecimal.valueOf(0));
     abonnementDao.save(abonnement);
 
     numeroCarte.setActive(true);

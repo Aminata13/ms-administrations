@@ -162,7 +162,7 @@ public class TransactionServiceImpl implements TransactionService {
       }
       Transaction transaction = _transaction.get();
       if (approbation == 1) {
-        Abonnement abonnement = transaction.getAbonnement();
+        Abonnement abonnement = abonnementDao.findById(transaction.getAbonnement().getId()).get();
         BigDecimal montant = transaction.getMontant();
         abonnement.rechargerCarte(montant);
         abonnementDao.save(abonnement);
