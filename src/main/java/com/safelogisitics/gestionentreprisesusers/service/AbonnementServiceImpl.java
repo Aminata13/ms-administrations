@@ -66,7 +66,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Object getCustomResponseByNumeroCarte(String numeroCarte) {
-    Optional<Abonnement> _abonnement = abonnementDao.findByNumeroCarte(numeroCarte);
+    Optional<Abonnement> _abonnement = abonnementDao.findByNumeroCarte(numeroCarte.replaceAll("\\D+",""));
     if (!_abonnement.isPresent() || _abonnement.get().isDeleted() || _abonnement.get().isCarteBloquer() || _abonnement.get().getCompteClient().isDeleted())
       return null;
 
