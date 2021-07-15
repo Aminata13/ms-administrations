@@ -18,6 +18,8 @@ public interface TransactionDefaultFields {
 
   public ETransactionAction getAction();
 
+  public int getApprobation();
+
   public EServiceType getService();
 
   @Value("#{target.getCompteCreateur().getId()}")
