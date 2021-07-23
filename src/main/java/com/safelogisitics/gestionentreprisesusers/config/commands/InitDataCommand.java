@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.config.commands;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
@@ -136,10 +137,12 @@ public class InitDataCommand implements CommandLineRunner {
         typeAbonnement.setLibelle(_typeAbonnement.getLibelle());
         typeAbonnement.setIcon(_typeAbonnement.getIcon());
         typeAbonnement.setReduction(_typeAbonnement.getReduction());
+        typeAbonnement.setPrix(_typeAbonnement.getPrix());
         typeAbonnement.setStatut(_typeAbonnement.getStatut());
         typeAbonnementDao.save(typeAbonnement);
       }, () -> {
         TypeAbonnement typeAbonnement = new TypeAbonnement(_typeAbonnement.getLibelle(), _typeAbonnement.getReduction(), _typeAbonnement.getStatut());
+        typeAbonnement.setPrix(_typeAbonnement.getPrix());
         typeAbonnementDao.save(typeAbonnement);
       });
     }

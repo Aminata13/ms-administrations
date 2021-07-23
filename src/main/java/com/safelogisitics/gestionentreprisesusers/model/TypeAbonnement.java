@@ -1,5 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -18,6 +20,9 @@ public class TypeAbonnement {
 
   @Field(value = "reduction")
   private int reduction;
+
+  @Field(value = "prix")
+  private BigDecimal prix;
 
   @Field(value = "statut")
   private int statut;
@@ -60,6 +65,14 @@ public class TypeAbonnement {
 
   public void setReduction(int reduction) {
     this.reduction = reduction;
+  }
+
+  public BigDecimal getPrix() {
+    return this.prix;
+  }
+
+  public void setPrix(BigDecimal prix) {
+    this.prix = prix;
   }
 
   public int getStatut() {

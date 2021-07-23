@@ -14,6 +14,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
+import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
@@ -63,6 +64,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
   AbonnementDao abonnementDao;
+
+  @Autowired
+  TypeAbonnementDao typeAbonnementDao;
 
   @Autowired
   RoleService roleService;
@@ -441,7 +445,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (infosPerso != null && abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId()))
       throw new IllegalArgumentException("Cet utilisateur est déjà abonné!");
 
-    if (enrollmentRequest.getMontant() == null || enrollmentRequest.getMontant().compareTo(BigDecimal.valueOf(2005)) == -1)
+    BigDecimal prixCarte = typeAbonnementDao.findById(numeroCarteExist.get().getTypeAbonnementId()).get().getPrix();
+
+    if (enrollmentRequest.getMontant() == null || enrollmentRequest.getMontant().compareTo(prixCarte) == -1)
       throw new IllegalArgumentException("Le montant à recharger est insuffisant!");
 
     NumeroCarte carte = numeroCarteExist.get();
@@ -487,8 +493,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     abonnement = abonnementService.getAbonnementByCompteClient(compte).get();
 
-    BigDecimal prixCarte = BigDecimal.valueOf(2000);
-
     // On soustrait deux mille comme prix de la carte
     enrollmentRequest.setMontant(enrollmentRequest.getMontant().subtract(prixCarte));
 
@@ -496,10 +500,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     abonnementDao.save(abonnement);
 
-    transactionService.createRechargementTransaction(
-      new RechargementTransactionRequest(abonnement.getNumeroCarte(), abonnement.getDepotInitial()),
-      compteType
-    );
+    if (abonnement.getDepotInitial().compareTo(BigDecimal.valueOf(5)) != -1) {
+      transactionService.createRechargementTransaction(
+        new RechargementTransactionRequest(abonnement.getNumeroCarte(), abonnement.getDepotInitial()),
+        compteType
+      );
+    }
 
     return infosPerso;
   }

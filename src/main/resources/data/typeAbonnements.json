@@ -2,18 +2,21 @@
   {
     "libelle": "Silver",
     "reduction": 20,
+    "prix": 2000,
     "statut": 1,
     "icon": "silver"
   },
   {
     "libelle": "Gold",
     "reduction": 10,
+    "prix": 5000,
     "statut": 1,
     "icon": "gold"
   },
   {
     "libelle": "Platinium",
     "reduction": 1,
+    "prix": 10000,
     "statut": 1,
     "icon": "platinium"
   }
