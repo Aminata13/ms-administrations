@@ -105,6 +105,10 @@ public class InfosPerso {
     return this.nom;
   }
 
+  public String getNomComplet() {
+    return String.format("%s %s", this.prenom, this.nom);
+  }
+
   public void setNom(String nom) {
     this.nom = nom;
   }

@@ -26,6 +26,8 @@ public class PaiementTransactionRequest {
   @NotBlank
   private String serviceId;
 
+  private String numeroCommande;
+
   private String clientId;
 
   public String getNumeroCarte() {
@@ -54,5 +56,9 @@ public class PaiementTransactionRequest {
 
   public String getClientId() {
     return this.clientId;
+  }
+
+  public String getNumeroCommande() {
+    return this.numeroCommande;
   }
 }

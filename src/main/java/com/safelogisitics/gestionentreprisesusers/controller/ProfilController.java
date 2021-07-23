@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -44,6 +45,18 @@ public class ProfilController {
   @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
 	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
+	}
+
+  @GetMapping("/custom-search")
+	public ResponseEntity<?> getByCustomSearch(
+    @RequestParam(required = false) String prenom,
+    @RequestParam(required = false) String nom,
+    @RequestParam(required = false) String email,
+    @RequestParam(required = false) String telephone,
+    @RequestParam(required = false) String numeroCarte,
+    @RequestParam(required = false) ECompteType compteType
+  ) {
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, numeroCarte, compteType));
 	}
 
   @ApiOperation(value = "", tags = "personnels")

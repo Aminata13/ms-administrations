@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -26,9 +27,12 @@ import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -227,6 +231,26 @@ public class AbonnementController {
       return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnementAndDateCreation(id, LocalDate.parse(date.get()), pageable));
     }
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnement(id, pageable));
+	}
+
+  @ApiOperation(value = "Rapport des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
+  @GetMapping("/transactions/rapport/pdf")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+	public ResponseEntity<?> transactionsRapport(
+    @RequestParam(required = false) String idClient,
+    @RequestParam(required = false) String dateDebut,
+    @RequestParam(required = false) String dateFin
+  ) {
+    ByteArrayInputStream file = transactionService.getRapportByAbonnement(idClient, "pdf", dateDebut, dateFin);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Disposition", "inline; filename=rapport_transactions.pdf");
+
+    return ResponseEntity.status(HttpStatus.OK)
+      .headers(headers)
+      .contentType(MediaType.APPLICATION_PDF)
+      .body(new InputStreamResource(file));
 	}
 
   @ApiOperation(value = "Liste des transactions à approuver", tags = "Gestion des abonnements")

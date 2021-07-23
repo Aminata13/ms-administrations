@@ -133,6 +133,34 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public Optional<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
+    final Query query = new Query();
+
+    final List<Criteria> criteria = new ArrayList<>();
+
+    if (prenom != null && !prenom.isEmpty())
+      criteria.add(Criteria.where("prenom").regex("^"+prenom.trim()+"$","i"));
+
+    if (nom != null && !nom.isEmpty())
+      criteria.add(Criteria.where("nom").regex("^"+nom.trim()+"$","i"));
+
+    if (email != null && !email.isEmpty())
+      criteria.add(Criteria.where("email").regex("^"+email.trim()+"$","i"));
+
+    if (telephone != null && !telephone.isEmpty())
+      criteria.add(Criteria.where("telephone").is(telephone.trim()));
+
+    if (criteria.isEmpty())
+      return null;
+
+    query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+
+    query.limit(1);
+
+    return Optional.ofNullable(mongoTemplate.findOne(query, InfosPerso.class));
+  }
+
+  @Override
   public Optional<InfosPerso> findInfosPersoById(String id) {
     return infosPersoDao.findById(id);
   }

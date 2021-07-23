@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
@@ -47,4 +48,6 @@ public interface TransactionService {
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
 
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest);
+
+  public ByteArrayInputStream getRapportByAbonnement(String id, String rapportType, String dateDebut, String dateFin);
 }

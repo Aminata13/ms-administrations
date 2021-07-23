@@ -1,11 +1,15 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -33,6 +37,10 @@ import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsI
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,6 +67,12 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
   private UserDao userDao;
+
+  @Autowired
+  MongoTemplate mongoTemplate;
+
+  @Autowired
+  PDFGeneratorService PDFGeneratorService;
 
   @Autowired
 	PasswordEncoder encoder;
@@ -289,9 +303,41 @@ public class TransactionServiceImpl implements TransactionService {
 
     transaction.setService(transactionRequest.getService());
 
+    transaction.setNumeroCommande(transactionRequest.getNumeroCommande());
+
     transactionDao.save(transaction);
 
     return transaction;
+  }
+
+  @Override
+  public ByteArrayInputStream getRapportByAbonnement(String idClient, String rapportType, String dateDebut, String dateFin) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    final Query query = new Query().with(Sort.by(Sort.Direction.DESC, "abonnement.compteClient.infosPersoId", "dateCreation"));
+
+    final List<Criteria> criteria = new ArrayList<>();
+
+    criteria.add(Criteria.where("abonnement.compteClient.deleted").is(false));
+
+    if (idClient != null && !idClient.isEmpty())
+      criteria.add(Criteria.where("abonnement.compteClient.infosPersoId").is(idClient));
+
+    if (dateDebut != null && !dateDebut.isEmpty())
+      criteria.add(Criteria.where("dateCreation").gte(LocalDateTime.parse(dateDebut, formatter)));
+
+    if (dateFin != null && !dateFin.isEmpty())
+      criteria.add(Criteria.where("dateCreation").lte(LocalDateTime.parse(dateFin, formatter)));
+
+    if (!criteria.isEmpty())
+      query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+
+    List<Transaction> transactions = mongoTemplate.find(query, Transaction.class);
+
+    if (transactions == null || transactions.isEmpty())
+      return null;
+
+    return PDFGeneratorService.exportToPdf(transactions);
   }
 
   private Abonnement getAbonnementByInfosPerso(String infosPersoId) {

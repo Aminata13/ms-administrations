@@ -26,6 +26,9 @@ public class Transaction {
   @Field(value = "action")
   private ETransactionAction action;
 
+  @Field(value = "numeroCommande")
+  private String numeroCommande;
+
   private EServiceType service;
 
   @Field(value = "compteCreateur")
@@ -94,6 +97,14 @@ public class Transaction {
 
   public void setService(EServiceType service) {
     this.service = service;
+  }
+
+  public String getNumeroCommande() {
+    return this.numeroCommande;
+  }
+
+  public void setNumeroCommande(String numeroCommande) {
+    this.numeroCommande = numeroCommande;
   }
 
   public Compte getCompteCreateur() {
