@@ -2,9 +2,12 @@ package com.safelogisitics.gestionentreprisesusers.config.commands;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
@@ -82,6 +85,10 @@ public class InitDataCommand implements CommandLineRunner {
 
     Privilege[] newPrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/privileges.json"), Privilege[].class);
 
+    TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
+
+    Collection<Map<String, Object>>  privilegesActions = objectMapper.readValue(getClass().getResourceAsStream("/data/new-list-privileges.json"), typeReference);
+
     for (Privilege privilege : newPrivileges) {
       if (!privilegeDao.existsByTypeAndValeur(privilege.getType(), privilege.getValeur())) {
         privilegeDao.save(privilege);
@@ -100,6 +107,9 @@ public class InitDataCommand implements CommandLineRunner {
     role.setEditable(false);
     role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
     role.setPrivileges(new HashSet<Privilege>(privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR)));
+    for (Map<String,Object> privilegeActions : privilegesActions) {
+      role.getPrivilegesActions().put(String.valueOf(privilegeActions.get("valeur")), new HashSet<>((Collection<String>) privilegeActions.get("actions")));
+    }
     roleDao.save(role);
 
     Compte compte;

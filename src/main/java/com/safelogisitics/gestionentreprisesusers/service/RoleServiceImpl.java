@@ -1,10 +1,14 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.dao.PrivilegeDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
@@ -47,6 +51,8 @@ public class RoleServiceImpl implements RoleService {
     Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
 
     role.setPrivileges(privileges);
+    role.setPrivilegesActions(roleRequest.getPrivilegesActions());
+
     role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
 
     roleDao.save(role);
@@ -83,6 +89,7 @@ public class RoleServiceImpl implements RoleService {
     Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
 
     role.setPrivileges(privileges);
+    role.setPrivilegesActions(roleRequest.getPrivilegesActions());
 
     roleDao.save(role);
 
@@ -134,5 +141,20 @@ public class RoleServiceImpl implements RoleService {
   @Override
   public Collection<Privilege> getPrivileges(ECompteType type) {
     return privilegeDao.findByType(type);
+  }
+
+  @Override
+  public Collection<Map<String, Object>> getPrivilegeActions() {
+    Collection<Map<String, Object>> listNewPrivileges = new ArrayList<>();
+    ObjectMapper mapper = new ObjectMapper();
+    TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
+
+    try {
+      listNewPrivileges = mapper.readValue(getClass().getResourceAsStream("/data/new-list-privileges.json"), typeReference);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    
+    return listNewPrivileges;
   }
 }

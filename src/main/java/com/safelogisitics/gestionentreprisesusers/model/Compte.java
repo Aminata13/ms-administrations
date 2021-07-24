@@ -207,7 +207,7 @@ public class Compte {
     this.dateCreation = dateCreation;
   }
 
-  public Object getCustomRoleFields(String privilegeData) {
+  public Object getCustomFields() {
     Map <String,Object> _customRoleField = new LinkedHashMap<>();
 
     _customRoleField.put("id", getId());
@@ -216,11 +216,13 @@ public class Compte {
     _customRoleField.put("privileges", new ArrayList<>());
     if (role != null) {
       _customRoleField.put("role", role.getLibelle());
-      List<String> privileges = role.getPrivileges().stream().map(
-          privilege -> privilegeData.equals("id") ? privilege.getId() : privilege.getValeur().name()
-        ).collect(Collectors.toList());
-        _customRoleField.put("privileges", privileges);
+      List<String> privileges = new ArrayList<>();
+      for (Map.Entry<String, Set<String>> entry : role.getPrivilegesActions().entrySet()) {
+        privileges.add(String.format("%s_%s", entry.getKey(), String.join("_", entry.getValue())));
+      }
+      _customRoleField.put("privileges", privileges);
     }
+    System.out.println(_customRoleField);
 
     return _customRoleField;
   }

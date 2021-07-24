@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -229,11 +230,12 @@ public class InfosPerso {
 
       authorities.add("ROLE_"+compte.getType().name());
 
-      if (compte.getRole() == null || compte.getRole().getPrivileges().isEmpty()) {
+      if (compte.getRole() == null || compte.getRole().getPrivilegesActions().isEmpty()) {
         continue;
       }
-      for (Privilege privilege : compte.getRole().getPrivileges()) {
-        authorities.add(privilege.getValeur().name());
+
+      for (Map.Entry<String, Set<String>> entry : compte.getRole().getPrivilegesActions().entrySet()) {
+        authorities.add(String.format("%s_%s", entry.getKey(), String.join("_", entry.getValue())));
       }
     }
 

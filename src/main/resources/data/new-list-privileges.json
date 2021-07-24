@@ -39,11 +39,39 @@
     ]
   },
   {
+    "libelle": "Gestion des prospects",
+    "valeur": "GESTION_PROSPECTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
     "libelle": "Gestion des commandes de livraisons",
     "valeur": "GESTION_COMMANDE_LIVRAISONS",
     "type": "COMPTE_ADMINISTRATEUR",
     "statut": 1,
-    "action": [
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ASSIGN",
+      "TRACK"
+    ]
+  },
+  {
+    "libelle": "Gestion des commandes de conciergeries",
+    "valeur": "GESTION_COMMANDE_CONCIERGERIES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
       "READ",
       "CREATE",
       "UPDATE",
@@ -75,10 +103,8 @@
     "actions": [
       "READ",
       "CREATE",
-      "UPDATE",
       "DELETE",
-      "VALIDATE",
-      "ACTIVATE"
+      "VALIDATE"
     ]
   },
   {

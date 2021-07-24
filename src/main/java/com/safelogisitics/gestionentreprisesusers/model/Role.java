@@ -1,6 +1,8 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +34,9 @@ public class Role {
   @DBRef
   @Field(value = "privileges")
   private Set<Privilege> privileges = new HashSet<>();
+
+  @Field(value = "privilegesActions")
+  private Map<String, Set<String>> privilegesActions = new HashMap<>();
 
   public Role() {
   }
@@ -84,6 +89,32 @@ public class Role {
   public boolean hasPrivilege(EPrivilege _privilege) {
     for (Privilege privilege : privileges) {
       if (privilege.getValeur().equals(_privilege)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Map<String, Set<String>> getPrivilegesActions() {
+		return this.privilegesActions;
+	}
+
+	public void setPrivilegesActions(Map<String, Set<String>> privilegesActions) {
+		this.privilegesActions = privilegesActions;
+	}
+
+  public boolean hasPrivilegeAction(String _privilege) {
+    for (String privilege : this.privilegesActions.keySet()) {
+      if (privilege.equals(_privilege)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean hasPrivilegeAction(String _privilege, String action) {
+    for (String privilege : this.privilegesActions.keySet()) {
+      if (privilege.equals(_privilege) && this.privilegesActions.get(_privilege).contains(action)) {
         return true;
       }
     }
