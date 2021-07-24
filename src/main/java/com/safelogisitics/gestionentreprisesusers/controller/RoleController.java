@@ -57,14 +57,14 @@ public class RoleController {
 	}
 
   @PutMapping("/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updateRole(@PathVariable(value = "id") String id, @Valid @RequestBody RoleRequest roleRequest) {
     Role role = roleService.updateRole(id, roleRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(role);
 	}
 
   @PutMapping("/update-multiple")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updateMultiRole(@Valid @RequestBody Collection<RoleRequest> roleRequests) {
     Collection<Role> roles = roleService.updateMultiRole(roleRequests);
 		return ResponseEntity.status(HttpStatus.OK).body(roles);

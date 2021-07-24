@@ -96,6 +96,18 @@
     ]
   },
   {
+    "libelle": "Gestion des cartes",
+    "valeur": "GESTION_CARTES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE"
+    ]
+  },
+  {
     "libelle": "Gestion des transactions",
     "valeur": "GESTION_TRANSACTIONS",
     "type": "COMPTE_ADMINISTRATEUR",

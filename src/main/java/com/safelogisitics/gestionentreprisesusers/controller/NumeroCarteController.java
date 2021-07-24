@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,7 @@ public class NumeroCarteController {
 
   @ApiOperation(value = "Liste des carte")
   @GetMapping("/list")
+  @PreAuthorize("hasPermission('GESTION_CARTES', 'READ')")
 	public ResponseEntity<?> allCartes(
     @RequestParam(required = false) String typeAbonnementId,
     Pageable pageable
@@ -54,12 +56,14 @@ public class NumeroCarteController {
 
   @ApiOperation(value = "Affichage d'une carte")
   @GetMapping("/{numero}")
+  @PreAuthorize("hasPermission('GESTION_CARTES', 'READ')")
 	public ResponseEntity<?> oneCarte(@PathVariable(value = "numero") String numero) {
     return ResponseEntity.status(HttpStatus.OK).body(numeroCarteService.getNumeroCarteByNumero(numero));
 	}
 
   @ApiOperation(value = "Création d'une nouvelle carte")
   @PostMapping("/add")
+  @PreAuthorize("hasPermission('GESTION_CARTES', 'CREATE')")
 	public NumeroCarte addCarte(@Valid @RequestBody NumeroCarte request) {
     NumeroCarte numeroCarte = numeroCarteService.createNumeroCarte(request);
 		return numeroCarte;
@@ -67,6 +71,7 @@ public class NumeroCarteController {
 
   @ApiOperation(value = "Création d'une nouvelle carte")
   @PostMapping("/add-multiple")
+  @PreAuthorize("hasPermission('GESTION_CARTES', 'CREATE')")
 	public Page<NumeroCarte> addMultipleCarte(@RequestParam(name = "file", required = true) MultipartFile file, @RequestParam(name = "typeAbonnementId", required = true) String typeAbonnementId) {
     if (!TYPES.contains(file.getContentType())) {
       throw new IllegalArgumentException("Fichier invalide");
@@ -78,6 +83,7 @@ public class NumeroCarteController {
 
   @ApiOperation(value = "Suppression d'une carte")
   @PutMapping("/delete/{numero}")
+  @PreAuthorize("hasPermission('GESTION_CARTES', 'DELETE')")
 	public ResponseEntity<?> deleteCarte(@PathVariable(value = "numero") String numero) {
     numeroCarteService.deleteByNumero(numero);
     return ResponseEntity.status(HttpStatus.OK).body("OK!");

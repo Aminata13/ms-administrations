@@ -42,7 +42,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "profils")
   @GetMapping("/search/{emailOrTelephone}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
 	}
@@ -61,14 +61,14 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/get-by-compte/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> getByCompte(@PathVariable(value = "id") String id) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPersoService.findByCompteId(id));
 	}
 
   @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/personnels/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> allPersonnels(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_ADMINISTRATEUR, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -76,7 +76,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "personnels")
   @PostMapping("/personnels/add")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE')")
 	public ResponseEntity<?> addPersonnel(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -84,7 +84,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "personnels")
   @PutMapping("/personnels/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updatePersonnel(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -92,7 +92,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "personnels")
   @DeleteMapping("/personnels/delete/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'DELETE')")
 	public ResponseEntity<?> deletePersonnel(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Personnel with that id does not exists!");
@@ -103,7 +103,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "agents")
   @GetMapping("/agents/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_CREATION', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_AFFECTATION', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_CREATION', 'READ') or hasPermission('GESTION_COMMANDE_LIVRAISONS_AFFECTATION', 'READ')")
 	public ResponseEntity<?> allAgents(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_COURSIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -111,7 +111,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "agents")
   @PostMapping("/agents/add")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE')")
 	public ResponseEntity<?> addAgent(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -119,7 +119,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "agents")
   @PutMapping("/agents/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updateAgent(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -127,7 +127,7 @@ public class ProfilController {
 
   @ApiOperation(value = "Suppression d'un agent", tags = "agents")
   @DeleteMapping("/agents/delete/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'DELETE')")
 	public ResponseEntity<?> deleteAgent(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent with that id does not exists!");
@@ -138,7 +138,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @GetMapping("/prestataires/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> allPrestataires(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PRESTATAIRE, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -146,7 +146,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @PostMapping("/prestataires/add")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE')")
 	public ResponseEntity<?> addPrestataire(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -154,7 +154,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @PutMapping("/prestataires/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updatePrestataire(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -162,7 +162,7 @@ public class ProfilController {
 
   @ApiOperation(value = "Suppression d'un prestataire", tags = "prestataires")
   @DeleteMapping("/prestataires/delete/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'DELETE')")
 	public ResponseEntity<?> deleteprestataire(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
@@ -173,7 +173,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "clients")
   @GetMapping("/clients/list")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'READ') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> allClients(@PageableDefault(size = 20) Pageable pageable) {
     Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -181,7 +181,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "clients")
   @PostMapping("/clients/add")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'CREATE') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE') or hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> addClient(@Valid @RequestBody RegisterRequest request) {
     InfosPerso infosPerso = infosPersoService.createCompteClient(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -189,7 +189,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "clients")
   @PutMapping("/clients/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'WRITE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updateClient(@PathVariable(value = "id") String id, @Valid @RequestBody UpdateInfosPersoRequest request) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
@@ -200,7 +200,7 @@ public class ProfilController {
 
   @ApiOperation(value = "Suppression d'un Client", tags = "clients")
   @DeleteMapping("/clients/delete/{id}")
-  @PreAuthorize("hasPermission('GESTION_UTILISATEURS', 'DELETE')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'DELETE')")
 	public ResponseEntity<?> deleteClient(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
