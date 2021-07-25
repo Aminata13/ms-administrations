@@ -9,7 +9,6 @@ import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.model.enums.EPrivilege;
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
@@ -110,7 +109,7 @@ public class UserServiceImpl implements UserService {
     User user = userExist.get();
 
     for (Compte compte : user.getInfosPerso().getComptes()) {
-      boolean enroleur = compte.getType().equals(ECompteType.COMPTE_ADMINISTRATEUR) && compte.getRole() != null && compte.getRole().hasPrivilege(EPrivilege.GESTION_ENROLEMENTS);
+      boolean enroleur = compte.getType().equals(ECompteType.COMPTE_ADMINISTRATEUR) && compte.getRole() != null && compte.getRole().hasPrivilegeAction("GESTION_ABONNEMENTS", "CREATE");
 
       if (compte.isDeleted() || (numeroEmei != null && !compte.getType().equals(ECompteType.COMPTE_COURSIER) && !enroleur )) {
         continue;
