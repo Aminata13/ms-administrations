@@ -41,7 +41,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Page<Abonnement> getAbonnements(Pageable pageable) {
-    return abonnementDao.findByDeletedIsFalse(pageable);
+    return abonnementDao.findByDeletedIsFalseOrderByDateCreationDesc(pageable);
   }
 
   @Override

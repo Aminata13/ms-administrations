@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, String> {
-  Page<Abonnement> findByDeletedIsFalse(Pageable pageable);
+  Page<Abonnement> findByDeletedIsFalseOrderByDateCreationDesc(Pageable pageable);
 
   Page<Abonnement> findByTypeAbonnementIdAndDeletedIsFalse(String typeAbonnementId, Pageable pageable);
 

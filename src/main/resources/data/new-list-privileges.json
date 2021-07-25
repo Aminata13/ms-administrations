@@ -26,6 +26,19 @@
     ]
   },
   {
+    "libelle": "Gestion des prestataires",
+    "valeur": "GESTION_PRESTATAIRES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
     "libelle": "Gestion des clients",
     "valeur": "GESTION_CLIENTS",
     "type": "COMPTE_ADMINISTRATEUR",

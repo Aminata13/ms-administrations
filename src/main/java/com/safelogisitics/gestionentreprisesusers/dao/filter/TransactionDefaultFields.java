@@ -27,5 +27,7 @@ public interface TransactionDefaultFields {
 
   public BigDecimal getMontant();
 
+  public BigDecimal getNouveauSolde();
+
   public LocalDateTime getDateCreation();
 }
