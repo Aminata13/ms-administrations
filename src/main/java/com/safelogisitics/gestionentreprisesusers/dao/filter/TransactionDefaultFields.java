@@ -16,6 +16,8 @@ public interface TransactionDefaultFields {
 
   public String getReference();
 
+  public String getNumeroCommande();
+
   public ETransactionAction getAction();
 
   public int getApprobation();

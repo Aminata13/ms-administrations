@@ -36,7 +36,7 @@ public class EnrollmentRequest {
   private String password;
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
   public BigDecimal getMontant() {
@@ -76,7 +76,7 @@ public class EnrollmentRequest {
   }
 
   public String getUsername() {
-    return this.username;
+    return this.username.replaceAll("\\D+","");
   }
 
   public String getPassword() {

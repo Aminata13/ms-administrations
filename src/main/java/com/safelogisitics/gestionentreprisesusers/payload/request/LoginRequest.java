@@ -18,11 +18,11 @@ public class LoginRequest {
   }
 
   public String getUsername() {
-    return this.username;
+    return this.username.replaceAll("\\D+","");
   }
 
   public String getNumeroEmei() {
-    return this.numeroEmei;
+    return this.numeroEmei.replaceAll("\\D+","");
   }
 
   public String getPassword() {

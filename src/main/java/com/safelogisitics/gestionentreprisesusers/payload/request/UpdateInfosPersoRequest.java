@@ -11,7 +11,7 @@ public class UpdateInfosPersoRequest extends InfosPersoRequest {
   private String password;
 
   public String getUsername() {
-    return this.username;
+    return this.username.replaceAll("\\D+","");
   }
 
   public String getOldPassword() {

@@ -14,6 +14,6 @@ public class TokenRefreshRequest {
   }
 
   public String getNumeroEmei() {
-    return this.numeroEmei;
+    return this.numeroEmei.replaceAll("\\D+","");
   }
 }

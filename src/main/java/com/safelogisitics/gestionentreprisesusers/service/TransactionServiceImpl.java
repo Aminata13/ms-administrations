@@ -402,6 +402,7 @@ public class TransactionServiceImpl implements TransactionService {
         customFields.put("id", transaction.getId());
         customFields.put("action", transaction.getAction());
         customFields.put("reference", transaction.getReference());
+        customFields.put("numeroCommande", transaction.getNumeroCommande());
         customFields.put("abonnement", abonnement);
         customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()).get().getDefaultFields());
         customFields.put("montant", transaction.getMontant());
