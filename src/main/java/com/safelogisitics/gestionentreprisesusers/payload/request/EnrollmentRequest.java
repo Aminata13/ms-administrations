@@ -76,7 +76,7 @@ public class EnrollmentRequest {
   }
 
   public String getUsername() {
-    return this.username.replaceAll("\\D+","");
+    return this.username != null ? this.username.replaceAll("\\s+","") : this.username;
   }
 
   public String getPassword() {

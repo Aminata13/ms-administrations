@@ -27,7 +27,7 @@ public class RegisterRequest extends InfosPersoRequest {
   }
 
   public String getUsername() {
-    return this.username.replaceAll("\\D+","");
+    return this.username.replaceAll("\\s+","");
   }
 
   public String getPassword() {
