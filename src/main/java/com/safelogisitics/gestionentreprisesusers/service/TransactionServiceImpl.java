@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultF
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.PushNotification;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -73,6 +75,9 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
   PDFGeneratorService PDFGeneratorService;
+
+  @Autowired
+  private FirebaseMessagingService firebaseMessagingService;
 
   @Autowired
 	PasswordEncoder encoder;
@@ -238,6 +243,25 @@ public class TransactionServiceImpl implements TransactionService {
     transaction.setApprobation(0);
 
     transactionDao.save(transaction);
+
+    try {
+      Map<String, String> data = new HashMap<>();
+
+      PushNotification pushNotification = new PushNotification(
+        String.valueOf("Nouveau rechargement"),
+        String.valueOf("Vous avez un nouveau rechargement à valider."),
+        String.valueOf("validation-nouveau-rechargement")
+      );
+
+      data.put("transactionId", transaction.getId());
+
+      pushNotification.setData(data);
+
+      String resp = this.firebaseMessagingService.sendNotification(pushNotification);
+      System.out.println("RESPONSE ================================> "+resp);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
 
     return transaction;
   }
