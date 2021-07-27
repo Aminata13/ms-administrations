@@ -34,6 +34,8 @@ public interface TransactionDao extends PagingAndSortingRepository<Transaction, 
 
   Page<Transaction> findByActionAndApprobation(ETransactionAction action, int approbation, Pageable pageable);
 
+  Page<Transaction> findByApprobateurIdOrderByDateCreationDesc(String approbateurId, Pageable pageable);
+
   Optional<Transaction> findByReference(String reference);
 
   Optional<Transaction> findByIdAndApprobation(String id, int approbation);

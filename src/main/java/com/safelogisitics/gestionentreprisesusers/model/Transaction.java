@@ -34,6 +34,9 @@ public class Transaction {
   @Field(value = "compteCreateur")
   private Compte compteCreateur;
 
+  @Field(value = "approbateur")
+  private Compte approbateur;
+
   @Field(value = "montant")
   private BigDecimal montant;
 
@@ -45,6 +48,9 @@ public class Transaction {
 
   @Field(value = "dateCreation")
   private LocalDateTime dateCreation;
+
+  @Field(value = "dateApprobation")
+  private LocalDateTime dateApprobation;
 
   public Transaction() {
     this.dateCreation = LocalDateTime.now();
@@ -115,6 +121,14 @@ public class Transaction {
     this.compteCreateur = compteCreateur;
   }
 
+  public Compte getApprobateur() {
+    return this.approbateur;
+  }
+
+  public void setApprobateur(Compte approbateur) {
+    this.approbateur = approbateur;
+  }
+
   public BigDecimal getMontant() {
     return this.montant;
   }
@@ -145,5 +159,13 @@ public class Transaction {
 
   public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
+  }
+
+  public LocalDateTime getDateApprobation() {
+    return this.dateApprobation;
+  }
+
+  public void setDateApprobation(LocalDateTime dateApprobation) {
+    this.dateApprobation = dateApprobation;
   }
 }

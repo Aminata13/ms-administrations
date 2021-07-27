@@ -268,4 +268,12 @@ public class AbonnementController {
 	public ResponseEntity<?> approuveTransaction(@Valid @RequestBody ApprouveTransactionRequest request) {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.approuveTransaction(request));
 	}
+
+  @ApiOperation(value = "Historique des transactions approuver", tags = "Gestion des abonnements")
+  @GetMapping("/transactions/approbations/historique")
+  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+	public ResponseEntity<?> historiqueTransactionsApprobations(@PageableDefault(size = 20) Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(transactionService.findMyHistoriqueTransactionsApprobations(pageable));
+	}
 }

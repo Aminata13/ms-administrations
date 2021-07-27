@@ -159,11 +159,23 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
+  public Page<Map<String, Object>> findMyHistoriqueTransactionsApprobations(Pageable pageable) {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte approbateur = getCompteByType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR);
+
+    Page<Transaction> transactions = transactionDao.findByApprobateurIdOrderByDateCreationDesc(approbateur.getId(), pageable);
+    return customTransactionsData(transactions);
+  }
+
+  @Override
   public Map<String, Set<String>> approuveTransaction(ApprouveTransactionRequest request) {
     int approbation = request.getApprobation();
     if (approbation != -1 && approbation != 1) {
       throw new IllegalArgumentException("Approbation invalide!");
     }
+
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte approbateur = getCompteByType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR);
 
     Set<String> traites = new HashSet<>();
     Set<String> noTraites = new HashSet<>();
@@ -181,11 +193,12 @@ public class TransactionServiceImpl implements TransactionService {
         abonnement.rechargerCarte(montant);
         abonnementDao.save(abonnement);
         transaction.setNouveauSolde(abonnement.getSolde());
-        transaction.setApprobation(approbation);
-        transactionDao.save(transaction);
-      } else {
-        transactionDao.delete(transaction);
       }
+      transaction.setApprobation(approbation);
+      transaction.setApprobateur(approbateur);
+      transaction.setDateApprobation(LocalDateTime.now());
+      transactionDao.save(transaction);
+
       traites.add(transactionId);
     }
 
@@ -337,7 +350,7 @@ public class TransactionServiceImpl implements TransactionService {
     if (transactions == null || transactions.isEmpty())
       return null;
 
-    return PDFGeneratorService.exportToPdf(transactions);
+    return PDFGeneratorService.exportToPdf(transactions, idClient, dateDebut, dateFin);
   }
 
   private Abonnement getAbonnementByInfosPerso(String infosPersoId) {

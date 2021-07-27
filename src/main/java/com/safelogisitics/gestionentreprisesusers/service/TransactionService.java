@@ -39,6 +39,8 @@ public interface TransactionService {
 
   public Page<Map<String, Object>> findTransactionsEnApprobations(Pageable pageable);
 
+  public Page<Map<String, Object>> findMyHistoriqueTransactionsApprobations(Pageable pageable);
+
   public Map<String, Set<String>> approuveTransaction(ApprouveTransactionRequest request);
 
   public Optional<Transaction> findByReference(String reference);
