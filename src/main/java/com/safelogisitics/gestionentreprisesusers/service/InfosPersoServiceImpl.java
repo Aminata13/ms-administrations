@@ -51,43 +51,43 @@ import org.springframework.web.server.ResponseStatusException;
 public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
-  InfosPersoDao infosPersoDao;
+  private InfosPersoDao infosPersoDao;
 
   @Autowired
-  CompteDao compteDao;
+  private CompteDao compteDao;
 
   @Autowired
-  UserDao userDao;
+  private UserDao userDao;
 
   @Autowired
-  NumeroCarteDao numeroCarteDao;
+  private NumeroCarteDao numeroCarteDao;
 
   @Autowired
-  AbonnementDao abonnementDao;
+  private AbonnementDao abonnementDao;
 
   @Autowired
-  TypeAbonnementDao typeAbonnementDao;
+  private TypeAbonnementDao typeAbonnementDao;
 
   @Autowired
-  RoleService roleService;
+  private RoleService roleService;
 
   @Autowired
-  UserService userService;
+  private UserService userService;
 
   @Autowired
-	EmailService emailService;
+	private EmailService emailService;
 
   @Autowired
-  AbonnementService abonnementService;
+  private AbonnementService abonnementService;
 
   @Autowired
-  TransactionService transactionService;
+  private TransactionService transactionService;
 
   @Autowired
-  MongoTemplate mongoTemplate;
+  private MongoTemplate mongoTemplate;
 
   @Autowired
-	PasswordEncoder encoder;
+	private PasswordEncoder encoder;
 
   @Override
   public UserInfosResponse getUserInfos() {
@@ -362,7 +362,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public InfosPerso createCompteClient(RegisterRequest request) {
+  public UserInfosResponse createCompteClient(RegisterRequest request) {
     InfosPerso infosPerso = createCompte(request, ECompteType.COMPTE_PARTICULIER, request.getUsername(), request.getPassword());
 
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
@@ -372,11 +372,31 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
 
-    return infosPerso;
+    User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+
+    return new UserInfosResponse(infosPerso, null, user);
   }
 
   @Override
-  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request) {
+  public UserInfosResponse getCompteClient(String id) {
+    Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
+
+    if (!compteExist.isPresent() && !compteExist.get().isDeleted())
+      throw new IllegalArgumentException("Cet client n'existe pas!");
+
+    InfosPerso infosPerso = infosPersoDao.findById(id).get();
+    User user = userDao.findByInfosPersoId(id).get();
+
+    return new UserInfosResponse(infosPerso, null, user);
+  }
+
+  @Override
+  public UserInfosResponse updateCompteClient(String id, UpdateInfosPersoRequest request) {
+    Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
+
+    if (!compteExist.isPresent() && !compteExist.get().isDeleted())
+      throw new IllegalArgumentException("Cet client n'existe pas!");
+
     Optional<User> accessExist = userDao.findByUsername(request.getUsername());
 
     if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(id)) {
@@ -385,15 +405,18 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     InfosPerso infosPerso = updateInfosPerso(id, request);
 
-    userDao.findByInfosPersoId(infosPerso.getId()).ifPresent(user -> {
-      user.setUsername(request.getUsername());
-      if (request.getPassword() != null) {
-        user.setPassword(encoder.encode(request.getPassword())); 
-      }
-      userDao.save(user);
-    });
+    User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
 
-    return infosPerso;
+    if (request.getUsername() != null && !request.getUsername().isEmpty())
+      user.setUsername(request.getUsername());
+
+    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      user.setPassword(encoder.encode(request.getPassword())); 
+    }
+    
+    userDao.save(user);
+
+    return new UserInfosResponse(infosPerso, null, user);
   }
 
   @Override
@@ -415,7 +438,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request) {
+  public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (request.getPassword() != null && !request.getPassword().isEmpty()) {
@@ -425,7 +448,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
         throw new IllegalArgumentException("Encien mot de passe invalide!");
     }
 
-    InfosPerso infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
+    UserInfosResponse infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
 
     return infosPerso;
   }
@@ -474,7 +497,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
         enrollmentRequest.getNumeroPiece(),
         null);
 
-      infosPerso = createCompteClient(registerRequest);
+        UserInfosResponse _infosPerso = createCompteClient(registerRequest);
+        infosPerso = infosPersoDao.findById(_infosPerso.getId()).get();
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

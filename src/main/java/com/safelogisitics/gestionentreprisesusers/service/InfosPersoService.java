@@ -51,9 +51,11 @@ public interface InfosPersoService {
 
   public void deleteComptePrestataire(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
-  public InfosPerso createCompteClient(RegisterRequest request); // Création d'un infosPerso avec compte particulier (Client)
+  public UserInfosResponse createCompteClient(RegisterRequest request); // Création d'un infosPerso avec compte particulier (Client)
 
-  public InfosPerso updateCompteClient(String id, UpdateInfosPersoRequest request); // Modification d'un infosPerso avec compte particulier (Client)
+  public UserInfosResponse getCompteClient(String id); // get infosPerso avec compte
+
+  public UserInfosResponse updateCompteClient(String id, UpdateInfosPersoRequest request); // Modification d'un infosPerso avec compte particulier (Client)
 
   public void deleteCompteClient(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
@@ -63,7 +65,7 @@ public interface InfosPersoService {
 
   public Page<?> getMyEnrollments(Pageable pageable);
 
-  public InfosPerso updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
+  public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
 
   public Collection<Compte> getInfosPersoComptes(String id);
 

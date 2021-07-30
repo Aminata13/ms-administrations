@@ -180,11 +180,20 @@ public class ProfilController {
 	}
 
   @ApiOperation(value = "", tags = "clients")
+  @GetMapping("/clients/{id}")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
+	public ResponseEntity<?> getClient(@PathVariable(value = "id") String id) {
+    if (!infosPersoService.findInfosPersoById(id).isPresent())
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
+
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getCompteClient(id));
+	}
+
+  @ApiOperation(value = "", tags = "clients")
   @PostMapping("/clients/add")
   @PreAuthorize("hasPermission('GESTION_CLIENTS', 'CREATE')")
 	public ResponseEntity<?> addClient(@Valid @RequestBody RegisterRequest request) {
-    InfosPerso infosPerso = infosPersoService.createCompteClient(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPersoService.createCompteClient(request));
 	}
 
   @ApiOperation(value = "", tags = "clients")
@@ -194,8 +203,9 @@ public class ProfilController {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
 
-    InfosPerso infosPerso = infosPersoService.updateCompteClient(id, request);
-		return ResponseEntity.status(HttpStatus.OK).body(infosPerso);
+    request.setPassword(null);
+
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.updateCompteClient(id, request));
 	}
 
   @ApiOperation(value = "Suppression d'un Client", tags = "clients")

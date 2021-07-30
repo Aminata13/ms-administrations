@@ -21,6 +21,10 @@ import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsI
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +43,39 @@ public class AbonnementServiceImpl implements AbonnementService {
   @Autowired
   private CompteDao compteDao;
 
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
   @Override
   public Page<Abonnement> getAbonnements(Pageable pageable) {
     return abonnementDao.findByDeletedIsFalseOrderByDateCreationDesc(pageable);
+  }
+
+  @Override
+  public Page<Abonnement> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte , String typeAbonnement, boolean generalSearch, Pageable pageable) {
+
+    // if (prenom != null && !prenom.isEmpty())
+    //   criteria.add(Criteria.where("prenom").regex("^"+prenom.trim()+"$","i"));
+
+    // if (nom != null && !nom.isEmpty())
+    //   criteria.add(Criteria.where("nom").regex("^"+nom.trim()+"$","i"));
+
+    // if (email != null && !email.isEmpty())
+    //   criteria.add(Criteria.where("email").regex("^"+email.trim()+"$","i"));
+
+    // if (telephone != null && !telephone.isEmpty())
+    //   criteria.add(Criteria.where("telephone").is(telephone.trim()));
+    LookupOperation lookupOperation = LookupOperation.newLookup()
+      .from("infosPersos")
+      .localField("compteClient.infosPersoId")
+      .foreignField("_id")
+      .as("userInfos");
+
+    // Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("_id").is("1")) , lookupOperation);
+    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("_id").is("1")) , lookupOperation);
+
+    System.out.println(mongoTemplate.aggregate(aggregation, "abonnements", Abonnement.class).getMappedResults());
+    return null;
   }
 
   @Override
