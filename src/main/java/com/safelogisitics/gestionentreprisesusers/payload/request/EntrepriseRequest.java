@@ -5,13 +5,15 @@ import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 
 public class EntrepriseRequest {
   
   @NotBlank
-  private ETypeEntreprise typeEntreprise;
+  private String typeEntreprise;
+
+  @NotBlank
+  private String domaineActivite;
 
   @NotEmpty
   private Set<ETypePartenariat> typePartenariats;
@@ -34,8 +36,12 @@ public class EntrepriseRequest {
 
   private String adresse;
 
-  public ETypeEntreprise getTypeEntreprise() {
+  public String getTypeEntreprise() {
     return this.typeEntreprise;
+  }
+
+  public String getDomaineActivite() {
+    return this.domaineActivite;
   }
 
   public Set<ETypePartenariat> getTypePartenariats() {

@@ -3,13 +3,10 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 
@@ -37,15 +34,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   MongoTemplate mongoTemplate;
 
   @Override
-  public Page<Entreprise> getEntreprises(ETypeEntreprise typeEntreprise, Set<ETypePartenariat> typePartenariats, String agentId, String denomination, String ninea, Pageable pageable) {
+  public Page<Entreprise> getEntreprises(String typeEntreprise, String domaineActivite, String agentId, String denomination, String ninea, Pageable pageable) {
     final Query query = new Query().with(pageable);
     final List<Criteria> criteria = new ArrayList<>();
 
     if (typeEntreprise != null)
       criteria.add(Criteria.where("typeEntreprise").is(typeEntreprise));
 
-    if (typePartenariats != null && !typePartenariats.isEmpty())
-      criteria.add(Criteria.where("typePartenariats").in(typePartenariats));
+    if (domaineActivite != null && !domaineActivite.isEmpty())
+      criteria.add(Criteria.where("domaineActivite").is(domaineActivite));
 
     if (agentId != null && !agentId.isEmpty())
       criteria.add(Criteria.where("agentId").is(agentId));
@@ -79,9 +76,10 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 
-    Entreprise entreprise = new Entreprise(request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
     InfosPerso gerant = infosPersoService.createInfosPerso(request.getGerant());
     entreprise.setGerantId(gerant.getId());
+
     entrepriseDao.save(entreprise);
 
     return entreprise;
@@ -93,7 +91,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 
-    Entreprise entreprise = new Entreprise(request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    entreprise.setTypeEntreprise(request.getTypeEntreprise());
+    entreprise.setDomaineActivite(request.getDomaineActivite());
 
     entrepriseDao.save(entreprise);
 
@@ -105,22 +105,28 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     Optional<Entreprise> _entreprise = entrepriseDao.findById(id);
 
     if (!_entreprise.isPresent() || _entreprise.get().isDeleted()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entreprise avec cette id n'existe pas!");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cette entreprise n'existe pas ou a été supprimé!");
     }
 
     Entreprise entreprise = _entreprise.get();
 
     entreprise.setTypeEntreprise(request.getTypeEntreprise());
+    entreprise.setDomaineActivite(request.getDomaineActivite());
     entreprise.setTypePartenariats(request.getTypePartenariats());
     entreprise.setDenomination(request.getDenomination());
     entreprise.setNinea(request.getNinea());
     entreprise.setRaisonSociale(request.getRaisonSociale());
-    entreprise.setDenomination(request.getDenomination());
     entreprise.setEmail(request.getEmail());
     entreprise.setTelephone(request.getTelephone());
     entreprise.setAdresse(request.getAdresse());
+    InfosPerso gerant = null;
+    if (request.getGerant().getId() == null) {
+      gerant = infosPersoService.createInfosPerso(request.getGerant());
+    } else {
+      gerant = infosPersoService.updateInfosPerso(request.getGerant().getId(), request.getGerant());
+    }
 
-    InfosPerso gerant = infosPersoService.createInfosPerso(request.getGerant());
+    gerant = infosPersoService.createInfosPerso(request.getGerant());
     entreprise.setGerantId(gerant.getId());
 
     entrepriseDao.save(entreprise);

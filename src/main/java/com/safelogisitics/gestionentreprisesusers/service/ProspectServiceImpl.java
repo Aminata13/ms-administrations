@@ -167,6 +167,8 @@ public class ProspectServiceImpl implements ProspectService {
       ));
     } else {
       prospect.setInfosEntreprise(new Entreprise(
+        prospectRequest.getInfosEntreprise().getTypeEntreprise(),
+        prospectRequest.getInfosEntreprise().getDomaineActivite(),
         prospectRequest.getInfosEntreprise().getDenomination(),
         prospectRequest.getInfosEntreprise().getNinea(),
         prospectRequest.getInfosEntreprise().getRaisonSociale(),
@@ -232,6 +234,8 @@ public class ProspectServiceImpl implements ProspectService {
       ));
     } else {
       prospect.setInfosEntreprise(new Entreprise(
+        prospectRequest.getInfosEntreprise().getTypeEntreprise(),
+        prospectRequest.getInfosEntreprise().getDomaineActivite(),
         prospectRequest.getInfosEntreprise().getDenomination(),
         prospectRequest.getInfosEntreprise().getNinea(),
         prospectRequest.getInfosEntreprise().getRaisonSociale(),

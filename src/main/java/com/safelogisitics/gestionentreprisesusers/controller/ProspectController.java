@@ -67,7 +67,7 @@ public class ProspectController {
 		return ResponseEntity.status(HttpStatus.OK).body(prospect);
 	}
 
-  @ApiOperation(value = "Mise à jour d'un prospect")
+  @ApiOperation(value = "Enrolement d'un prospect")
   @PutMapping("/enrole/{id}")
 	public ResponseEntity<Map<String, Object>> enroleProspect(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
     Map<String, Object> prospect = prospectService.enroleProspect(id, request);

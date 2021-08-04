@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 
 import org.springframework.data.annotation.Id;
@@ -19,7 +18,10 @@ public class Entreprise {
   private String id;
 
   @Field(value = "typeEntreprise")
-  private ETypeEntreprise typeEntreprise;
+  private String typeEntreprise;
+
+  @Field(value = "domaineActivite")
+  private String domaineActivite;
 
   @Field(value = "typePartenariats")
   private Set<ETypePartenariat> typePartenariats = new HashSet<>();
@@ -57,7 +59,9 @@ public class Entreprise {
     this.dateCreation = LocalDateTime.now();
   }
 
-  public Entreprise(String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse) {
+  public Entreprise(String typeEntreprise, String domaineActivite, String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse) {
+    this.typeEntreprise = typeEntreprise;
+    this.domaineActivite = domaineActivite;
     this.denomination = denomination;
     this.ninea = ninea;
     this.raisonSociale = raisonSociale;
@@ -76,12 +80,20 @@ public class Entreprise {
     this.id = id;
   }
 
-  public ETypeEntreprise getTypeEntreprise() {
+  public String getTypeEntreprise() {
     return this.typeEntreprise;
   }
 
-  public void setTypeEntreprise(ETypeEntreprise typeEntreprise) {
+  public void setTypeEntreprise(String typeEntreprise) {
     this.typeEntreprise = typeEntreprise;
+  }
+
+  public String getDomaineActivite() {
+    return this.domaineActivite;
+  }
+
+  public void setDomaineActivite(String domaineActivite) {
+    this.domaineActivite = domaineActivite;
   }
 
   public Set<ETypePartenariat> getTypePartenariats() {

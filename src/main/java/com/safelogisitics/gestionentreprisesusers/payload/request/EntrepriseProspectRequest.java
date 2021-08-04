@@ -2,12 +2,13 @@ package com.safelogisitics.gestionentreprisesusers.payload.request;
 
 import javax.validation.constraints.NotBlank;
 
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
-
 public class EntrepriseProspectRequest {
   
   @NotBlank
-  private ETypeEntreprise typeEntreprise;
+  private String typeEntreprise;
+
+  @NotBlank
+  private String domaineActivite;
 
   @NotBlank
   private String denomination;
@@ -24,8 +25,12 @@ public class EntrepriseProspectRequest {
 
   private String adresse;
 
-  public ETypeEntreprise getTypeEntreprise() {
+  public String getTypeEntreprise() {
     return this.typeEntreprise;
+  }
+
+  public String getDomaineActivite() {
+    return this.domaineActivite;
   }
 
   public String getDenomination() {

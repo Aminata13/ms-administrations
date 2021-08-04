@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 
 public class InfosPersoRequest {
+  
+  private String id;
+
   @NotBlank
   protected String prenom;
 
@@ -28,6 +31,10 @@ public class InfosPersoRequest {
   protected String numeroPermis;
 
   protected String numeroPiece;
+
+  public String getId() {
+    return this.id;
+  }
 
   public String getPrenom() {
     return this.prenom;
