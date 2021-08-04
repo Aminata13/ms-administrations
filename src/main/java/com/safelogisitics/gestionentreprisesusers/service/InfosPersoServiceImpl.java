@@ -130,7 +130,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone) {
     Optional<InfosPerso> infosPerso = infosPersoDao.findByEmailOrTelephone(email, telephone);
 
-    if (infosPerso.isPresent() && !compteDao.existsByInfosPersoIdAndDeletedIsFalse(infosPerso.get().getId()) && infosPerso.get().getStatutProspect() != 0 ) {
+    if (infosPerso.isPresent() && !compteDao.existsByInfosPersoIdAndDeletedIsFalse(infosPerso.get().getId())) {
       return null;
     }
     return infosPerso;

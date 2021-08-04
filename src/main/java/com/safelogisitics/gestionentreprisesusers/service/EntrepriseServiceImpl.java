@@ -10,6 +10,7 @@ import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
+import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,19 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     Entreprise entreprise = new Entreprise(request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
     InfosPerso gerant = infosPersoService.createInfosPerso(request.getGerant());
     entreprise.setGerantId(gerant.getId());
+    entrepriseDao.save(entreprise);
+
+    return entreprise;
+  }
+
+  @Override
+  public Entreprise createEntreprise(EntrepriseProspectRequest request) {
+    if (entrepriseDao.existsByDenominationOrNineaAndDeletedIsFalse(request.getDenomination(), request.getNinea())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
+    }
+
+    Entreprise entreprise = new Entreprise(request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+
     entrepriseDao.save(entreprise);
 
     return entreprise;

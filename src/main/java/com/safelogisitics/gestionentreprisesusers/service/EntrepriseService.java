@@ -6,6 +6,7 @@ import java.util.Set;
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
+import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface EntrepriseService {
   public Optional<Entreprise> getEntrepriseById(String id);
 
   public Entreprise createEntreprise(EntrepriseRequest request);
+
+  public Entreprise createEntreprise(EntrepriseProspectRequest request);
 
   public Entreprise updateEntreprise(String id, EntrepriseRequest request);
 
