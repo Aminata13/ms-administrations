@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.controller;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -86,8 +87,8 @@ public class AbonnementController {
   @GetMapping("/list")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
-	public ResponseEntity<?> allAbonnements(@PageableDefault(size = 20) Pageable pageable) {
-    return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnements(pageable));
+	public ResponseEntity<?> allAbonnements(@RequestParam Map<String,String> parameters, @PageableDefault(size = 20) Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(abonnementService.findByCustomSearch(parameters, pageable));
 	}
 
   @ApiOperation(value = "Liste des abonnements par type d'abonnement", tags = "Gestion des abonnements")

@@ -1,10 +1,13 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
@@ -12,6 +15,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -21,10 +25,11 @@ import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsI
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -52,30 +57,55 @@ public class AbonnementServiceImpl implements AbonnementService {
   }
 
   @Override
-  public Page<Abonnement> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte , String typeAbonnement, boolean generalSearch, Pageable pageable) {
+  public Page<Abonnement> findByCustomSearch(Map<String,String> parameters, Pageable pageable) {
+    final Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.DESC, "dateCreation"));;
+    final List<Criteria> criteria = new ArrayList<>();
 
-    // if (prenom != null && !prenom.isEmpty())
-    //   criteria.add(Criteria.where("prenom").regex("^"+prenom.trim()+"$","i"));
+    final Query queryInfosPerso = new Query();
+    final List<Criteria> criteriaInfosPerso = new ArrayList<>();
+    List<String> infosPersoIds = new ArrayList<>();
 
-    // if (nom != null && !nom.isEmpty())
-    //   criteria.add(Criteria.where("nom").regex("^"+nom.trim()+"$","i"));
+    // Recherche dans infos particulier 
+    if (parameters != null && parameters.containsKey("prenom") && !parameters.get("prenom").isEmpty())
+      criteriaInfosPerso.add(Criteria.where("prenom").regex(".*"+parameters.get("prenom").trim()+".*","i"));
 
-    // if (email != null && !email.isEmpty())
-    //   criteria.add(Criteria.where("email").regex("^"+email.trim()+"$","i"));
+    if (parameters != null && parameters.containsKey("nom") && !parameters.get("nom").isEmpty())
+      criteriaInfosPerso.add(Criteria.where("nom").regex(".*"+parameters.get("nom").trim()+".*","i"));
 
-    // if (telephone != null && !telephone.isEmpty())
-    //   criteria.add(Criteria.where("telephone").is(telephone.trim()));
-    LookupOperation lookupOperation = LookupOperation.newLookup()
-      .from("infosPersos")
-      .localField("compteClient.infosPersoId")
-      .foreignField("_id")
-      .as("userInfos");
+    if (parameters != null && parameters.containsKey("email") && !parameters.get("prenom").isEmpty())
+      criteriaInfosPerso.add(Criteria.where("email").regex(".*"+parameters.get("email").trim()+".*","i"));
 
-    // Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("_id").is("1")) , lookupOperation);
-    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("_id").is("1")) , lookupOperation);
+    if (parameters != null && parameters.containsKey("telephone") && !parameters.get("telephone").isEmpty())
+      criteriaInfosPerso.add(Criteria.where("telephone").regex(".*"+parameters.get("telephone").trim()+".*","i"));
 
-    System.out.println(mongoTemplate.aggregate(aggregation, "abonnements", Abonnement.class).getMappedResults());
-    return null;
+    if (!criteriaInfosPerso.isEmpty()) {
+      queryInfosPerso.addCriteria(new Criteria().andOperator(criteriaInfosPerso.toArray(new Criteria[criteriaInfosPerso.size()])));
+      infosPersoIds = mongoTemplate.find(queryInfosPerso, InfosPerso.class).stream().map(infosPerso -> infosPerso.getId()).collect(Collectors.toList());
+      if (infosPersoIds.size() <= 0)
+        return PageableExecutionUtils.getPage(
+          new ArrayList<Abonnement>(), 
+          pageable, 
+          () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Abonnement.class));
+    }
+
+    if (infosPersoIds.size() > 0)
+      criteria.add(Criteria.where("compteClient.infosPersoId").in(infosPersoIds));
+
+    if (parameters != null && parameters.containsKey("numeroCarte") && !parameters.get("numeroCarte").isEmpty())
+      criteria.add(Criteria.where("numeroCarte").regex(".*"+parameters.get("numeroCarte").replaceAll("\\D+","")+".*","i"));
+
+    if (parameters != null && parameters.containsKey("typeAbonnement") && !parameters.get("typeAbonnement").isEmpty())
+      criteria.add(Criteria.where("typeAbonnement._id").is(parameters.get("typeAbonnement")));
+
+    if (!criteria.isEmpty())
+      query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+
+    List<Abonnement> listAbonnements = mongoTemplate.find(query, Abonnement.class);
+
+    return PageableExecutionUtils.getPage(
+      listAbonnements, 
+      pageable, 
+      () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Abonnement.class));
   }
 
   @Override

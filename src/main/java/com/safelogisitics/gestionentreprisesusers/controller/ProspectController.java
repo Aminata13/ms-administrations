@@ -37,10 +37,9 @@ public class ProspectController {
   private ProspectService prospectService;
 
   @ApiOperation(value = "Liste des prospects")
-  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'READ')")
   @GetMapping("/list")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'READ')")
 	public ResponseEntity<?> allProspects(@RequestParam Map<String,String> parameters, Pageable pageable) {
-    System.out.print(parameters);
     Page<Map<String, Object>> prospects = prospectService.getProspects(parameters, pageable);
 
     return ResponseEntity.status(HttpStatus.OK).body(prospects);
@@ -48,12 +47,14 @@ public class ProspectController {
 
   @ApiOperation(value = "Affichage d'une prospect")
   @GetMapping("/{id}")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'READ')")
 	public ResponseEntity<?> oneProspect(@PathVariable(value = "id") String id) {
     return ResponseEntity.status(HttpStatus.OK).body(prospectService.getProspectById(id));
 	}
 
   @ApiOperation(value = "Création d'une nouveau prospect")
   @PostMapping("/add")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'CREATE')")
 	public ResponseEntity<Map<String, Object>> addProspect(@Valid @RequestBody ProspectRequest request) {
     Map<String, Object> prospect = prospectService.createProspect(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(prospect);
@@ -61,6 +62,7 @@ public class ProspectController {
 
   @ApiOperation(value = "Mise à jour d'un prospect")
   @PutMapping("/update/{id}")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'UPDATE')")
 	public ResponseEntity<Map<String, Object>> updateProspect(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
     Map<String, Object> prospect = prospectService.updateProspect(id, request);
 
@@ -69,6 +71,7 @@ public class ProspectController {
 
   @ApiOperation(value = "Enrolement d'un prospect")
   @PutMapping("/enrole/{id}")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'ACTIVATE')")
 	public ResponseEntity<Map<String, Object>> enroleProspect(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
     Map<String, Object> prospect = prospectService.enroleProspect(id, request);
 
@@ -77,6 +80,7 @@ public class ProspectController {
 
   @ApiOperation(value = "Suppression d'un prospect")
   @DeleteMapping("/delete/{id}")
+  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'DELETE')")
 	public ResponseEntity<?> deleteProspect(@PathVariable(value = "id") String id) {
     prospectService.deleteProspect(id);
     return ResponseEntity.status(HttpStatus.OK).body("OK!");

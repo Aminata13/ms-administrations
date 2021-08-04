@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
@@ -15,7 +16,7 @@ public interface AbonnementService {
   
   public Page<Abonnement> getAbonnements(Pageable pageable);
 
-  public Page<Abonnement> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte , String typeAbonnement, boolean generalSearch, Pageable pageable);
+  public Page<Abonnement> findByCustomSearch(Map<String,String> parameters, Pageable pageable);
 
   public Page<Abonnement> getAbonnements(TypeAbonnement typeAbonnement, Pageable pageable);
 

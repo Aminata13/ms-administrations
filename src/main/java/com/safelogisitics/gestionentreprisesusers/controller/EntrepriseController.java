@@ -1,12 +1,8 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
-import java.util.Set;
-
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeEntreprise;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 import com.safelogisitics.gestionentreprisesusers.service.EntrepriseService;
 
@@ -16,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,28 +36,31 @@ public class EntrepriseController {
 
   @ApiOperation(value = "Liste des entreprises")
   @GetMapping("/list")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
 	public ResponseEntity<?> allEntreprises(
-    @RequestParam(required = false) ETypeEntreprise typeEntreprise,
-    @RequestParam(required = false) Set<ETypePartenariat> typePartenariats,
+    @RequestParam(required = false) String typeEntreprise,
+    @RequestParam(required = false) String domaineActivite,
     @RequestParam(required = false) String agentId,
     @RequestParam(required = false) String clientId,
     @RequestParam(required = false) String denomination,
     @RequestParam(required = false) String ninea,
     Pageable pageable
   ) {
-    Page<Entreprise> entreprises = entrepriseService.getEntreprises(typeEntreprise, typePartenariats, agentId, denomination, ninea, pageable);
+    Page<Entreprise> entreprises = entrepriseService.getEntreprises(typeEntreprise, domaineActivite, agentId, denomination, ninea, pageable);
 
     return ResponseEntity.status(HttpStatus.OK).body(entreprises);
 	}
 
   @ApiOperation(value = "Affichage d'une entreprise")
   @GetMapping("/{id}")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
 	public ResponseEntity<?> oneEntreprise(@PathVariable(value = "id") String id) {
     return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getEntrepriseById(id));
 	}
 
   @ApiOperation(value = "Création d'une nouvelle entreprise")
   @PostMapping("/add")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'CREATE')")
 	public Entreprise addEntreprise(@Valid @RequestBody EntrepriseRequest request) {
     Entreprise entreprise = entrepriseService.createEntreprise(request);
 		return entreprise;
@@ -68,6 +68,7 @@ public class EntrepriseController {
 
   @ApiOperation(value = "Mise à jour d'une entreprise")
   @PutMapping("/update/{id}")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'UPDATE')")
 	public ResponseEntity<?> updateEntreprise(@PathVariable(value = "id") String id, @Valid @RequestBody EntrepriseRequest request) {
     Entreprise entreprise = entrepriseService.updateEntreprise(id, request);
 
@@ -79,6 +80,7 @@ public class EntrepriseController {
 
   @ApiOperation(value = "Suppression d'une entreprise")
   @PutMapping("/delete/{id}")
+  @PreAuthorize("hasPermission('GESTION_CLIENTS', 'CREATE')")
 	public ResponseEntity<?> deleteEntreprise(@PathVariable(value = "id") String id) {
     entrepriseService.deleteEntreprise(id);
     return ResponseEntity.status(HttpStatus.OK).body("OK!");
