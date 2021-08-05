@@ -144,7 +144,8 @@ public class ProspectServiceImpl implements ProspectService {
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
-      prospectDao.existsByInfosEntrepriseDenominationOrInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getDenomination(), prospectRequest.getInfosEntreprise().getNinea())
+      (prospectDao.existsByInfosEntrepriseDenomination(prospectRequest.getInfosEntreprise().getDenomination()) ||
+      (prospectRequest.getInfosEntreprise().getNinea() != null && prospectDao.existsByInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getNinea())))
     ) {
       throw new IllegalArgumentException("Cette entreprise existe déjà");
     }
@@ -317,8 +318,8 @@ public class ProspectServiceImpl implements ProspectService {
     customFields.put("infosEntreprise", prospect.getInfosEntreprise());
     customFields.put("infosParticulier", prospect.getInfosParticulier());
     customFields.put("prospecteur", infosPersoDao.findById(compteDao.findById(prospect.getProspecteurId()).get().getInfosPersoId()).get().getDefaultFields());
-    customFields.put("dernierEditeur", infosPersoDao.findById(compteDao.findById(prospect.getDernierEditeurId()).get().getInfosPersoId()).get().getDefaultFields());
-    customFields.put("enroleur", infosPersoDao.findById(compteDao.findById(prospect.getEnroleurId()).get().getInfosPersoId()).get().getDefaultFields());
+    customFields.put("dernierEditeur", prospect.getDernierEditeurId() != null ? infosPersoDao.findById(compteDao.findById(prospect.getDernierEditeurId()).get().getInfosPersoId()).get().getDefaultFields() : null);
+    customFields.put("enroleur", prospect.getEnroleurId() != null ? infosPersoDao.findById(compteDao.findById(prospect.getEnroleurId()).get().getInfosPersoId()).get().getDefaultFields() : null);
     customFields.put("dateEnrolement", prospect.getDateEnrolement());
     customFields.put("dateDerniereModification", prospect.getDateDerniereModification());
     customFields.put("dateCreation", prospect.getDateCreation());
