@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
+import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
@@ -50,6 +51,8 @@ public interface TransactionService {
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
 
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest);
+
+  public void annulerPaiementTransaction(PaiementServiceDto paiementServiceDto);
 
   public ByteArrayInputStream getRapportByAbonnement(String id, String rapportType, String dateDebut, String dateFin);
 }

@@ -23,6 +23,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TransactionDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
+import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
@@ -345,6 +346,28 @@ public class TransactionServiceImpl implements TransactionService {
     transactionDao.save(transaction);
 
     return transaction;
+  }
+
+  public void annulerPaiementTransaction(PaiementServiceDto paiementServiceDto) {
+    Optional<Transaction> _transaction = transactionDao.findByReference(paiementServiceDto.getServiceReference());
+    if (!_transaction.isPresent() || !_transaction.get().getAction().equals(ETransactionAction.PAIEMENT)) {
+      return;
+    }
+    Compte compteAnnulateur = compteDao.findById(paiementServiceDto.getAnnulateurId()).get();
+    Transaction transaction = _transaction.get();
+    Abonnement abonnement = abonnementDao.findById(transaction.getAbonnement().getId()).get();
+    BigDecimal montant = transaction.getMontant();
+
+    abonnement.rechargerCarte(montant);
+    abonnementDao.save(abonnement);
+    transactionDao.delete(transaction);
+
+    String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
+    Transaction rechargeTransaction = new Transaction(abonnement, reference, ETransactionAction.RECHARGEMENT, compteAnnulateur, montant);
+    rechargeTransaction.setApprobation(1);
+    rechargeTransaction.setApprobateur(compteAnnulateur);
+    rechargeTransaction.setDateApprobation(LocalDateTime.now());
+    transactionDao.save(rechargeTransaction);
   }
 
   @Override
