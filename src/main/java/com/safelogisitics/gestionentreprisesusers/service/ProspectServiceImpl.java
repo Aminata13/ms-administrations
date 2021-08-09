@@ -60,50 +60,50 @@ public class ProspectServiceImpl implements ProspectService {
     final List<Criteria> criteria = new ArrayList<>();
 
     // Rechercher dans infos general
-    if (parameters != null && parameters.containsKey("type"))
+    if (parameters != null && parameters.containsKey("type") && !parameters.get("type").isEmpty())
       criteria.add(Criteria.where("type").is(parameters.get("type")));
 
-    if (parameters != null && parameters.containsKey("statutProspection"))
+    if (parameters != null && parameters.containsKey("statutProspection") && !parameters.get("statutProspection").isEmpty())
       criteria.add(Criteria.where("statutProspection").is(Integer.valueOf(parameters.get("statutProspection"))));
 
-    if (parameters != null && parameters.containsKey("prospecteurId"))
+    if (parameters != null && parameters.containsKey("prospecteurId") && !parameters.get("prospecteurId").isEmpty())
       criteria.add(Criteria.where("prospecteurId").is(parameters.get("prospecteurId")));
 
-    if (parameters != null && parameters.containsKey("enroleurId"))
+    if (parameters != null && parameters.containsKey("enroleurId") && !parameters.get("enroleurId").isEmpty())
       criteria.add(Criteria.where("enroleurId").is(parameters.get("enroleurId")));
 
 
     // Rechercher dans infos entreprise
-    if (parameters != null && parameters.containsKey("infosEntreprise.typeEntreprise"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.typeEntreprise") && !parameters.get("infosEntreprise.typeEntreprise").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.typeEntreprise").is(parameters.get("infosEntreprise.typeEntreprise")));
 
-    if (parameters != null && parameters.containsKey("infosEntreprise.denomination"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.denomination") && !parameters.get("infosEntreprise.denomination").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.denomination").regex(".*"+parameters.get("infosEntreprise.denomination").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosEntreprise.ninea"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.ninea") && !parameters.get("infosEntreprise.ninea").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.ninea").regex(".*"+parameters.get("infosEntreprise.ninea").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosEntreprise.email"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.email") && !parameters.get("infosEntreprise.email").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.email").regex(".*"+parameters.get("infosEntreprise.email").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosEntreprise.telephone"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.telephone") && !parameters.get("infosEntreprise.telephone").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.telephone").regex(".*"+parameters.get("infosEntreprise.telephone").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosEntreprise.adresse"))
+    if (parameters != null && parameters.containsKey("infosEntreprise.adresse") && !parameters.get("infosEntreprise.adresse").isEmpty())
       criteria.add(Criteria.where("infosEntreprise.adresse").regex(".*"+parameters.get("infosEntreprise.adresse").trim()+".*","i"));
 
 
     // Recherche dans infos particulier 
-    if (parameters != null && parameters.containsKey("infosParticulier.prenom"))
+    if (parameters != null && parameters.containsKey("infosParticulier.prenom") && !parameters.get("infosParticulier.prenom").isEmpty())
       criteria.add(Criteria.where("infosParticulier.prenom").regex(".*"+parameters.get("infosParticulier.prenom").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosParticulier.nom"))
+    if (parameters != null && parameters.containsKey("infosParticulier.nom") && !parameters.get("infosParticulier.nom").isEmpty())
       criteria.add(Criteria.where("infosParticulier.nom").regex(".*"+parameters.get("infosParticulier.nom").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosParticulier.email"))
+    if (parameters != null && parameters.containsKey("infosParticulier.email") && !parameters.get("infosParticulier.email").isEmpty())
       criteria.add(Criteria.where("infosParticulier.email").regex(".*"+parameters.get("infosParticulier.email").trim()+".*","i"));
 
-    if (parameters != null && parameters.containsKey("infosParticulier.telephone"))
+    if (parameters != null && parameters.containsKey("infosParticulier.telephone") && !parameters.get("infosParticulier.telephone").isEmpty())
       criteria.add(Criteria.where("infosParticulier.telephone").regex(".*"+parameters.get("infosParticulier.telephone").trim()+".*","i"));
 
     if (!criteria.isEmpty())
