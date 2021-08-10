@@ -211,11 +211,13 @@ public class ProspectServiceImpl implements ProspectService {
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
+      !prospect.getInfosEntreprise().getDenomination().equals(prospectRequest.getInfosEntreprise().getDenomination()) &&
       prospectDao.existsByInfosEntrepriseDenomination(prospectRequest.getInfosEntreprise().getDenomination())
     ) throw new IllegalArgumentException("Cette dénomination existe déjà");
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
+      !prospect.getInfosEntreprise().getNinea().equals(prospectRequest.getInfosEntreprise().getNinea()) &&
       prospectDao.existsByInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getNinea())
     ) throw new IllegalArgumentException("Ce ninéa existe déjà");
 
