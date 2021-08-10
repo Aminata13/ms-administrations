@@ -216,7 +216,7 @@ public class ProspectServiceImpl implements ProspectService {
     ) throw new IllegalArgumentException("Cette dénomination existe déjà");
 
     if (
-      prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
+      prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) && prospectRequest.getInfosEntreprise().getNinea() != null &&
       !prospect.getInfosEntreprise().getNinea().equals(prospectRequest.getInfosEntreprise().getNinea()) &&
       prospectDao.existsByInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getNinea())
     ) throw new IllegalArgumentException("Ce ninéa existe déjà");
