@@ -138,26 +138,24 @@ public class ProspectServiceImpl implements ProspectService {
     if (
       prospectRequest.getType().equals(ETypeProspect.PARTICULIER) &&
       prospectDao.existsByInfosParticulierEmailOrInfosParticulierTelephone(prospectRequest.getInfosParticulier().getEmail(), prospectRequest.getInfosParticulier().getTelephone())
-    ) {
-      throw new IllegalArgumentException("Ce particulier existe déjà");
-    }
+    ) throw new IllegalArgumentException("Ce particulier existe déjà");
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
       (prospectDao.existsByInfosEntrepriseDenomination(prospectRequest.getInfosEntreprise().getDenomination()) ||
       (prospectRequest.getInfosEntreprise().getNinea() != null && prospectDao.existsByInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getNinea())))
-    ) {
-      throw new IllegalArgumentException("Cette entreprise existe déjà");
-    }
+    ) throw new IllegalArgumentException("Cette entreprise existe déjà");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     Compte prospecteur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
 
-
     Prospect prospect = new Prospect(prospectRequest.getType(), prospecteur.getId(), prospectRequest.getNiveauAvancement(), prospectRequest.getRapportVisites());
 
     if (prospectRequest.getType().equals(ETypeProspect.PARTICULIER)) {
+      if(prospectRequest.getInfosParticulier() == null)
+        throw new IllegalArgumentException("Veuillez remplir les informations du client");
+
       prospect.setInfosParticulier(new InfosPerso(
         prospectRequest.getInfosParticulier().getPrenom(),
         prospectRequest.getInfosParticulier().getNom(),
@@ -166,7 +164,12 @@ public class ProspectServiceImpl implements ProspectService {
         prospectRequest.getInfosParticulier().getAdresse(),
         prospectRequest.getInfosParticulier().getDateNaissance()
       ));
-    } else {
+    }
+
+    if (prospectRequest.getType().equals(ETypeProspect.ENTREPRISE)) {
+      if(prospectRequest.getInfosEntreprise() == null)
+        throw new IllegalArgumentException("Veuillez remplir les informations de l'entreprise");
+
       prospect.setInfosEntreprise(new Entreprise(
         prospectRequest.getInfosEntreprise().getTypeEntreprise(),
         prospectRequest.getInfosEntreprise().getDomaineActivite(),
@@ -198,31 +201,23 @@ public class ProspectServiceImpl implements ProspectService {
       prospectRequest.getType().equals(ETypeProspect.PARTICULIER) &&
       !prospect.getInfosParticulier().getEmail().equals(prospectRequest.getInfosParticulier().getEmail()) &&
       prospectDao.existsByInfosParticulierEmail(prospectRequest.getInfosParticulier().getEmail())
-    ) {
-      throw new IllegalArgumentException("Cette adresse email existe déjà");
-    }
+    ) throw new IllegalArgumentException("Cette adresse email existe déjà");
 
     if (
       prospectRequest.getType().equals(ETypeProspect.PARTICULIER) &&
       !prospect.getInfosParticulier().getTelephone().equals(prospectRequest.getInfosParticulier().getTelephone()) &&
       prospectDao.existsByInfosParticulierTelephone(prospectRequest.getInfosParticulier().getTelephone())
-    ) {
-      throw new IllegalArgumentException("Ce numéro de téléphone existe déjà");
-    }
+    ) throw new IllegalArgumentException("Ce numéro de téléphone existe déjà");
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
       prospectDao.existsByInfosEntrepriseDenomination(prospectRequest.getInfosEntreprise().getDenomination())
-    ) {
-      throw new IllegalArgumentException("Cette dénomination existe déjà");
-    }
+    ) throw new IllegalArgumentException("Cette dénomination existe déjà");
 
     if (
       prospectRequest.getType().equals(ETypeProspect.ENTREPRISE) &&
       prospectDao.existsByInfosEntrepriseNinea(prospectRequest.getInfosEntreprise().getNinea())
-    ) {
-      throw new IllegalArgumentException("Ce ninéa existe déjà");
-    }
+    ) throw new IllegalArgumentException("Ce ninéa existe déjà");
 
     if (prospectRequest.getType().equals(ETypeProspect.PARTICULIER)) {
       prospect.setInfosParticulier(new InfosPerso(
@@ -317,6 +312,7 @@ public class ProspectServiceImpl implements ProspectService {
     customFields.put("niveauAvancement", prospect.getNiveauAvancement());
     customFields.put("infosEntreprise", prospect.getInfosEntreprise());
     customFields.put("infosParticulier", prospect.getInfosParticulier());
+    customFields.put("personneRencontrer", prospect.getPersonneRencontrer());
     customFields.put("prospecteur", infosPersoDao.findById(compteDao.findById(prospect.getProspecteurId()).get().getInfosPersoId()).get().getDefaultFields());
     customFields.put("dernierEditeur", prospect.getDernierEditeurId() != null ? infosPersoDao.findById(compteDao.findById(prospect.getDernierEditeurId()).get().getInfosPersoId()).get().getDefaultFields() : null);
     customFields.put("enroleur", prospect.getEnroleurId() != null ? infosPersoDao.findById(compteDao.findById(prospect.getEnroleurId()).get().getInfosPersoId()).get().getDefaultFields() : null);
