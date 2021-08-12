@@ -56,7 +56,7 @@ public class ProspectServiceImpl implements ProspectService {
 
   @Override
   public Page<Map<String, Object>> getProspects(Map<String,String> parameters, Pageable pageable) {
-    final Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.DESC, "dateCreation"));;
+    final Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.DESC, "dateCreation"));
     final List<Criteria> criteria = new ArrayList<>();
 
     // Rechercher dans infos general

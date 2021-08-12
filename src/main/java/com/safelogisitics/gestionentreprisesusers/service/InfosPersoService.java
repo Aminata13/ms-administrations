@@ -29,7 +29,7 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone);
 
-  public Optional<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType);
+  public Collection<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType);
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
 

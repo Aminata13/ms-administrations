@@ -137,7 +137,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Optional<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
+  public Collection<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
     final Query query = new Query();
 
     final List<Criteria> criteria = new ArrayList<>();
@@ -159,9 +159,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
 
-    query.limit(1);
-
-    return Optional.ofNullable(mongoTemplate.findOne(query, InfosPerso.class));
+    return mongoTemplate.find(query, InfosPerso.class);
   }
 
   @Override
