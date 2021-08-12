@@ -143,16 +143,16 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     final List<Criteria> criteria = new ArrayList<>();
 
     if (prenom != null && !prenom.isEmpty())
-      criteria.add(Criteria.where("prenom").regex("^"+prenom.trim()+"$","i"));
+      criteria.add(Criteria.where("prenom").regex(".*"+prenom.trim()+".*","i"));
 
     if (nom != null && !nom.isEmpty())
-      criteria.add(Criteria.where("nom").regex("^"+nom.trim()+"$","i"));
+      criteria.add(Criteria.where("nom").regex(".*"+nom.trim()+".*","i"));
 
     if (email != null && !email.isEmpty())
-      criteria.add(Criteria.where("email").regex("^"+email.trim()+"$","i"));
+      criteria.add(Criteria.where("email").regex(".*"+email.trim()+".*","i"));
 
     if (telephone != null && !telephone.isEmpty())
-      criteria.add(Criteria.where("telephone").is(telephone.trim()));
+      criteria.add(Criteria.where("telephone").regex(".*"+telephone.trim()+".*","i"));
 
     if (criteria.isEmpty())
       return null;
