@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
@@ -24,6 +25,8 @@ public interface InfosPersoService {
   public Optional<InfosPerso> findInfosPersoById(String id);
 
   public Object findInfosPersoByCompteId(String id);
+
+  public Collection<Object> findAllInfosPersoByCompteIds(Set<String> ids);
 
   public Optional<InfosPerso> findByCompteId(String id);
 

@@ -52,7 +52,7 @@ public class ProspectController {
     return ResponseEntity.status(HttpStatus.OK).body(prospectService.getProspectById(id));
 	}
 
-  @ApiOperation(value = "Création d'une nouveau prospect")
+  @ApiOperation(value = "Création d'un nouveau prospect")
   @PostMapping("/add")
   @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'CREATE')")
 	public ResponseEntity<Map<String, Object>> addProspect(@Valid @RequestBody ProspectRequest request) {

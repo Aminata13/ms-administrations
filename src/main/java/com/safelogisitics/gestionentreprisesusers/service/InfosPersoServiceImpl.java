@@ -7,8 +7,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
@@ -114,6 +116,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     InfosPerso infosPerso = infosPersoDao.findById(compteExist.get().getInfosPersoId()).get();
 
     return infosPerso.getDefaultFields();
+  }
+
+  @Override
+  public Collection<Object> findAllInfosPersoByCompteIds(Set<String> ids) {
+    return StreamSupport.stream(compteDao.findAllById(ids).spliterator(), false)
+      .filter(compte -> !compte.isDeleted())
+      .map(compte -> infosPersoDao.findById(compte.getInfosPersoId()).get())
+      .collect(Collectors.toList());
   }
 
   @Override

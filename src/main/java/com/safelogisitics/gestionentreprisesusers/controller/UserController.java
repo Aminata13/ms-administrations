@@ -1,5 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Set;
+
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -49,6 +52,11 @@ public class UserController {
   @GetMapping("/infos/{id}")
 	public ResponseEntity<?> infosById(@PathVariable(value = "id") String id) {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findInfosPersoByCompteId(id));
+  }
+
+  @GetMapping("/infos/multiple")
+	public ResponseEntity<?> multipleInfosByIds(@RequestParam(required = true) Set<String> ids) {
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findAllInfosPersoByCompteIds(ids));
   }
 
   @PostAuthorize("hasRole('COMPTE_COURSIER')")
