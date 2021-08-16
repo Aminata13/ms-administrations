@@ -4,25 +4,39 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class HistoriqueFourniture {
+import javax.validation.constraints.NotBlank;
 
+import com.google.firebase.database.annotations.NotNull;
+
+public class FournitureEquipement {
+
+  @NotNull
   private BigDecimal cout;
 
+  @NotNull
   private double quantite;
 
+  @NotBlank
   private String fournisseur;
 
+  @NotBlank
   private String numeroCommande;
 
+  @NotNull
   private LocalDate dateAchat;
 
   private LocalDateTime dateCreation;
 
-  public HistoriqueFourniture() {
+  public FournitureEquipement() {
     this.dateCreation = LocalDateTime.now();
   }
 
-  public HistoriqueFourniture(BigDecimal cout, double quantite, String fournisseur, String numeroCommande, LocalDate dateAchat) {
+  public FournitureEquipement(BigDecimal cout, double quantite, String fournisseur, String numeroCommande, LocalDate dateAchat) {
+    this.cout = cout;
+    this.quantite = quantite;
+    this.fournisseur = fournisseur;
+    this.numeroCommande = numeroCommande;
+    this.dateAchat = dateAchat;
     this.dateCreation = LocalDateTime.now();
   }
 

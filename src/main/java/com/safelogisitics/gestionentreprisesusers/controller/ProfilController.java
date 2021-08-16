@@ -1,7 +1,10 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Set;
+
 import javax.validation.Valid;
 
+import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -122,6 +125,14 @@ public class ProfilController {
   @PreAuthorize("hasPermission('GESTION_AGENTS', 'UPDATE')")
 	public ResponseEntity<?> updateAgent(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(id, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
+  @ApiOperation(value = "", tags = "agents")
+  @PutMapping("/agents/equiper/{id}")
+  @PreAuthorize("hasPermission('GESTION_MATERIELS', 'ASSIGN')")
+	public ResponseEntity<?> equiperAgent(@PathVariable(value = "id") String id, @Valid @RequestBody Set<AffectationEquipement> request) {
+    InfosPerso infosPerso = infosPersoService.equiperAgent(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 

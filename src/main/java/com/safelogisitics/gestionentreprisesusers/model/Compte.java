@@ -55,6 +55,12 @@ public class Compte {
   @Field(value = "services")
   private Set<Service> services = new HashSet<>();
 
+  @Field(value = "equipements")
+  private Set<AffectationEquipement> equipements = new HashSet<>();
+
+  @Field(value = "moyenTransportId")
+  private String moyenTransportId;
+
   @Field(value = "numeroEmei")
   private String numeroEmei;
 
@@ -165,6 +171,29 @@ public class Compte {
 
   public void setServices(Set<Service> services) {
     this.services = services;
+  }
+
+  public Set<AffectationEquipement> getEquipements() {
+    return this.equipements;
+  }
+
+  public void addEquipement(AffectationEquipement equipement) {
+    if (this.equipements.contains(equipement)) {
+      this.equipements.remove(equipement);
+    }
+    this.equipements.add(equipement);
+  }
+
+  public void removeEquipement(AffectationEquipement equipement) {
+    this.equipements.remove(equipement);
+  }
+
+  public String getMoyenTransportId() {
+    return this.moyenTransportId;
+  }
+
+  public void setMoyenTransportId(String moyenTransportId) {
+    this.moyenTransportId = moyenTransportId;
   }
 
   public String getNumeroEmei() {

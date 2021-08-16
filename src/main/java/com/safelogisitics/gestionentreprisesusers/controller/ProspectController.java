@@ -45,7 +45,7 @@ public class ProspectController {
     return ResponseEntity.status(HttpStatus.OK).body(prospects);
 	}
 
-  @ApiOperation(value = "Affichage d'une prospect")
+  @ApiOperation(value = "Affichage d'un prospect")
   @GetMapping("/{id}")
   @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'READ')")
 	public ResponseEntity<?> oneProspect(@PathVariable(value = "id") String id) {

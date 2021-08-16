@@ -3,13 +3,13 @@ package com.safelogisitics.gestionentreprisesusers.dao.filter;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementCategorie;
 
 public interface EquipementDefaultFIelds {
   
   public String getId();
 
-  public EEquipementType getType();
+  public EEquipementCategorie getCategories();
 
   public String getLibelle();
 

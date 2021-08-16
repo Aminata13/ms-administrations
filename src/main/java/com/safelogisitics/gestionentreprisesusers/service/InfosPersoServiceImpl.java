@@ -14,12 +14,15 @@ import java.util.stream.StreamSupport;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.dao.EquipementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
+import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.Equipement;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
@@ -69,6 +72,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
   private TypeAbonnementDao typeAbonnementDao;
+
+  @Autowired
+  private EquipementDao equipementDao;
 
   @Autowired
   private RoleService roleService;
@@ -325,6 +331,58 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
+  }
+
+  @Override
+  public InfosPerso equiperAgent(String id, Set<AffectationEquipement> affectationEquipements) {
+    Optional<InfosPerso> _infosPerso = infosPersoDao.findById(id);
+    if (!_infosPerso.isPresent())
+      throw new IllegalArgumentException("Cet utilisateur n'existe pas!");
+
+    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_COURSIER);
+
+    if (!_compte.isPresent() || _compte.get().isDeleted())
+      throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
+
+    InfosPerso infosPerso = _infosPerso.get(); 
+    Compte compte = _compte.get();
+
+    for (AffectationEquipement affectationEquipement : affectationEquipements) {
+      Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
+
+      if (!_equipement.isPresent()) {
+        
+      }
+
+      Equipement equipement = _equipement.get();
+      Double quantiteAffecter = equipement.getQuantiteAffecter();
+      Double stock = equipement.getStock();
+
+      if (compte.getEquipements().contains(affectationEquipement) && affectationEquipement.getQuantite() == 0) {
+        compte.removeEquipement(affectationEquipement);
+        quantiteAffecter = quantiteAffecter - 1;
+        stock = stock + 1;
+      }
+
+      if (compte.getEquipements().contains(affectationEquipement) && affectationEquipement.getQuantite() > 0) {
+        compte.addEquipement(affectationEquipement);
+        quantiteAffecter = quantiteAffecter + 1;
+        stock = stock - 1;
+      }
+
+      equipement.setQuantiteAffecter(quantiteAffecter);
+      equipement.setStock(stock);
+
+      equipementDao.save(equipement);
+
+      compteDao.save(compte);
+    }
+
+    infosPerso.updateCompte(compte);
+
     infosPersoDao.save(infosPerso);
 
     return infosPerso;
@@ -637,7 +695,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
 
       if (_compte.isPresent() && !_compte.get().isDeleted())
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette utilisateur a déjà un compte administrateur!");
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet utilisateur a déjà un compte administrateur!");
 
       compte = _compte.get();
       compte.setDeleted(false);
@@ -673,12 +731,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   private InfosPerso updateCompte(String id, InfosPersoAvecCompteRequest request, ECompteType compteType) {
     Optional<InfosPerso> infosPersoExist = infosPersoDao.findById(id);
     if (!infosPersoExist.isPresent())
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cette utilisateur n'existe pas!");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cet utilisateur n'existe pas!");
 
     Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, compteType);
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette utilisateur n'a pas de compte administrateur!");
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet utilisateur n'a pas de compte administrateur!");
 
     InfosPerso _infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 

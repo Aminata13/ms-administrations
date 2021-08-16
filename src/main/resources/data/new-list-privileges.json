@@ -145,5 +145,18 @@
       "VALIDATE",
       "ACTIVATE"
     ]
+  },
+  {
+    "libelle": "Gestion des matériels",
+    "valeur": "GESTION_MATERIELS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ASSIGN"
+    ]
   }
 ]

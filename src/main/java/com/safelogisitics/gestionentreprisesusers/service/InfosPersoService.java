@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -47,6 +48,8 @@ public interface InfosPersoService {
   public void deleteCompteAdministrateur(String infosPersoId); // Suppression d'un admnistrateur (Soft delete)
 
   public InfosPerso createOrUpdateCompteAgent(String id, InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
+
+  public InfosPerso equiperAgent(String id, Set<AffectationEquipement> affectationEquipements);
 
   public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 

@@ -4,28 +4,50 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementType;
+import javax.validation.constraints.NotBlank;
+
+import com.google.firebase.database.annotations.NotNull;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementCategorie;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "equipements")
 public class Equipement {
-  
+
   private String id;
 
-  private EEquipementType type;
+  @NotNull
+  private Set<EEquipementCategorie> categories;
 
+  @NotBlank
   private String libelle;
 
+  @NotBlank
   private String description;
 
-  private Set<String> specificites = new HashSet<>();
+  private Set<EquipementSpecificites> specificites = new HashSet<>();
 
-  private Set<HistoriqueFourniture> historiqueFourniture = new HashSet<>();
+  private Set<FournitureEquipement> historiqueFournitures = new HashSet<>();
 
   private double stock;
 
+  private double quantiteAffecter;
+
   private LocalDateTime dateCreation;
+
+  public Equipement() {
+    this.quantiteAffecter = 0;
+    this.dateCreation = LocalDateTime.now();
+  }
+
+  public Equipement(String libelle, Set<EEquipementCategorie> categories, String description, Set<EquipementSpecificites> specificites) {
+    this.libelle = libelle;
+    this.categories = categories;
+    this.description = description;
+    this.specificites = specificites;
+    this.quantiteAffecter = 0;
+    this.dateCreation = LocalDateTime.now();
+  }
 
   public String getId() {
     return this.id;
@@ -35,12 +57,12 @@ public class Equipement {
     this.id = id;
   }
 
-  public EEquipementType getType() {
-    return this.type;
+  public Set<EEquipementCategorie> getCategories() {
+    return this.categories;
   }
 
-  public void setType(EEquipementType type) {
-    this.type = type;
+  public void setCategories(Set<EEquipementCategorie> categories) {
+    this.categories = categories;
   }
 
   public String getLibelle() {
@@ -59,20 +81,20 @@ public class Equipement {
     this.description = description;
   }
 
-  public Set<String> getSpecificites() {
+  public Set<EquipementSpecificites> getSpecificites() {
     return this.specificites;
   }
 
-  public void setSpecificites(Set<String> specificites) {
+  public void setSpecificites(Set<EquipementSpecificites> specificites) {
     this.specificites = specificites;
   }
 
-  public Set<HistoriqueFourniture> getHistoriqueFourniture() {
-    return this.historiqueFourniture;
+  public Set<FournitureEquipement> getHistoriqueFournitures() {
+    return this.historiqueFournitures;
   }
 
-  public void setHistoriqueFourniture(Set<HistoriqueFourniture> historiqueFourniture) {
-    this.historiqueFourniture = historiqueFourniture;
+  public void addHistoriqueFourniture(FournitureEquipement historiqueFourniture) {
+    this.historiqueFournitures.add(historiqueFourniture);
   }
 
   public double getStock() {
@@ -81,6 +103,14 @@ public class Equipement {
 
   public void setStock(double stock) {
     this.stock = stock;
+  }
+
+  public double getQuantiteAffecter() {
+    return this.quantiteAffecter;
+  }
+
+  public void setQuantiteAffecter(double quantiteAffecter) {
+    this.quantiteAffecter = quantiteAffecter;
   }
 
   public LocalDateTime getDateCreation() {
