@@ -4,10 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class AffectationEquipement {
 
+  @NotBlank
   private String idEquipement;
 
+  @NotNull
   private double quantite;
 
   private Map<String, String> specificites = new HashMap<>();

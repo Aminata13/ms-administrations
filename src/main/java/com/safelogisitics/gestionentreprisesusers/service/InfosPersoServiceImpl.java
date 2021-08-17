@@ -361,13 +361,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Double quantiteAffecter = equipement.getQuantiteAffecter();
       Double stock = equipement.getStock();
 
-      if (compte.getEquipements().contains(affectationEquipement) && affectationEquipement.getQuantite() == 0) {
+      if (affectationEquipement.getQuantite() == 0 && compte.getEquipements().contains(affectationEquipement)) {
         compte.removeEquipement(affectationEquipement);
         quantiteAffecter = quantiteAffecter - 1;
         stock = stock + 1;
       }
 
-      if (compte.getEquipements().contains(affectationEquipement) && affectationEquipement.getQuantite() > 0) {
+      if (affectationEquipement.getQuantite() > 0) {
         compte.addEquipement(affectationEquipement);
         quantiteAffecter = quantiteAffecter + 1;
         stock = stock - 1;
