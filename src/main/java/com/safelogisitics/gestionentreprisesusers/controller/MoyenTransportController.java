@@ -47,7 +47,7 @@ public class MoyenTransportController {
 
   @ApiOperation(value = "Rechercher un moyen de transport")
   @GetMapping("/search/{searchText}")
-  @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_MATERIELS', 'READ')")
 	public ResponseEntity<Collection<MoyenTransport>> searchMoyensTransport(@PathVariable(value = "searchText") String searchText) {
     Collection<MoyenTransport> moyenTransports = moyenTransportService.searchMoyenTransport(searchText);
 

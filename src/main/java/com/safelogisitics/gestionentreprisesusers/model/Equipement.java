@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.annotations.NotNull;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementCategorie;
 
@@ -26,6 +27,7 @@ public class Equipement {
 
   private Set<EquipementSpecificites> specificites = new HashSet<>();
 
+  @JsonIgnore
   private Set<FournitureEquipement> historiqueFournitures = new HashSet<>();
 
   private double stock;
