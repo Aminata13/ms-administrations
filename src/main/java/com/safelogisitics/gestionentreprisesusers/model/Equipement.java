@@ -22,7 +22,6 @@ public class Equipement {
   @NotBlank
   private String libelle;
 
-  @NotBlank
   private String description;
 
   private Set<EquipementSpecificites> specificites = new HashSet<>();

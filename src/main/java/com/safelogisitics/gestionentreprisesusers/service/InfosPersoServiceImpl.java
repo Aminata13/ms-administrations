@@ -354,7 +354,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     for (AffectationEquipement affectationEquipement : affectationEquipements) {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
-      if (!_equipement.isPresent()) {
+      if (!_equipement.isPresent() || _equipement.get().getStock() >= 0) {
         continue;
       }
 
