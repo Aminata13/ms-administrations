@@ -11,9 +11,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MoyenTransportDao extends PagingAndSortingRepository<MoyenTransport, String> {
+
   Optional<MoyenTransport> findByReference(String reference);
 
   Collection<MoyenTransport> findBytype(EMoyenTransportType type);
 
   boolean existsByReference(String reference);
+
+  boolean existsByNumeroSerie(String numeroSerie);
+
+  boolean existsByNumeroCarteGrise(String numeroCarteGrise);
+
+  boolean existsByMatricule(String matricule);
+
 }

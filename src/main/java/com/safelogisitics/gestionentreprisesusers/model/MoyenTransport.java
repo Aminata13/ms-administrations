@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.safelogisitics.gestionentreprisesusers.model.enums.EMoyenTransportType;
 
 import org.springframework.data.annotation.Id;
@@ -18,30 +21,38 @@ public class MoyenTransport {
   @Id
   private String id;
 
+  @NotNull
   @Field(value = "type")
   private EMoyenTransportType type;
 
+  @NotBlank
   @Field(value = "reference")
   private String reference;
 
+  @NotBlank
   @Field(value = "marque")
   private String marque;
 
+  @NotBlank
   @Field(value = "modele")
   private String modele;
 
+  @NotBlank
   @Field(value = "numeroSerie")
   private String numeroSerie;
 
+  @NotBlank
   @Field(value = "numeroCarteGrise")
   private String numeroCarteGrise;
 
+  @NotBlank
   @Field(value = "fournisseur")
   private String fournisseur;
 
   @Field(value = "accessoires")
   private Set<String> accessoires = new HashSet<>();
 
+  @NotBlank
   @Field(value = "matricule")
   private String matricule;
 
@@ -62,9 +73,6 @@ public class MoyenTransport {
 
   @Field(value = "cout")
   private BigDecimal cout;
-
-  @Field(value = "statut")
-  private int statut;
 
   @Field(value = "enService")
   private boolean enService;
@@ -238,14 +246,6 @@ public class MoyenTransport {
 
   public void setCout(BigDecimal cout) {
     this.cout = cout;
-  }
-
-  public int getStatut() {
-    return this.statut;
-  }
-
-  public void setStatut(int statut) {
-    this.statut = statut;
   }
 
   public boolean isEnService() {

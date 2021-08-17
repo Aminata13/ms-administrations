@@ -1,9 +1,10 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
+import java.util.Collection;
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.dto.MoyenTransportSearchDto;
 import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
-import com.safelogisitics.gestionentreprisesusers.model.enums.EMoyenTransportType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +12,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface MoyenTransportService {
 
-  public Page<MoyenTransport> getMoyenTransports(String fournisseur, EMoyenTransportType type, String reference, String marque, String modele, Pageable pageable);
+  public Page<MoyenTransport> getMoyenTransports(MoyenTransportSearchDto moyenTransportSearch, Pageable pageable);
 
   public Optional<MoyenTransport> getMoyenTransportById(String id);
-  
+
+  public Collection<MoyenTransport> searchMoyenTransport(String searchValue);
+
   public MoyenTransport createMoyenTransport(MoyenTransport moyenTransport);
 
   public MoyenTransport updateMoyenTransport(String id, MoyenTransport moyenTransport);

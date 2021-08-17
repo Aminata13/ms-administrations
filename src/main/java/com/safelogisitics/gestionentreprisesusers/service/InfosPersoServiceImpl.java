@@ -16,6 +16,7 @@ import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.EquipementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.dao.MoyenTransportDao;
 import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
@@ -24,6 +25,7 @@ import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.Equipement;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
 import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.User;
@@ -90,6 +92,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
   private TransactionService transactionService;
+
+  @Autowired
+  private MoyenTransportDao moyenTransportDao;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -338,23 +343,19 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso equiperAgent(String id, Set<AffectationEquipement> affectationEquipements) {
-    Optional<InfosPerso> _infosPerso = infosPersoDao.findById(id);
-    if (!_infosPerso.isPresent())
-      throw new IllegalArgumentException("Cet utilisateur n'existe pas!");
-
-    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_COURSIER);
+    Optional<Compte> _compte = compteDao.findByIdAndType(id, ECompteType.COMPTE_COURSIER);
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
       throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
 
-    InfosPerso infosPerso = _infosPerso.get(); 
     Compte compte = _compte.get();
+    InfosPerso infosPerso = infosPersoDao.findById(compte.getInfosPersoId()).get();
 
     for (AffectationEquipement affectationEquipement : affectationEquipements) {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
       if (!_equipement.isPresent()) {
-        
+        continue;
       }
 
       Equipement equipement = _equipement.get();
@@ -380,6 +381,42 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
       compteDao.save(compte);
     }
+
+    infosPerso.updateCompte(compte);
+
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
+  }
+
+  @Override
+  public InfosPerso affecterMoyenTransportAgent(String id, String moyenTransportId) {
+    Optional<Compte> _compte = compteDao.findByIdAndType(id, ECompteType.COMPTE_COURSIER);
+
+    if (!_compte.isPresent() || _compte.get().isDeleted())
+      throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
+
+    Compte compte = _compte.get();
+    InfosPerso infosPerso = infosPersoDao.findById(compte.getInfosPersoId()).get();
+
+    Optional<MoyenTransport> _moyenTransport = moyenTransportDao.findById(moyenTransportId);
+
+    if (!_moyenTransport.isPresent())
+      throw new IllegalArgumentException("Ce moyen de transport n'existe pas.");
+
+    MoyenTransport moyenTransport = _moyenTransport.get();
+
+    if (compte.getMoyenTransportId() != null && moyenTransportDao.existsById(compte.getMoyenTransportId())) {
+      MoyenTransport olMoyenTransport = moyenTransportDao.findById(compte.getMoyenTransportId()).get();
+      olMoyenTransport.setEnService(false);
+      moyenTransportDao.save(olMoyenTransport);
+    }
+
+    moyenTransport.setEnService(true);
+    moyenTransportDao.save(moyenTransport);
+
+    compte.setMoyenTransportId(moyenTransportId);
+    compteDao.save(compte);
 
     infosPerso.updateCompte(compte);
 

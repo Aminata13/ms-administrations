@@ -51,6 +51,8 @@ public interface InfosPersoService {
 
   public InfosPerso equiperAgent(String id, Set<AffectationEquipement> affectationEquipements);
 
+  public InfosPerso affecterMoyenTransportAgent(String id, String moyenTransportId);
+
   public void deleteCompteAgent(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
 
   public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)

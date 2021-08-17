@@ -136,6 +136,14 @@ public class ProfilController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
+  @ApiOperation(value = "", tags = "agents")
+  @PutMapping("/agents/affecter-moyen-transport/{id}")
+  @PreAuthorize("hasPermission('GESTION_MATERIELS', 'ASSIGN')")
+	public ResponseEntity<?> affecterMoyenTransportAgent(@PathVariable(value = "id") String id, @Valid @RequestBody String moyenTransportId) {
+    InfosPerso infosPerso = infosPersoService.affecterMoyenTransportAgent(id, moyenTransportId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
+	}
+
   @ApiOperation(value = "Suppression d'un agent", tags = "agents")
   @DeleteMapping("/agents/delete/{id}")
   @PreAuthorize("hasPermission('GESTION_AGENTS', 'DELETE')")
