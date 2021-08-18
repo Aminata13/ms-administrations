@@ -158,5 +158,18 @@
       "DELETE",
       "ASSIGN"
     ]
+  },
+  {
+    "libelle": "Gestion des événements",
+    "valeur": "GESTION_EVENEMENTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "SUPERVISE"
+    ]
   }
 ]

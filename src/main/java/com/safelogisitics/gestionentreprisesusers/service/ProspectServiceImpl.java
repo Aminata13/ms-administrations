@@ -109,10 +109,10 @@ public class ProspectServiceImpl implements ProspectService {
     if (!criteria.isEmpty())
       query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
 
-    List<Prospect> listEntreprises = mongoTemplate.find(query, Prospect.class);
+    List<Prospect> listprospects = mongoTemplate.find(query, Prospect.class);
 
     Page<Prospect> prospects = PageableExecutionUtils.getPage(
-      listEntreprises, 
+      listprospects, 
       pageable, 
       () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Prospect.class));
 
