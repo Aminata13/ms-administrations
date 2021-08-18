@@ -69,17 +69,22 @@ public class EvenementServiceImpl implements EvenementService {
     query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
 
     return mongoTemplate.find(query, Evenement.class).stream().map(evenement -> {
-      return objectMapper.convertValue(evenement, EvenementDto.class);
+      EvenementDto evenementDto = objectMapper.convertValue(evenement, EvenementDto.class);
+      evenementDto.setTypeEvenement(typeEvenementDao.findById(evenement.getTypeEvenementId()));
+      return evenementDto;
     }).collect(Collectors.toList());
   }
 
   @Override
   public EvenementDto getEvenementById(String id) {
     Optional<Evenement> evenementExist = evenementDao.findById(id);
-    if (evenementExist.isPresent())
+    if (!evenementExist.isPresent())
       return null;
 
-    return objectMapper.convertValue(evenementExist.get(), EvenementDto.class);
+    Evenement evenement = evenementExist.get();
+    EvenementDto evenementDto = objectMapper.convertValue(evenement, EvenementDto.class);
+    evenementDto.setTypeEvenement(typeEvenementDao.findById(evenement.getTypeEvenementId()));
+    return evenementDto;
   }
 
   @Override
@@ -93,14 +98,16 @@ public class EvenementServiceImpl implements EvenementService {
     evenement.setAuteurId(compteAdmin.getId());
     evenementDao.save(evenement);
 
-    return objectMapper.convertValue(evenement, EvenementDto.class);
+    EvenementDto evenementDto = objectMapper.convertValue(evenement, EvenementDto.class);
+    evenementDto.setTypeEvenement(typeEvenementDao.findById(evenement.getTypeEvenementId()));
+    return evenementDto;
   }
 
   @Override
   public EvenementDto updateEvenement(String id, Evenement evenement) {
     Optional<Evenement> evenementExist = evenementDao.findById(id);
 
-    if (evenementExist.isPresent())
+    if (!evenementExist.isPresent())
       throw new IllegalArgumentException("Cet événement n'existe pas.");
 
     if (!typeEvenementDao.existsById(evenement.getTypeEvenementId()))
@@ -111,7 +118,9 @@ public class EvenementServiceImpl implements EvenementService {
     
     evenementDao.save(evenement);
 
-    return objectMapper.convertValue(evenement, EvenementDto.class);
+    EvenementDto evenementDto = objectMapper.convertValue(evenement, EvenementDto.class);
+    evenementDto.setTypeEvenement(typeEvenementDao.findById(evenement.getTypeEvenementId()));
+    return evenementDto;
   }
 
   @Override

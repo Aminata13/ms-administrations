@@ -26,7 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/type-evenements")
+@RequestMapping("/types-evenements")
 @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
 @Api(tags = "Gestion des types d'événement", description = "Api de gestion des types d'événement")
 public class TypeEvenementController {

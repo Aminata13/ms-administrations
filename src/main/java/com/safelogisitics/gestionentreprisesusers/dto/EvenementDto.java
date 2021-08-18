@@ -1,18 +1,18 @@
 package com.safelogisitics.gestionentreprisesusers.dto;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.TypeEvenement;
 
 public class EvenementDto {
   
   private String id;
 
-  private TypeEvenement typeEvenement;
+  private Optional<TypeEvenement> typeEvenement;
 
-  private Compte auteur;
+  private String auteurId;
 
   private String titre;
 
@@ -40,20 +40,20 @@ public class EvenementDto {
     this.id = id;
   }
 
-  public TypeEvenement getTypeEvenement() {
+  public Optional<TypeEvenement> getTypeEvenement() {
     return this.typeEvenement;
   }
 
-  public void setTypeEvenement(TypeEvenement typeEvenement) {
+  public void setTypeEvenement(Optional<TypeEvenement> typeEvenement) {
     this.typeEvenement = typeEvenement;
   }
 
-  public Compte getAuteur() {
-    return this.auteur;
+  public String getAuteurId() {
+    return this.auteurId;
   }
 
-  public void setAuteur(Compte auteur) {
-    this.auteur = auteur;
+  public void setAuteurId(String auteurId) {
+    this.auteurId = auteurId;
   }
 
   public String getTitre() {
