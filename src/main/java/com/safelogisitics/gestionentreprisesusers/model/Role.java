@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "roles")
-public class Role {
+public class Role extends AuditMetadata {
   
   @Id
   private String id;

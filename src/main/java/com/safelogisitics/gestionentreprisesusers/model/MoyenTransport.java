@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "moyenTransports")
-public class MoyenTransport {
+public class MoyenTransport extends AuditMetadata {
   
   @Id
   private String id;

@@ -69,6 +69,14 @@ public class EquipementController {
 	}
 
   @ApiOperation(value = "Fourniture d'un équipement")
+  @GetMapping("/historique/fournitures/{id}")
+  @PreAuthorize("hasPermission('GESTION_MATERIELS', 'UPDATE')")
+	public ResponseEntity<Collection<FournitureEquipement>> historiqueFournituresEquipement(@PathVariable(value = "id") String id) {
+    Collection<FournitureEquipement> historiqueFournitures = equipementService.getHistoriqueFournitures(id);
+		return ResponseEntity.status(HttpStatus.OK).body(historiqueFournitures);
+	}
+
+  @ApiOperation(value = "Fourniture d'un équipement")
   @PutMapping("/fourniture/{id}")
   @PreAuthorize("hasPermission('GESTION_MATERIELS', 'UPDATE')")
 	public ResponseEntity<Equipement> fournitureEquipement(@PathVariable(value = "id") String id, @Valid @RequestBody FournitureEquipement request) {

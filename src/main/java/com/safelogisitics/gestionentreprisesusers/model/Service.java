@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "services")
-public class Service {
+public class Service extends AuditMetadata {
   
   @Id
   private String id;

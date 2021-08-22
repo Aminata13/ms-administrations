@@ -35,6 +35,5 @@ public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
 
   boolean existsByInfosPersoIdAndDeletedIsFalse(String infosPersoId);
 
-
   long countByInfosPersoIdAndDeletedIsFalse(String infosPersoId);
 }

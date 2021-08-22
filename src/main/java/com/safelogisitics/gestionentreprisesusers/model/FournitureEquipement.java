@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.google.firebase.database.annotations.NotNull;
 
-public class FournitureEquipement {
+public class FournitureEquipement extends AuditMetadata {
 
   @NotNull
   private BigDecimal cout;

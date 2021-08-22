@@ -7,7 +7,7 @@ import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-public class AffectationEquipement {
+public class AffectationEquipement extends AuditMetadata {
 
   @NotBlank
   private String idEquipement;

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -42,10 +43,15 @@ import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
+import org.bson.Document;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -159,28 +165,45 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public Collection<InfosPerso> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
-    final Query query = new Query();
+    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>();
 
-    final List<Criteria> criteria = new ArrayList<>();
+    if (compteType != null)
+      listCritarias.add(Criteria.where("type").is(compteType));
 
     if (prenom != null && !prenom.isEmpty())
-      criteria.add(Criteria.where("prenom").regex(".*"+prenom.trim()+".*","i"));
+      listCritarias.add(Criteria.where("userInfos.prenom").regex(".*"+prenom.trim()+".*","i"));
 
     if (nom != null && !nom.isEmpty())
-      criteria.add(Criteria.where("nom").regex(".*"+nom.trim()+".*","i"));
+      listCritarias.add(Criteria.where("userInfos.nom").regex(".*"+nom.trim()+".*","i"));
 
     if (email != null && !email.isEmpty())
-      criteria.add(Criteria.where("email").regex(".*"+email.trim()+".*","i"));
+      listCritarias.add(Criteria.where("userInfos.email").regex(".*"+email.trim()+".*","i"));
 
     if (telephone != null && !telephone.isEmpty())
-      criteria.add(Criteria.where("telephone").regex(".*"+telephone.trim()+".*","i"));
+      listCritarias.add(Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","i"));
 
-    if (criteria.isEmpty())
-      return null;
+    if (numeroCarte != null && !numeroCarte.isEmpty())
+      listCritarias.add(Criteria.where("abonnement.numeroCarte").regex(".*"+numeroCarte.trim()+".*","i"));
 
-    query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+    if (listCritarias.isEmpty())
+      return new ArrayList<InfosPerso>();
 
-    return mongoTemplate.find(query, InfosPerso.class);
+    listCritarias.add(Criteria.where("deleted").is(false));
+    listCritarias.add(Criteria.where("statut").ne(-1));
+
+    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+    listAggregations.add(Aggregation.lookup("abonnements", "infosPersoId", "compteClient.infosPersoId", "abonnement"));
+    listAggregations.add(Aggregation.unwind("userInfos"));
+    listAggregations.add(Aggregation.unwind("abonnement"));
+    listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+
+    Aggregation aggregation = Aggregation.newAggregation(listAggregations);
+
+    AggregationResults<Compte> listUsers = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class);
+
+    return listUsers.getMappedResults().stream().map(compte -> compte.getUserInfos()).collect(Collectors.toList());
   }
 
   @Override
@@ -361,16 +384,23 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Double quantiteAffecter = equipement.getQuantiteAffecter();
       Double stock = equipement.getStock();
 
+      for (Iterator<AffectationEquipement> iterate = compte.getEquipements().iterator(); iterate.hasNext(); ) {
+        AffectationEquipement _affectationEquipement = iterate.next();
+        if (_affectationEquipement.equals(affectationEquipement)) {
+          quantiteAffecter = quantiteAffecter - _affectationEquipement.getQuantite();
+          stock = stock + _affectationEquipement.getQuantite();
+          break;
+        }
+      }
+
       if (affectationEquipement.getQuantite() == 0 && compte.getEquipements().contains(affectationEquipement)) {
         compte.removeEquipement(affectationEquipement);
-        quantiteAffecter = quantiteAffecter - 1;
-        stock = stock + 1;
       }
 
       if (affectationEquipement.getQuantite() > 0) {
         compte.addEquipement(affectationEquipement);
-        quantiteAffecter = quantiteAffecter + 1;
-        stock = stock - 1;
+        quantiteAffecter = quantiteAffecter + affectationEquipement.getQuantite();
+        stock = stock - affectationEquipement.getQuantite();
       }
 
       equipement.setQuantiteAffecter(quantiteAffecter);

@@ -30,7 +30,6 @@ public class RefreshTokenServiceImpl  implements RefreshTokenService {
     this.jwtConfig = jwtConfig;
   }
 
-
   @Override
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenDao.findByToken(token);

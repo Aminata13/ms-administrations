@@ -13,7 +13,7 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.EEquipementCategor
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "equipements")
-public class Equipement {
+public class Equipement extends AuditMetadata {
 
   private String id;
 

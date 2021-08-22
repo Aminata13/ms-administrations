@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "numeroCartes")
-public class NumeroCarte {
+public class NumeroCarte extends AuditMetadata {
  
   @Id
   private String id;

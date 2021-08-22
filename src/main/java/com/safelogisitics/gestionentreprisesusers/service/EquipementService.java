@@ -19,5 +19,7 @@ public interface EquipementService {
 
   public Equipement fournitureEquipement(String id, FournitureEquipement fourniture);
 
+  public  Collection<FournitureEquipement> getHistoriqueFournitures(String id);
+
   public void deleteEquipement(String id);
 }

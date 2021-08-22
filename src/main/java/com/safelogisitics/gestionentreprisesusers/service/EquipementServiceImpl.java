@@ -122,6 +122,15 @@ public class EquipementServiceImpl implements EquipementService {
   }
 
   @Override
+  public Collection<FournitureEquipement> getHistoriqueFournitures(String id) {
+    Optional<Equipement> equipement = equipementDao.findById(id);
+    if (!equipement.isPresent()) {
+      return new ArrayList<FournitureEquipement>();
+    }
+    return equipement.get().getHistoriqueFournitures();
+  }
+
+  @Override
   public void deleteEquipement(String id) {
     Optional<Equipement> _equipement = equipementDao.findById(id);
 

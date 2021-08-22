@@ -1,0 +1,42 @@
+db.comptes.aggregate([
+  { $addFields: {
+    userObjectId: { $toObjectId: "$infosPersoId" }
+  }},
+  { $lookup: {
+    from: "infosPersos",
+    localField: "userObjectId",
+    foreignField: "_id",
+    as: "infosPerso"
+  }},
+  {
+    $unwind: "$infosPerso"
+  },
+  { $match: {
+    $and: [{ deleted: false }, { type: "COMPTE_PARTICULIER" }, { "infosPerso.prenom": "Aminata" }]
+  }}
+])
+
+db.comptes.aggregate([
+  { $addFields: {
+    userObjectId: { $toObjectId: "$infosPersoId" }
+  }},
+  { $lookup: {
+    from: "infosPersos",
+    localField: "userObjectId",
+    foreignField: "_id",
+    as: "infosPerso"
+  }},
+  {
+    $unwind: "$infosPerso"
+  },
+  { $match: {
+    $and: [{ deleted: false }, { type: "COMPTE_PARTICULIER" }, { "infosPerso.prenom": "Aminata" }]
+  }}
+])
+
+listAggregations.add(l -> new Document("$lookup",
+  new Document("from", mongoTemplate.getCollectionName(Compte.class))
+  .append("let", new Document("userObjectId", new Document("$toObjectId", "$infosPersoId")))
+  .append("pipeline", Arrays.asList(new Document("$match",
+    new Document("$expr", new Document("$eq", Arrays.asList("$id", "$$userObjectId"))))))
+  .append("as", "userInfos")));

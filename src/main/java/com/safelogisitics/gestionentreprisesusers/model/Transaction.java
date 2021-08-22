@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 
 @Document(collection = "transactions")
-public class Transaction {
+public class Transaction extends AuditMetadata {
 
   @Id
   private String id;

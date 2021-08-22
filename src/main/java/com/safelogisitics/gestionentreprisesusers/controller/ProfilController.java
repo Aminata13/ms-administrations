@@ -59,6 +59,7 @@ public class ProfilController {
     @RequestParam(required = false) String numeroCarte,
     @RequestParam(required = false) ECompteType compteType
   ) {
+
     return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, numeroCarte, compteType));
 	}
 

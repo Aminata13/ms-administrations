@@ -32,7 +32,7 @@ Lister => READ, Créer => CREATE, Editer => UPDATE, Valider => VALIDATE, Affecte
 */
 
 @Document(collection = "comptes")
-public class Compte {
+public class Compte extends AuditMetadata {
 
   @Id
   private String id;
@@ -76,6 +76,16 @@ public class Compte {
 
   @Field(value = "dateCreation")
   private Date dateCreation;
+
+  private InfosPerso userInfos;
+
+  public InfosPerso getUserInfos() {
+    return this.userInfos;
+  }
+
+  public void setUserInfos(InfosPerso userInfos) {
+    this.userInfos = userInfos;
+  }
 
   public Compte() {
     this.deleted = false;
