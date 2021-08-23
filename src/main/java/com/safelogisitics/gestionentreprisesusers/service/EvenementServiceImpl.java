@@ -2,12 +2,10 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
+import static java.time.temporal.TemporalAdjusters.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,9 +48,8 @@ public class EvenementServiceImpl implements EvenementService {
   public Collection<EvenementDto> getEvenements(String _dateDebut, String _dateFin) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     LocalDateTime now = LocalDateTime.now();
-    TemporalField fieldUS = WeekFields.of(Locale.getDefault()).dayOfWeek();
-    LocalDateTime dateDebut = _dateDebut != null && !_dateDebut.isEmpty() ? LocalDateTime.parse(_dateDebut, formatter) : now.with(fieldUS, 1).withHour(0).withMinute(0).withSecond(0);
-    LocalDateTime dateFin = _dateFin != null && !_dateFin.isEmpty() ? LocalDateTime.parse(_dateFin, formatter) : now.with(fieldUS, 7).withHour(23).withMinute(59).withSecond(59);
+    LocalDateTime dateDebut = _dateDebut != null && !_dateDebut.isEmpty() ? LocalDateTime.parse(_dateDebut, formatter) : now.with(firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
+    LocalDateTime dateFin = _dateFin != null && !_dateFin.isEmpty() ? LocalDateTime.parse(_dateFin, formatter) : now.with(lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
 
     final Query query = new Query();
     final List<Criteria> criteria = new ArrayList<>();
