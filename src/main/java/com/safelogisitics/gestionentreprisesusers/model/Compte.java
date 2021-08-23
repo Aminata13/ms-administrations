@@ -74,18 +74,12 @@ public class Compte extends AuditMetadata {
   @Field(value = "deleted")
   private boolean deleted;
 
-  @Field(value = "dateCreation")
-  private Date dateCreation;
-
   private InfosPerso userInfos;
 
-  public InfosPerso getUserInfos() {
-    return this.userInfos;
-  }
+  private Abonnement abonnement;
 
-  public void setUserInfos(InfosPerso userInfos) {
-    this.userInfos = userInfos;
-  }
+  @Field(value = "dateCreation")
+  private Date dateCreation;
 
   public Compte() {
     this.deleted = false;
@@ -236,6 +230,22 @@ public class Compte extends AuditMetadata {
 
   public void setDeleted(boolean deleted) {
     this.deleted = deleted;
+  }
+
+  public InfosPerso getUserInfos() {
+    return this.userInfos;
+  }
+
+  public void setUserInfos(InfosPerso userInfos) {
+    this.userInfos = userInfos;
+  }
+
+  public Abonnement getAbonnement() {
+    return this.abonnement;
+  }
+
+  public void setAbonnement(Abonnement abonnement) {
+    this.abonnement = abonnement;
   }
 
   public Date getDateCreation() {

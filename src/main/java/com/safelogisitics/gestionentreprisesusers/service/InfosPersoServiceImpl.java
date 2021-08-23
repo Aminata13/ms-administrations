@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -133,6 +134,35 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     InfosPerso infosPerso = infosPersoDao.findById(compteExist.get().getInfosPersoId()).get();
 
     return infosPerso.getDefaultFields();
+  }
+
+  @Override
+  public Optional<String> verifierAbonnement(String telephone) {
+    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(
+      Criteria.where("type").is(ECompteType.COMPTE_PARTICULIER),
+      Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","i"),
+      Criteria.where("deleted").is(false),
+      Criteria.where("statut").ne(-1)
+    ));
+
+    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+    listAggregations.add(Aggregation.lookup("abonnements", "infosPersoId", "compteClient.infosPersoId", "abonnement"));
+    listAggregations.add(Aggregation.unwind("userInfos"));
+    listAggregations.add(Aggregation.unwind("abonnement"));
+    listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+
+    Aggregation aggregation = Aggregation.newAggregation(listAggregations);
+
+    List<Compte> listUsers = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getMappedResults();
+
+    if (listUsers.size() <= 0 || listUsers.get(0).getAbonnement() == null
+      || listUsers.get(0).getAbonnement().isDeleted() || listUsers.get(0).getAbonnement().isCarteBloquer()) {
+      return Optional.ofNullable(new String());
+    }
+
+    return Optional.ofNullable(listUsers.get(0).getAbonnement().getCompteClient().getId());
   }
 
   @Override

@@ -25,6 +25,8 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findInfosPersoById(String id);
 
+  public Optional<String> verifierAbonnement(String telephone);
+
   public Object findInfosPersoByCompteId(String id);
 
   public Collection<Object> findAllInfosPersoByCompteIds(Set<String> ids);
