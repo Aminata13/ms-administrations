@@ -5,8 +5,10 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -137,7 +139,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Optional<String> verifierAbonnement(String telephone) {
+  public Map<String, String> verifierAbonnement(String telephone) {
     final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
     final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(
       Criteria.where("type").is(ECompteType.COMPTE_PARTICULIER),
@@ -159,10 +161,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     if (listUsers.size() <= 0 || listUsers.get(0).getAbonnement() == null
       || listUsers.get(0).getAbonnement().isDeleted() || listUsers.get(0).getAbonnement().isCarteBloquer()) {
-      return Optional.ofNullable(new String());
+      return null;
     }
 
-    return Optional.ofNullable(listUsers.get(0).getAbonnement().getCompteClient().getId());
+    Map<String, String> response = new HashMap<>();
+    response.put("id", listUsers.get(0).getAbonnement().getCompteClient().getId());
+    response.put("abonnement", listUsers.get(0).getAbonnement().getTypeAbonnement().getLibelle());
+
+    return response;
   }
 
   @Override

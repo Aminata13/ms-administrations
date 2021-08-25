@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findInfosPersoById(String id);
 
-  public Optional<String> verifierAbonnement(String telephone);
+  public Map<String, String> verifierAbonnement(String telephone);
 
   public Object findInfosPersoByCompteId(String id);
 
