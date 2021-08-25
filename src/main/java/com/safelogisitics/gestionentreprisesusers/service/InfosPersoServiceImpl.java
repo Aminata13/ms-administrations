@@ -143,7 +143,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
     final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(
       Criteria.where("type").is(ECompteType.COMPTE_PARTICULIER),
-      Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","i"),
+      Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","xi"),
       Criteria.where("deleted").is(false),
       Criteria.where("statut").ne(-1)
     ));
