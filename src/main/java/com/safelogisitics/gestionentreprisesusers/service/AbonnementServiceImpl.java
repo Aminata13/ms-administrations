@@ -76,7 +76,7 @@ public class AbonnementServiceImpl implements AbonnementService {
       criteriaInfosPerso.add(Criteria.where("email").regex(".*"+parameters.get("email").trim()+".*","i"));
 
     if (parameters != null && parameters.containsKey("telephone") && !parameters.get("telephone").isEmpty())
-      criteriaInfosPerso.add(Criteria.where("telephone").regex(".*"+parameters.get("telephone").trim()+".*","i"));
+      criteriaInfosPerso.add(Criteria.where("telephone").regex(".*"+parameters.get("telephone").trim()+".*","xi"));
 
     if (!criteriaInfosPerso.isEmpty()) {
       queryInfosPerso.addCriteria(new Criteria().andOperator(criteriaInfosPerso.toArray(new Criteria[criteriaInfosPerso.size()])));

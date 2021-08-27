@@ -217,10 +217,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       listCritarias.add(Criteria.where("userInfos.email").regex(".*"+email.trim()+".*","i"));
 
     if (telephone != null && !telephone.isEmpty())
-      listCritarias.add(Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","i"));
+      listCritarias.add(Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","xi"));
 
     if (numeroCarte != null && !numeroCarte.isEmpty())
-      listCritarias.add(Criteria.where("abonnement.numeroCarte").regex(".*"+numeroCarte.trim()+".*","i"));
+      listCritarias.add(Criteria.where("abonnement.numeroCarte").regex(".*"+numeroCarte.trim()+".*","xi"));
 
     if (listCritarias.isEmpty())
       return new ArrayList<InfosPerso>();
@@ -565,26 +565,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!compteExist.isPresent() && !compteExist.get().isDeleted())
       throw new IllegalArgumentException("Cet client n'existe pas!");
 
-    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
-
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(id)) {
-      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
-    }
-
-    InfosPerso infosPerso = updateInfosPerso(id, request);
-
-    User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
-
-    if (request.getUsername() != null && !request.getUsername().isEmpty())
-      user.setUsername(request.getUsername());
-
-    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-      user.setPassword(encoder.encode(request.getPassword())); 
-    }
-    
-    userDao.save(user);
-
-    return new UserInfosResponse(infosPerso, null, user);
+    return updateUserInfos(request);
   }
 
   @Override
@@ -608,17 +589,35 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String id = currentUser.getInfosPerso().getId();
 
     if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-      Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
+      Optional<User> userExist = userDao.findByInfosPersoId(id);
 
       if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
         throw new IllegalArgumentException("Encien mot de passe invalide!");
     }
 
-    UserInfosResponse infosPerso = updateCompteClient(currentUser.getInfosPerso().getId(), request);
+    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
 
-    return infosPerso;
+    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(id)) {
+      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
+    }
+
+    InfosPerso infosPerso = updateInfosPerso(id, request);
+
+    User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+
+    if (request.getUsername() != null && !request.getUsername().isEmpty())
+      user.setUsername(request.getUsername());
+
+    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      user.setPassword(encoder.encode(request.getPassword())); 
+    }
+    
+    userDao.save(user);
+
+    return new UserInfosResponse(infosPerso, null, user);
   }
 
   @Override
