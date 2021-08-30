@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
+import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -28,6 +31,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Autowired
   private EntrepriseDao entrepriseDao;
+
+  @Autowired
+  private CompteDao compteDao;
 
   @Autowired
   private InfosPersoService infosPersoService;
@@ -82,9 +88,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
     InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
-    entreprise.setGerantId(gerant.getId());
+    Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
+
+    entreprise.setGerantId(compte.getId());
 
     entrepriseDao.save(entreprise);
 
@@ -127,10 +136,14 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     entreprise.setAdresse(request.getAdresse());
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
-    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(entreprise.getGerantId(), infosAgentRequest);
+    id = null;
+    if (entreprise.getGerantId() != null  && compteDao.existsById(entreprise.getGerantId())) {
+      id = compteDao.findById(entreprise.getGerantId()).get().getInfosPersoId();
+    }
+    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(id, infosAgentRequest);
+    Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
-    gerant = infosPersoService.createInfosPerso(request.getGerant());
-    entreprise.setGerantId(gerant.getId());
+    entreprise.setGerantId(compte.getId());
 
     entrepriseDao.save(entreprise);
 
