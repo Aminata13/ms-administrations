@@ -93,6 +93,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
+    compte.setEntreprise(entreprise);
+    compteDao.save(compte);
+
     entreprise.setGerantId(compte.getId());
 
     entrepriseDao.save(entreprise);
@@ -142,6 +145,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
     InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(id, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
+
+    compte.setEntreprise(entreprise);
+    compteDao.save(compte);
 
     entreprise.setGerantId(compte.getId());
 
