@@ -530,6 +530,36 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public InfosPerso createOrUpdateCompteEntreprise(String id, InfosPersoAvecCompteRequest request) {
+    InfosPerso infosPerso = null;
+
+    if (id == null) {
+      infosPerso = createCompte(request, ECompteType.COMPTE_ENTREPRISE, null, null);
+      id = infosPerso.getId();
+    } else {
+      infosPerso = updateCompte(id, request, ECompteType.COMPTE_ENTREPRISE);
+    }
+
+    Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ENTREPRISE).get();
+
+    compte.setStatut(request.getStatut());
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
+
+    return infosPerso;
+  }
+
+  @Override
+  public void deleteCompteEntreprise(String infosPersoId) {
+    Optional<InfosPerso> infosPerso = infosPersoDao.findById(infosPersoId);
+
+    if (infosPerso.isPresent()) {
+      deleteCompte(infosPersoId, ECompteType.COMPTE_ENTREPRISE);
+    }
+  }
+
+  @Override
   public UserInfosResponse createCompteClient(RegisterRequest request) {
     InfosPerso infosPerso = createCompte(request, ECompteType.COMPTE_PARTICULIER, request.getUsername(), request.getPassword());
 

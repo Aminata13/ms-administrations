@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,13 +27,16 @@ import org.springframework.web.server.ResponseStatusException;
 public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Autowired
-  EntrepriseDao entrepriseDao;
+  private EntrepriseDao entrepriseDao;
 
   @Autowired
-  InfosPersoService infosPersoService;
+  private InfosPersoService infosPersoService;
 
   @Autowired
-  MongoTemplate mongoTemplate;
+  private MongoTemplate mongoTemplate;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Override
   public Page<Entreprise> getEntreprises(String typeEntreprise, String domaineActivite, String agentId, String denomination, String ninea, Pageable pageable) {
@@ -77,7 +82,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
-    InfosPerso gerant = infosPersoService.createInfosPerso(request.getGerant());
+    InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
+    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
     entreprise.setGerantId(gerant.getId());
 
     entrepriseDao.save(entreprise);
@@ -119,12 +125,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     entreprise.setEmail(request.getEmail());
     entreprise.setTelephone(request.getTelephone());
     entreprise.setAdresse(request.getAdresse());
-    InfosPerso gerant = null;
-    if (request.getGerant().getId() == null) {
-      gerant = infosPersoService.createInfosPerso(request.getGerant());
-    } else {
-      gerant = infosPersoService.updateInfosPerso(request.getGerant().getId(), request.getGerant());
-    }
+
+    InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
+    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(entreprise.getGerantId(), infosAgentRequest);
 
     gerant = infosPersoService.createInfosPerso(request.getGerant());
     entreprise.setGerantId(gerant.getId());
