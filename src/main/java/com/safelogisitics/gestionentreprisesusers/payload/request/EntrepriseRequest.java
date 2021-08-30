@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypePartenariat;
 
@@ -25,7 +26,7 @@ public class EntrepriseRequest {
 
   private String raisonSociale;
 
-  @NotBlank
+  @NotNull
   private InfosPersoRequest gerant;
 
   @NotBlank
