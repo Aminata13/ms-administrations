@@ -88,7 +88,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
-    
+
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
     InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();

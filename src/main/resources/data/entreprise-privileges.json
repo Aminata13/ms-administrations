@@ -1,0 +1,71 @@
+[
+  {
+    "libelle": "Gestion des Personnels",
+    "valeur": "GESTION_PERSONNELS",
+    "type": "COMPTE_ENTREPRISE",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des commandes de livraisons",
+    "valeur": "GESTION_COMMANDE_LIVRAISONS",
+    "type": "COMPTE_ENTREPRISE",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ASSIGN",
+      "TRACK"
+    ]
+  },
+  {
+    "libelle": "Gestion des commandes de conciergeries",
+    "valeur": "GESTION_COMMANDE_CONCIERGERIES",
+    "type": "COMPTE_ENTREPRISE",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ASSIGN",
+      "TRACK"
+    ]
+  },
+  {
+    "libelle": "Gestion des abonnements",
+    "valeur": "GESTION_ABONNEMENTS",
+    "type": "COMPTE_ENTREPRISE",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE",
+      "ACTIVATE"
+    ]
+  },
+  {
+    "libelle": "Gestion des transactions",
+    "valeur": "GESTION_TRANSACTIONS",
+    "type": "COMPTE_ENTREPRISE",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "DELETE",
+      "VALIDATE"
+    ]
+  }
+]

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RoleRequest;
 import com.safelogisitics.gestionentreprisesusers.service.RoleService;
@@ -82,13 +81,6 @@ public class RoleController {
 	public ResponseEntity<?> deleteMultiRole(@PathVariable(value = "ids") Collection<String> ids) {
     roleService.deleteMultiRole(ids);
 		return ResponseEntity.status(HttpStatus.OK).body(new String("Role is deleted"));
-	}
-
-  @GetMapping("/privileges/list")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
-	public ResponseEntity<?> allPrivileges() {
-    Collection<PrivilegeDefaultFields> privileges = roleService.getPrivileges();
-    return ResponseEntity.status(HttpStatus.OK).body(privileges);
 	}
 
   @GetMapping("/privileges-actions/list")

@@ -150,7 +150,7 @@ public class RoleServiceImpl implements RoleService {
     TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
 
     try {
-      listNewPrivileges = mapper.readValue(getClass().getResourceAsStream("/data/new-list-privileges.json"), typeReference);
+      listNewPrivileges = mapper.readValue(getClass().getResourceAsStream("/data/administrateur-privileges.json"), typeReference);
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }

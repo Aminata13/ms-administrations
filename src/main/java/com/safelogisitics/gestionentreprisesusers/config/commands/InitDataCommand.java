@@ -11,13 +11,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.dao.PrivilegeDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.User;
@@ -41,9 +39,6 @@ import org.springframework.stereotype.Component;
 public class InitDataCommand implements CommandLineRunner {
 
 	private static Logger LOG = LoggerFactory.getLogger(InitDataCommand.class);
-
-  @Autowired
-  private PrivilegeDao privilegeDao;
 
   @Autowired
   private RoleDao roleDao;
@@ -83,18 +78,10 @@ public class InitDataCommand implements CommandLineRunner {
 
     InfosPerso infosPerso = infosPersoDao.findByEmail(newInfosPerso.getEmail()).get();
 
-    Privilege[] newPrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/privileges.json"), Privilege[].class);
-
     TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
 
-    Collection<Map<String, Object>>  privilegesActions = objectMapper.readValue(getClass().getResourceAsStream("/data/new-list-privileges.json"), typeReference);
-
-    for (Privilege privilege : newPrivileges) {
-      if (!privilegeDao.existsByTypeAndValeur(privilege.getType(), privilege.getValeur())) {
-        privilegeDao.save(privilege);
-        LOG.info("Nouveau privilège ajouté avec succès: {}", privilege.getLibelle());
-      }
-    }
+    Collection<Map<String, Object>>  administrateurPrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/administrateur-privileges.json"), typeReference);
+    Collection<Map<String, Object>>  adminEntreprisePrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/entreprise-privileges.json"), typeReference);
 
     Role role = new Role();
 
@@ -106,8 +93,7 @@ public class InitDataCommand implements CommandLineRunner {
     role.setLibelle("Super Administrateur");
     role.setEditable(false);
     role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
-    role.setPrivileges(new HashSet<Privilege>(privilegeDao.findByType(ECompteType.COMPTE_ADMINISTRATEUR)));
-    for (Map<String,Object> privilegeActions : privilegesActions) {
+    for (Map<String,Object> privilegeActions : administrateurPrivileges) {
       role.getPrivilegesActions().put(String.valueOf(privilegeActions.get("valeur")), new HashSet<>((Collection<String>) privilegeActions.get("actions")));
     }
     roleDao.save(role);
