@@ -65,7 +65,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "personnels")
   @GetMapping("/get-by-compte/{id}")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ') or hasPermission('GESTION_AGENTS', 'READ')")
 	public ResponseEntity<?> getByCompte(@PathVariable(value = "id") String id) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPersoService.findByCompteId(id));
 	}

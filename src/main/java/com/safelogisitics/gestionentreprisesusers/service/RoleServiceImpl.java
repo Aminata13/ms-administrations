@@ -9,10 +9,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safelogisitics.gestionentreprisesusers.dao.PrivilegeDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
-import com.safelogisitics.gestionentreprisesusers.dao.filter.PrivilegeDefaultFields;
-import com.safelogisitics.gestionentreprisesusers.model.Privilege;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RoleRequest;
@@ -22,9 +19,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-
-  @Autowired
-  private PrivilegeDao privilegeDao;
 
   @Autowired
   private RoleDao roleDao;
@@ -48,9 +42,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     Role role = new Role(roleRequest.getLibelle());
-    Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
-
-    role.setPrivileges(privileges);
     role.setPrivilegesActions(roleRequest.getPrivilegesActions());
 
     role.setType(ECompteType.COMPTE_ADMINISTRATEUR);
@@ -86,9 +77,6 @@ public class RoleServiceImpl implements RoleService {
     Role role = _role.get();
 
     role.setLibelle(roleRequest.getLibelle());
-    Set<Privilege> privileges = new HashSet<Privilege>(privilegeDao.findByIdInAndType(roleRequest.getPrivileges(), ECompteType.COMPTE_ADMINISTRATEUR));
-
-    role.setPrivileges(privileges);
     role.setPrivilegesActions(roleRequest.getPrivilegesActions());
 
     roleDao.save(role);
@@ -134,16 +122,6 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Collection<PrivilegeDefaultFields> getPrivileges() {
-    return privilegeDao.findByTypeWithDefaultFields(ECompteType.COMPTE_ADMINISTRATEUR);
-  }
-
-  @Override
-  public Collection<Privilege> getPrivileges(ECompteType type) {
-    return privilegeDao.findByType(type);
-  }
-
-  @Override
   public Collection<Map<String, Object>> getPrivilegeActions() {
     Collection<Map<String, Object>> listNewPrivileges = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
@@ -151,6 +129,21 @@ public class RoleServiceImpl implements RoleService {
 
     try {
       listNewPrivileges = mapper.readValue(getClass().getResourceAsStream("/data/administrateur-privileges.json"), typeReference);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    
+    return listNewPrivileges;
+  }
+
+  @Override
+  public Collection<Map<String, Object>> getPrivilegeActions(String type) {
+    Collection<Map<String, Object>> listNewPrivileges = new ArrayList<>();
+    ObjectMapper mapper = new ObjectMapper();
+    TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
+
+    try {
+      listNewPrivileges = mapper.readValue(getClass().getResourceAsStream(String.format("/data/%s-privileges.json", type)), typeReference);
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }

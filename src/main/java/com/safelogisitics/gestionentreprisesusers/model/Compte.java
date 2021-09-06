@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -261,6 +260,7 @@ public class Compte extends AuditMetadata {
 
     _customRoleField.put("id", getId());
     _customRoleField.put("type", getType());
+    _customRoleField.put("entreprise", entreprise != null ? entreprise.getId() : "");
     _customRoleField.put("role", "");
     _customRoleField.put("privileges", new ArrayList<>());
     if (role != null) {
@@ -271,7 +271,6 @@ public class Compte extends AuditMetadata {
       }
       _customRoleField.put("privileges", privileges);
     }
-    System.out.println(_customRoleField);
 
     return _customRoleField;
   }
@@ -285,11 +284,13 @@ public class Compte extends AuditMetadata {
 
     _customRoleField.put("id", getRole().getId());
     _customRoleField.put("type", getType());
-    _customRoleField.put("privileges", new ArrayList<>());
+    _customRoleField.put("entreprise", entreprise != null ? entreprise.getId() : "");
     _customRoleField.put("role", getRole().getLibelle());
-    List<String> privileges = getRole().getPrivileges().stream().map(
-      privilege -> privilege.getId()
-      ).collect(Collectors.toList());
+    _customRoleField.put("privileges", new ArrayList<>());
+    List<String> privileges = new ArrayList<>();
+    for (Map.Entry<String, Set<String>> entry : role.getPrivilegesActions().entrySet()) {
+      privileges.add(String.format("%s_%s", entry.getKey(), String.join("_", entry.getValue())));
+    }
     _customRoleField.put("privileges", privileges);
 
     return _customRoleField;
