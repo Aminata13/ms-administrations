@@ -259,14 +259,25 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Page<InfosPerso> getInfosPersos(ECompteType type, Pageable pageable) {
+  public Page<UserInfosResponse> getInfosPersos(ECompteType type, Pageable pageable) {
     List<String> ids = compteDao.findByTypeAndDeletedIsFalse(type)
       .stream()
       .filter(compte -> !compte.isDeleted() && (compte.getRole() == null || (compte.getRole() != null && compte.getRole().isEditable())))
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
-    return infosPersoDao.findByIdIn(ids, pageable);
+    return infosPersoDao.findByIdIn(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
+      @Override
+      public UserInfosResponse apply(InfosPerso infosPerso) {
+        User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+        Abonnement abonnement = null;
+        Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(infosPerso.getId());
+        if (_abonnement.isPresent()) {
+          abonnement = _abonnement.get();
+        }
+        return new UserInfosResponse(infosPerso, abonnement, user);
+      }
+    });
   }
 
   @Override

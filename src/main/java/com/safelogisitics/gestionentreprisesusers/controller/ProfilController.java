@@ -10,6 +10,7 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class ProfilController {
   @GetMapping("/personnels/list")
   @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> allPersonnels(@PageableDefault(size = 20) Pageable pageable) {
-    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_ADMINISTRATEUR, pageable);
+    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_ADMINISTRATEUR, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
 	}
 
@@ -109,7 +110,7 @@ public class ProfilController {
   @GetMapping("/agents/list")
   @PreAuthorize("hasPermission('GESTION_AGENTS', 'READ')")
 	public ResponseEntity<?> allAgents(@PageableDefault(size = 20) Pageable pageable) {
-    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_COURSIER, pageable);
+    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_COURSIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
 	}
 
@@ -160,7 +161,7 @@ public class ProfilController {
   @GetMapping("/prestataires/list")
   @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> allPrestataires(@PageableDefault(size = 20) Pageable pageable) {
-    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PRESTATAIRE, pageable);
+    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PRESTATAIRE, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
 	}
 
@@ -195,7 +196,7 @@ public class ProfilController {
   @GetMapping("/clients/list")
   @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
 	public ResponseEntity<?> allClients(@PageableDefault(size = 20) Pageable pageable) {
-    Page<InfosPerso> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
+    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
 	}
 

@@ -40,7 +40,7 @@ public interface InfosPersoService {
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
 
-  public Page<InfosPerso> getInfosPersos(ECompteType type, Pageable pageable); // list infosPerso avec compte
+  public Page<UserInfosResponse> getInfosPersos(ECompteType type, Pageable pageable); // list infosPerso avec compte
   
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest); // Ajout d'un infos perso sans compte
 
