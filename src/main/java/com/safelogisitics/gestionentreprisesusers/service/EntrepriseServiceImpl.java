@@ -39,6 +39,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   private InfosPersoService infosPersoService;
 
   @Autowired
+  private AbonnementService abonnementService;
+
+  @Autowired
   private MongoTemplate mongoTemplate;
 
   @Autowired
@@ -109,7 +112,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
-    entreprise.setTypeEntreprise(request.getTypeEntreprise());
     entreprise.setDomaineActivite(request.getDomaineActivite());
 
     entrepriseDao.save(entreprise);

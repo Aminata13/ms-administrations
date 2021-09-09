@@ -134,6 +134,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     }
 
     InfosPerso infosPerso = infosPersoDao.findById(compteExist.get().getInfosPersoId()).get();
+    
+    Optional<Abonnement> abonnement = abonnementDao.findByCompteClientId(id);
+
+    if (abonnement.isPresent() && !abonnement.get().isDeleted()) {
+      return infosPerso.getDefaultFields(abonnement.get().getTypeAbonnement().getLibelle());
+    }
 
     return infosPerso.getDefaultFields();
   }

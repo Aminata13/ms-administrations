@@ -248,4 +248,24 @@ public class InfosPerso extends AuditMetadata {
     };
     return defaultFields;
   }
+
+  @JsonIgnore
+  public Object getDefaultFields(String abonnementLibelle) {
+    Object defaultFields = new Object() {
+      public final String id = getId();
+      public final String prenom = getPrenom();
+      public final String nom = getNom();
+      public final String email = getEmail();
+      public final String telephone = getTelephone();
+      public final String adresse = getAdresse();
+      public final String typeAbonnement = abonnementLibelle;
+      public final String dateCreation = getDateCreation().toString();
+
+      @Override
+      public String toString() {
+        return String.format("%s %s %s %s %s %s %s %s", id, prenom, nom, email, telephone, adresse, typeAbonnement, dateCreation); 
+      }
+    };
+    return defaultFields;
+  }
 }

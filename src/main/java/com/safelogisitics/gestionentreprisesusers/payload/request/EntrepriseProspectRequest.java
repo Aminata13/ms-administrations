@@ -25,6 +25,8 @@ public class EntrepriseProspectRequest {
 
   private String adresse;
 
+  private String numeroCarte;
+
   public String getTypeEntreprise() {
     return this.typeEntreprise;
   }
@@ -55,5 +57,9 @@ public class EntrepriseProspectRequest {
 
   public String getAdresse() {
     return this.adresse;
+  }
+
+  public String getNumeroCarte() {
+    return this.numeroCarte;
   }
 }

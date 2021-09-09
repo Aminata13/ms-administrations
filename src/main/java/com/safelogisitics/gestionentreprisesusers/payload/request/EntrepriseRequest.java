@@ -37,6 +37,8 @@ public class EntrepriseRequest {
 
   private String adresse;
 
+  private String numeroCarte;
+
   public String getTypeEntreprise() {
     return this.typeEntreprise;
   }
@@ -76,4 +78,9 @@ public class EntrepriseRequest {
   public String getAdresse() {
     return this.adresse;
   }
+
+  public String getNumeroCarte() {
+    return this.numeroCarte;
+  }
+
 }

@@ -40,3 +40,30 @@ listAggregations.add(l -> new Document("$lookup",
   .append("pipeline", Arrays.asList(new Document("$match",
     new Document("$expr", new Document("$eq", Arrays.asList("$id", "$$userObjectId"))))))
   .append("as", "userInfos")));
+
+
+
+  db.collection.aggregate( [ { aggregation steps... }, { $out : "results" } ] )
+
+db.abonnements.aggregate([
+  { $addFields: {
+    userObjectId: { $toObjectId: "$compteClient.infosPersoId" }
+  }},
+  { $lookup: {
+    from: "infosPersos",
+    localField: "userObjectId",
+    foreignField: "_id",
+    as: "infosPerso"
+  }},
+  {
+    $unwind: "$infosPerso"
+  },
+  { $match: {
+    deleted: false
+  }},
+  {
+    $out : "listAbonnees"
+  }
+])
+
+mongoexport --db=slAdministrations --collection=listAbonnees --fields=dateCreation,infosPerso.prenom,infosPerso.nom,infosPerso.email,infosPerso.telephone,typeAbonnement.libelle,numeroCarte,solde --type=csv --out=data/listAbonnees.csv
