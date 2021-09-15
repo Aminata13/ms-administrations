@@ -86,7 +86,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Override
   public Entreprise createEntreprise(EntrepriseRequest request) {
-    if (entrepriseDao.existsByDenominationOrNineaAndDeletedIsFalse(request.getDenomination(), request.getNinea())) {
+    if (entrepriseDao.existsByDenominationAndDeletedIsFalse(request.getDenomination())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 
@@ -107,7 +107,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Override
   public Entreprise createEntreprise(EntrepriseProspectRequest request) {
-    if (entrepriseDao.existsByDenominationOrNineaAndDeletedIsFalse(request.getDenomination(), request.getNinea())) {
+    if (entrepriseDao.existsByDenominationAndDeletedIsFalse(request.getDenomination())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 

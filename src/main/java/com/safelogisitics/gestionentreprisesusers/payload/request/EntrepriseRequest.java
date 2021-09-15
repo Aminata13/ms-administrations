@@ -37,6 +37,7 @@ public class EntrepriseRequest {
 
   private String adresse;
 
+  @NotBlank
   private String numeroCarte;
 
   public String getTypeEntreprise() {

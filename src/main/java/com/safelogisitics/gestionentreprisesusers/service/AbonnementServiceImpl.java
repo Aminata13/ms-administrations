@@ -163,7 +163,16 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
+    Compte compteClient = null;
+
+    if (abonnementRequest.getInfosPersoId() != null)
+      compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
+
+    if (abonnementRequest.getEntrepriseId() != null)
+      compteClient = compteDao.findByEntrepriseIdAndType(abonnementRequest.getEntrepriseId(), ECompteType.COMPTE_ENTREPRISE).get();
+
+    if (compteClient == null)
+      throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
 
     Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClientId(compteClient.getId());
 
@@ -267,7 +276,7 @@ public class AbonnementServiceImpl implements AbonnementService {
       throw new IllegalArgumentException("Cette carte n'existe pas!");
 
     if (!numeroCarteExist.get().getTypeAbonnementId().equals(abonnementRequest.getTypeAbonnementId()))
-      throw new IllegalArgumentException("Cette carte ne correspond avec ce type d'abonnement!");
+      throw new IllegalArgumentException("Cette carte ne correspond pas avec ce type d'abonnement!");
 
     if (numeroCarteExist.get().isActive())
       throw new IllegalArgumentException("Cette carte est déjà activé!");

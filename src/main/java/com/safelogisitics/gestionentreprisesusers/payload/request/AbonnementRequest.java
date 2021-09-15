@@ -8,8 +8,9 @@ public class AbonnementRequest {
   @NotBlank
   private String typeAbonnementId;
 
-  @NotBlank
   private String infosPersoId;
+
+  private String entrepriseId;
 
   @NotNull
   private int statut;
@@ -33,6 +34,10 @@ public class AbonnementRequest {
 
   public String getInfosPersoId() {
     return this.infosPersoId;
+  }
+
+  public String getEntrepriseId() {
+    return this.entrepriseId;
   }
 
   public int getStatut() {
