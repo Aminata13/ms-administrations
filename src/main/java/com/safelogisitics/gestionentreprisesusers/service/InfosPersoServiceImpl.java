@@ -206,7 +206,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, Boolean isAbonnee, String typeAbonnementId, String numeroCarte, ECompteType compteType) {
+  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
     final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
     final List<Criteria> listCritarias = new ArrayList<Criteria>();
 
@@ -224,12 +224,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     if (telephone != null && !telephone.isEmpty())
       listCritarias.add(Criteria.where("userInfos.telephone").regex(".*"+telephone.trim()+".*","xi"));
-
-    if (isAbonnee != null)
-      listCritarias.add(Criteria.where("abonnement").exists(isAbonnee.booleanValue()));
-
-    if (typeAbonnementId != null && !typeAbonnementId.isEmpty())
-      listCritarias.add(Criteria.where("abonnement.typeAbonnement.typeAbonnementId").is(typeAbonnementId.trim()));
 
     if (numeroCarte != null && !numeroCarte.isEmpty())
       listCritarias.add(Criteria.where("abonnement.numeroCarte").regex(".*"+numeroCarte.trim()+".*","xi"));
@@ -272,6 +266,33 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     List<String> ids = compteDao.findByTypeAndDeletedIsFalse(type)
       .stream()
       .filter(compte -> !compte.isDeleted() && (compte.getRole() == null || (compte.getRole() != null && compte.getRole().isEditable())))
+      .map(compte -> compte.getInfosPersoId())
+      .collect(Collectors.toList());
+
+    return infosPersoDao.findByIdIn(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
+      @Override
+      public UserInfosResponse apply(InfosPerso infosPerso) {
+        User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+        Abonnement abonnement = null;
+        Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(infosPerso.getId());
+        if (_abonnement.isPresent()) {
+          abonnement = _abonnement.get();
+        }
+        return new UserInfosResponse(infosPerso, abonnement, user);
+      }
+    });
+  }
+
+  @Override
+  public Page<UserInfosResponse> getInfosPersos(ECompteType type, Boolean isAbonnee, Pageable pageable) {
+    List<String> ids = compteDao.findByTypeAndDeletedIsFalse(type)
+      .stream()
+      .filter(compte -> {
+        boolean validCompte = !compte.isDeleted() && (compte.getRole() == null || (compte.getRole() != null && compte.getRole().isEditable()));
+        if (isAbonnee != null)
+          validCompte = validCompte && isAbonnee.booleanValue() == abonnementDao.existsByCompteClientInfosPersoId(compte.getInfosPersoId());
+        return validCompte;
+      })
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 

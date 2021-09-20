@@ -57,13 +57,11 @@ public class ProfilController {
     @RequestParam(required = false) String nom,
     @RequestParam(required = false) String email,
     @RequestParam(required = false) String telephone,
-    @RequestParam(required = false) Boolean isAbonnee,
-    @RequestParam(required = false) String typeAbonnementId,
     @RequestParam(required = false) String numeroCarte,
     @RequestParam(required = false) ECompteType compteType
   ) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, isAbonnee, typeAbonnementId, numeroCarte, compteType));
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, numeroCarte, compteType));
 	}
 
   @ApiOperation(value = "", tags = "personnels")
@@ -197,8 +195,10 @@ public class ProfilController {
   @ApiOperation(value = "", tags = "clients")
   @GetMapping("/clients/list")
   @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
-	public ResponseEntity<?> allClients(@PageableDefault(size = 20) Pageable pageable) {
-    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, pageable);
+	public ResponseEntity<?> allClients(
+    @RequestParam(required = false) Boolean isAbonnee,
+    @PageableDefault(size = 20) Pageable pageable) {
+    Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PARTICULIER, isAbonnee, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
 	}
 

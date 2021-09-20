@@ -171,5 +171,17 @@
       "DELETE",
       "SUPERVISE"
     ]
+  },
+  {
+    "libelle": "Gestion des sms",
+    "valeur": "GESTION_SMS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE"
+    ]
   }
 ]

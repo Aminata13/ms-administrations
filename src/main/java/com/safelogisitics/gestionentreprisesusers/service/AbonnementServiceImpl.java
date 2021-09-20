@@ -211,7 +211,7 @@ public class AbonnementServiceImpl implements AbonnementService {
   public Abonnement changerAbonnement(String id, AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur) {
     Optional<Abonnement> abonnementExist = abonnementDao.findById(id);
 
-    if (!abonnementExist.isPresent() || !abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted())
+    if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted())
       throw new IllegalArgumentException("Cette abonnement n'existe pas!");
 
     NumeroCarte newNumeroCarte = validateNewCarteAbonnement(abonnementRequest);

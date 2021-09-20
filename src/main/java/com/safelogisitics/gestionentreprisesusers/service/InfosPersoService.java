@@ -36,11 +36,13 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone);
 
-  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, Boolean isAbonnee, String typeAbonnementId, String numeroCarte, ECompteType compteType);
+  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType);
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
 
   public Page<UserInfosResponse> getInfosPersos(ECompteType type, Pageable pageable); // list infosPerso avec compte
+
+  public Page<UserInfosResponse> getInfosPersos(ECompteType type, Boolean isAbonnee, Pageable pageable); // list infosPerso avec compte
   
   public InfosPerso createInfosPerso(InfosPersoRequest infosPersoRequest); // Ajout d'un infos perso sans compte
 
