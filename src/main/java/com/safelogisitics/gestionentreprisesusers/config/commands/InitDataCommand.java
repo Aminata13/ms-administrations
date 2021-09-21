@@ -12,11 +12,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.RoleDao;
+import com.safelogisitics.gestionentreprisesusers.dao.SMSModelDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
+import com.safelogisitics.gestionentreprisesusers.model.SMSModel;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -56,6 +58,9 @@ public class InitDataCommand implements CommandLineRunner {
   private TypeAbonnementDao typeAbonnementDao;
 
   @Autowired
+  private SMSModelDao smsModelDao;
+
+  @Autowired
 	private PasswordEncoder encoder;
 
 	/**
@@ -79,9 +84,10 @@ public class InitDataCommand implements CommandLineRunner {
     InfosPerso infosPerso = infosPersoDao.findByEmail(newInfosPerso.getEmail()).get();
 
     TypeReference<Collection<Map<String, Object>>> typeReference = new TypeReference<Collection<Map<String, Object>>>(){};
+    TypeReference<Collection<SMSModel>> typeSMSModel = new TypeReference<Collection<SMSModel>>(){};
 
     Collection<Map<String, Object>>  administrateurPrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/administrateur-privileges.json"), typeReference);
-    Collection<Map<String, Object>>  adminEntreprisePrivileges = objectMapper.readValue(getClass().getResourceAsStream("/data/entreprise-privileges.json"), typeReference);
+    Collection<SMSModel>  smsModels = objectMapper.readValue(getClass().getResourceAsStream("/data/default-sms-models.json"), typeSMSModel);
 
     Role role = new Role();
 
@@ -140,6 +146,23 @@ public class InitDataCommand implements CommandLineRunner {
         typeAbonnement.setPrix(_typeAbonnement.getPrix());
         typeAbonnementDao.save(typeAbonnement);
       });
+    }
+
+    for (SMSModel _smsModel: smsModels) {
+      Optional<SMSModel> smsModelExist = smsModelDao.findByMotCleIgnoreCase(_smsModel.getMotCle());
+      SMSModel smsModel = new SMSModel();
+      if (smsModelExist.isPresent())
+        smsModel = smsModelExist.get();
+
+      smsModel.setSignature(_smsModel.getSignature());
+      smsModel.setSubject(_smsModel.getSubject());
+      smsModel.setContent(_smsModel.getContent());
+      smsModel.setData(_smsModel.getData());
+      smsModel.setCibles(_smsModel.getCibles());
+      smsModel.setMotCle(_smsModel.getMotCle());
+      smsModel.setRepetition(_smsModel.getRepetition());
+
+      smsModelDao.save(smsModel);
     }
 	}
 }

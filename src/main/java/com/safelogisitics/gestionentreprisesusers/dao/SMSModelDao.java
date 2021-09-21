@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface SMSModelDao extends PagingAndSortingRepository<SMSModel, String> {
   Optional<SMSModel> findBySubjectIgnoreCase(String subject);
 
+  Optional<SMSModel> findByMotCleIgnoreCase(String motCle);
+
   Collection<SMSModel> findByCiblesIn(Set<String> cibles);
 
   boolean existsBySubjectIgnoreCase(String subject);

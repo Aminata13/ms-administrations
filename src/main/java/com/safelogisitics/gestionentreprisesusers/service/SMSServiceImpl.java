@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
@@ -75,6 +76,7 @@ public class SMSServiceImpl implements SMSService {
   public void sendSms(Set<SMSRequest> messages) {
     System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
     String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+    // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
     String inputString = null;
     int responseCode = 0;
     String password = token;
@@ -138,6 +140,8 @@ public class SMSServiceImpl implements SMSService {
 
     SMSModel smsModel = objectMapper.convertValue(smsModelRequest, SMSModel.class);
 
+    smsModel.setMotCle(UUID.randomUUID().toString());
+
     smsModelDao.save(smsModel);
 
     return smsModel;
@@ -151,6 +155,7 @@ public class SMSServiceImpl implements SMSService {
       throw new IllegalArgumentException("Ce modèle de sms n'existe pas.");
 
     SMSModel smsModel = _smsModel.get();
+    String motCle = smsModel.getMotCle();
 
     if (!smsModel.getSubject().toLowerCase().equals(smsModelRequest.getSubject().toLowerCase()) && smsModelDao.existsBySubjectIgnoreCase(smsModelRequest.getSubject())) {
       throw new IllegalArgumentException("Un modèle de sms avec ce même sujet existe déjà.");
@@ -158,6 +163,7 @@ public class SMSServiceImpl implements SMSService {
 
     smsModel = objectMapper.convertValue(smsModelRequest, SMSModel.class);
     smsModel.setId(id);
+    smsModel.setMotCle(motCle);
 
     smsModelDao.save(smsModel);
 

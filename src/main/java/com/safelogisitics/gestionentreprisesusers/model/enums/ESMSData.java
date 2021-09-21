@@ -1,8 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.model.enums;
 
 public enum ESMSData {
-  CLIENT_PRENOM,
-  CLIENT_NOM,
+  CLIENT_NOM_COMPLET,
   TRANSACTION_TYPE,
   TRANSACTION_MONTANT,
   ABONNEMENT_NUMERO_CARTE,
