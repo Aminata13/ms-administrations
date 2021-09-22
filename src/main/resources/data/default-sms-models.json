@@ -4,7 +4,7 @@
     "subject": "Commande livraison effectuée",
     "content": "Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans les 02 heures qui suivent.\nLe code de retrait est %s.\nPour le retrait de votre colis si vous disposez d’une carte merci de la remettre à l’agent pour scan.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     "data": ["CLIENT_NOM_COMPLET", "COMMANDE_NUMERO", "COMMANDE_CODE_RETRAIT"],
-    "cibles": ["PARTICULIER", "ENTREPRISE"],
+    "cible": "PARTICULIERS",
     "repetition": "UNIQUE",
     "motCle": "commande-livraison-effectuer"
   }

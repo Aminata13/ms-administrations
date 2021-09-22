@@ -1,7 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.payload.request;
 
 import java.util.Collection;
-import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -23,8 +22,8 @@ public class SMSModelRequest {
 
   private Collection<ESMSData> data;
 
-  @NotNull(message = "La liste des cibles est obligatoire.")
-  private Set<ESMSCible> cibles;
+  @NotNull(message = "La cible est obligatoire.")
+  private ESMSCible cible;
 
   @NotNull(message = "Le type répétition est obligatoire.")
   private ESMSRepetition repetition;
@@ -61,12 +60,12 @@ public class SMSModelRequest {
     this.data = data;
   }
 
-  public Set<ESMSCible> getCibles() {
-    return this.cibles;
+  public ESMSCible getCible() {
+    return this.cible;
   }
 
-  public void setCibles(Set<ESMSCible> cibles) {
-    this.cibles = cibles;
+  public void setCible(ESMSCible cible) {
+    this.cible = cible;
   }
 
   public ESMSRepetition getRepetition() {

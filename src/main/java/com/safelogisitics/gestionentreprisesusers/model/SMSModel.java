@@ -1,7 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSCible;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSData;
@@ -29,8 +29,8 @@ public class SMSModel extends AuditMetadata {
   @Field(name = "data")
   private Collection<ESMSData> data;
 
-  @Field(name = "cibles")
-  private Set<ESMSCible> cibles;
+  @Field(name = "cible")
+  private ESMSCible cible;
 
   @Field(name = "motCle")
   private String motCle;
@@ -40,12 +40,12 @@ public class SMSModel extends AuditMetadata {
 
   public SMSModel() {}
 
-  public SMSModel(String signature, String subject, String content, Collection<ESMSData> data, Set<ESMSCible> cibles, ESMSRepetition repetition) {
+  public SMSModel(String signature, String subject, String content, Collection<ESMSData> data, ESMSCible cible, ESMSRepetition repetition) {
     this.signature = signature;
     this.subject = subject;
     this.content = content;
     this.data = data;
-    this.cibles = cibles;
+    this.cible = cible;
     this.repetition = repetition;
   }
 
@@ -89,12 +89,12 @@ public class SMSModel extends AuditMetadata {
     this.data = data;
   }
 
-  public Set<ESMSCible> getCibles() {
-    return this.cibles;
+  public ESMSCible getCible() {
+    return this.cible;
   }
 
-  public void setCibles(Set<ESMSCible> cibles) {
-    this.cibles = cibles;
+  public void setCible(ESMSCible cible) {
+    this.cible = cible;
   }
 
   public String getMotCle() {
@@ -111,5 +111,9 @@ public class SMSModel extends AuditMetadata {
 
   public void setRepetition(ESMSRepetition repetition) {
     this.repetition = repetition;
+  }
+
+  public String createSms(Collection<String> data, Collection<Map<String, String>> recipients) {
+    return String.format("%s %s %s %s", signature, subject, String.format(content, data), recipients);
   }
 }

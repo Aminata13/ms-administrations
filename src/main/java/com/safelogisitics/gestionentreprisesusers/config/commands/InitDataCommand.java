@@ -158,7 +158,7 @@ public class InitDataCommand implements CommandLineRunner {
       smsModel.setSubject(_smsModel.getSubject());
       smsModel.setContent(_smsModel.getContent());
       smsModel.setData(_smsModel.getData());
-      smsModel.setCibles(_smsModel.getCibles());
+      smsModel.setCible(_smsModel.getCible());
       smsModel.setMotCle(_smsModel.getMotCle());
       smsModel.setRepetition(_smsModel.getRepetition());
 

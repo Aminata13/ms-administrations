@@ -15,7 +15,7 @@ public interface SMSModelDao extends PagingAndSortingRepository<SMSModel, String
 
   Optional<SMSModel> findByMotCleIgnoreCase(String motCle);
 
-  Collection<SMSModel> findByCiblesIn(Set<String> cibles);
+  Collection<SMSModel> findByCibleIn(Set<String> cibles);
 
   boolean existsBySubjectIgnoreCase(String subject);
 }

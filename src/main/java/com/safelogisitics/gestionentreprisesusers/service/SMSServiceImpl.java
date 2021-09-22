@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -19,14 +24,21 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.SMSModelDao;
+import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
+import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.SMSModel;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSCible;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSData;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSModelRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSRequest;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +46,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,28 +70,24 @@ public class SMSServiceImpl implements SMSService {
 	private String login;
 
   @Autowired
+  private SMSModelDao smsModelDao;
+
+  @Autowired
+  private CompteDao compteDao;
+
+  @Autowired
+  private AbonnementDao abonnementDao;
+
+  @Autowired
   private ObjectMapper objectMapper;
 
   @Autowired
-  private SMSModelDao smsModelDao;
-
-  /* 
-  {
-    messages: [
-      {
-        signature: "RAK IN TAK",
-        subject: "Validation paiement",
-        content: "TEST SMS: Bonjour votre paiement est validé",
-        recipients: [{id: 1, value: "221776420768"}]
-      }
-    ]
-  }
-  //*/
+  private MongoTemplate mongoTemplate;
 
   @Override
   public void sendSms(Set<SMSRequest> messages) {
     System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
-    String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+    String documentJSON = handleSmsRequestsToJson(messages);
     // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
     String inputString = null;
     int responseCode = 0;
@@ -207,5 +219,138 @@ public class SMSServiceImpl implements SMSService {
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
+  }
+
+  private String handleSmsRequestsToJson(Set<SMSRequest> smsRequests) {
+    String json = "";
+    Collection<String> messages = new ArrayList<>();
+    for (SMSRequest smsRequest : smsRequests) {
+      Optional<SMSModel> smsModelExist = smsModelDao.findByMotCleIgnoreCase(smsRequest.getMotCle());
+      if (!smsModelExist.isPresent() || (smsModelExist.get().getData() != null  && smsRequest.getData() == null)) {
+        continue;
+      }
+
+      SMSModel smsModel = smsModelExist.get();
+      
+      Collection<Map<String, String>> smsRecipients = handleSmsRecipients(smsModel.getCible(), smsRequest.getRecipients());
+
+      Collection<String> smsData = new ArrayList<>();
+      if (smsModel.getData() != null && smsModel.getData().isEmpty()) {
+        smsData = handleSmsData(smsModel.getData(), smsRequest.getData());
+      }
+      
+      messages.add(smsModel.createSms(smsData, smsRecipients));
+    }
+
+    try {
+      json = objectMapper.writeValueAsString(Collections.singletonMap("messages", messages));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
+
+    return json;
+  }
+
+  private Collection<String> handleSmsData(Collection<ESMSData> dataSmsModel, Map<String, String> data) {
+    Collection<String> smsData = new ArrayList<>();
+    data.forEach((key, value) -> {
+      if (key == "CLIENT_NOM_COMPLET" && dataSmsModel.contains(ESMSData.valueOf("CLIENT_NOM_COMPLET"))) {
+        
+      }
+    });
+    if (dataSmsModel.contains(ESMSData.CLIENT_NOM_COMPLET)) {
+      if (!data.containsKey("clientId") || !compteDao.existsById(data.get("clientId"))) {
+        return smsData;
+      }
+      Compte compteClient = compteDao.findById(data.get("clientId")).get();
+      Optional<Abonnement> abonnement = abonnementDao.findByCompteClientId(compteClient.getId());
+    }
+    return smsData;
+  }
+
+  private Collection<Map<String, String>> handleSmsRecipients(ESMSCible cible, Set<String> data) {
+    Collection<Map<String, String>> smsRecipients = new ArrayList<Map<String, String>>();
+    Collection<String> recipients = new ArrayList<>();
+
+    if (cible == ESMSCible.UNIQUE) {
+      
+    }
+
+    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(
+      Criteria.where("deleted").is(false), Criteria.where("statut").ne(-1)
+    ));
+    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+    listAggregations.add(Aggregation.unwind("userInfos"));
+    Aggregation aggregation = Aggregation.newAggregation();
+
+    switch (cible) {
+      case UNIQUE:
+        recipients = data;
+        break;
+
+      case PARTICULIERS:
+        listCritarias.add(Criteria.where("type").is(ECompteType.COMPTE_PARTICULIER));
+        listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+        aggregation = Aggregation.newAggregation(listAggregations);
+        recipients = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getMappedResults()
+          .stream().map(compte -> compte.getUserInfos().getTelephone()).collect(Collectors.toList());
+        break;
+
+      case COURSIERS:
+        listCritarias.add(Criteria.where("type").is(ECompteType.COMPTE_COURSIER));
+        listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+        aggregation = Aggregation.newAggregation(listAggregations);
+        recipients = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getMappedResults()
+          .stream().map(compte -> compte.getUserInfos().getTelephone()).collect(Collectors.toList());
+        break;
+
+      case PRESTATAIRES:
+        listCritarias.add(Criteria.where("type").is(ECompteType.COMPTE_PRESTATAIRE));
+        listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+        aggregation = Aggregation.newAggregation(listAggregations);
+        recipients = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getMappedResults()
+          .stream().map(compte -> compte.getUserInfos().getTelephone()).collect(Collectors.toList());
+        break;
+
+      default:
+        break;
+    }
+
+    int index = 1;
+    for (Iterator<String> value = recipients.iterator(); value.hasNext(); index++) {
+      Map<String, String> recipient = new HashMap<>();
+      recipient.put("id", String.valueOf(index));
+      recipient.put("value", value.next());
+      smsRecipients.add(recipient);
+    }
+
+    return smsRecipients;
+  }
+
+  private List<Compte> findComptes(ECompteType compteType, String compteId) {
+    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(
+      Criteria.where("deleted").is(false),
+      Criteria.where("statut").ne(-1)
+    ));
+
+    if (compteType != null)
+      listCritarias.add(Criteria.where("type").is(compteType));
+
+    if (compteId != null)
+      listCritarias.add(Criteria.where("_id").is(compteId));
+
+    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+    listAggregations.add(Aggregation.lookup("abonnements", "infosPersoId", "compteClient.infosPersoId", "abonnement"));
+    listAggregations.add(Aggregation.unwind("userInfos"));
+    listAggregations.add(Aggregation.unwind("abonnement"));
+    listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+
+    Aggregation aggregation = Aggregation.newAggregation(listAggregations);
+
+    return mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getMappedResults();
   }
 }

@@ -183,5 +183,18 @@
       "UPDATE",
       "DELETE"
     ]
+  },
+  {
+    "libelle": "Gestion des factures",
+    "valeur": "GESTION_FACTURES",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE"
+    ]
   }
 ]
