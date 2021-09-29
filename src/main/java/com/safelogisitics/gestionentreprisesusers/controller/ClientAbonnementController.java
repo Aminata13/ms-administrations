@@ -84,12 +84,16 @@ public class ClientAbonnementController {
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte compteClient = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_PARTICULIER).get();
+
     CreatePaiementDto createPaiementDto = new CreatePaiementDto(
       request.getTypePaiementId(),
       transaction.getReference(),
       request.getService(),
       request.getServiceId(),
       transaction.getAbonnement().getCompteClient().getId(),
+      compteClient.getId(),
       transaction.getMontant()
     );
 

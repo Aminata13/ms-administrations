@@ -19,16 +19,19 @@ public class CreatePaiementDto {
 
   private String clientId;
 
+  private String auteurId;
+
   private BigDecimal montant;
 
   public CreatePaiementDto() {}
 
-  public CreatePaiementDto(String typePaiementId, String reference, EServiceType service, String serviceId, String clientId, BigDecimal montant) {
+  public CreatePaiementDto(String typePaiementId, String reference, EServiceType service, String serviceId, String clientId, String auteurId, BigDecimal montant) {
     this.typePaiementId = typePaiementId;
     this.reference = reference;
     this.service = service;
     this.serviceId = serviceId;
     this.clientId = clientId;
+    this.auteurId = auteurId;
     this.montant = montant;
   }
 
@@ -70,6 +73,14 @@ public class CreatePaiementDto {
 
   public void setClientId(String clientId) {
     this.clientId = clientId;
+  }
+
+  public String getAuteurId() {
+    return this.auteurId;
+  }
+
+  public void setAuteurId(String auteurId) {
+    this.auteurId = auteurId;
   }
 
   public BigDecimal getMontant() {

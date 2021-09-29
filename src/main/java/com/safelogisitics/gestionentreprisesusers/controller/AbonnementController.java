@@ -22,6 +22,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransa
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
@@ -38,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -205,6 +207,9 @@ public class AbonnementController {
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte compteAdmin = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
+
     try {
       CreatePaiementDto createPaiementDto = new CreatePaiementDto(
         request.getTypePaiementId(),
@@ -212,6 +217,7 @@ public class AbonnementController {
         request.getService(),
         request.getServiceId(),
         transaction.getAbonnement().getCompteClient().getId(),
+        compteAdmin.getId(),
         transaction.getMontant()
       );
 
