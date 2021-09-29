@@ -14,7 +14,7 @@ public class AnnulerPaiementCarteListener {
   private TransactionService transactionService;
 
   @KafkaListener(topics = "${kafka.topics.annulerPaiementCarteService.name}", containerFactory = "annulerPaiementKafkaListenerContainerFactory", autoStartup = "${kafka.enabled}")
-  public void listenCreationPaiement(PaiementServiceDto paiementDto) {
+  public void listenAnnulationPaiement(PaiementServiceDto paiementDto) {
     transactionService.annulerPaiementTransaction(paiementDto);
   }
 }

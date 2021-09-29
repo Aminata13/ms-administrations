@@ -37,6 +37,7 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSCible;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ESMSData;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSModelRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -134,6 +135,64 @@ public class SMSServiceImpl implements SMSService {
       System.out.println(e.getMessage());
     }
   }
+
+  @Override
+  public void sendSms(SendSmsRequest message) {
+    System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
+    String documentJSON = "";
+    try {
+      documentJSON = objectMapper.writeValueAsString(Collections.singletonMap("messages", Arrays.asList(message)));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
+    // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+    String inputString = null;
+    int responseCode = 0;
+    String password = token;
+    String authString = login + ":" + password;
+    String authStringEnc = Base64.getEncoder().encodeToString(authString.getBytes());
+    try {
+      long timestamp = System.currentTimeMillis()/1000;
+      String msgToEncrypt=token+documentJSON+timestamp;
+      String key=hmacSha(privateKey, msgToEncrypt); // HMAC
+      String URLAddress = apiUrl+"?token="+token+"&key="+key+"&timestamp="+timestamp;
+      URL url = new URL(URLAddress);
+      try {
+        // Get an HttpURLConnection subclass object instead of URLConnection
+        HttpsURLConnection myHttpConnection = (HttpsURLConnection) url.openConnection();
+        myHttpConnection.setRequestMethod("POST");
+        myHttpConnection.setDoOutput(true);
+        myHttpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+        myHttpConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
+        //
+        // Output the results
+        OutputStream output = myHttpConnection.getOutputStream();
+        output.write(documentJSON.toString().getBytes("UTF-8"));
+        // output.write(queryParam.toString().getBytes("UTF-8"));
+        output.flush();
+        // get the response-code from the response
+        responseCode = myHttpConnection.getResponseCode();
+        if (responseCode == 401) {throw new RuntimeException("LOGIN ou TOKEN incorrect: Acces non autorise HTTP error code : "+ responseCode);}
+        else if (responseCode == 400) {throw new RuntimeException("Erreur 103: Acces non autorise HTTP error code : "+ responseCode);}
+        // open the contents of the URL as an inputStream and print to stdout
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+        myHttpConnection.getInputStream()));
+        while ((inputString = in.readLine()) != null) {
+        System.out.println(inputString);
+        logger.info(inputString);
+        }
+        in.close();
+      } catch (IOException e) {
+        logger.error(e.getMessage(), e.getCause());
+        System.out.println(e.getMessage());
+      }
+    } catch (MalformedURLException e) {
+      logger.error(e.getMessage(), e.getCause());
+      System.out.println(e.getMessage());
+    }
+  }
+
+
 
   @Override
   public Page<SMSModel> getSMSModels(Map<String, String>parameters, Pageable pageable) {

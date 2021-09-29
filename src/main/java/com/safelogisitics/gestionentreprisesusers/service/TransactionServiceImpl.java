@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,6 +36,7 @@ import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction
 import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +81,9 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
   private FirebaseMessagingService firebaseMessagingService;
+
+  @Autowired
+  private SMSService smsService;
 
   @Autowired
 	PasswordEncoder encoder;
@@ -323,6 +328,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     BigDecimal montant = transactionRequest.getMontant();
 
+    if (montant == null) {
+      throw new UsernameNotFoundException("0");
+    }
+
     int res = abonnement.getSolde().compareTo(montant);
 
     if (res == -1) {
@@ -344,6 +353,14 @@ public class TransactionServiceImpl implements TransactionService {
     transaction.setNumeroCommande(transactionRequest.getNumeroCommande());
 
     transactionDao.save(transaction);
+
+    String smsText  = String.format("Bonjour %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de FCFA%s.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
+    infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
+
+    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Paiement commande", smsText, Arrays.asList(infosPerso.getTelephone()));
+
+    System.out.println(sms);
+    // smsService.sendSms(sms);
 
     return transaction;
   }

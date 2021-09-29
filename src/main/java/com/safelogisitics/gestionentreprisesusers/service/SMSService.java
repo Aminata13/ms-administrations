@@ -8,6 +8,7 @@ import java.util.Set;
 import com.safelogisitics.gestionentreprisesusers.model.SMSModel;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSModelRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SMSRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 public interface SMSService {
 
   public void sendSms(Set<SMSRequest> messages);
+
+  public void sendSms(SendSmsRequest message);
 
   public Page<SMSModel> getSMSModels(Map<String, String>parameters, Pageable pageable);
 

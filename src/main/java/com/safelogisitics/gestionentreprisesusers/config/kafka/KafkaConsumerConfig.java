@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
+import com.safelogisitics.gestionentreprisesusers.dto.SmsCreateCommandeDto;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -39,6 +40,25 @@ public class KafkaConsumerConfig {
   public ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> annulerPaiementKafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(annulerPaiementConsumerFactory());
+    return factory;
+  }
+
+  public ConsumerFactory<String, SmsCreateCommandeDto> smsCreateCommandeConsumerFactory() {
+    JsonDeserializer<SmsCreateCommandeDto> deserializer = new JsonDeserializer<>(SmsCreateCommandeDto.class);
+    deserializer.setRemoveTypeHeaders(false);
+    deserializer.addTrustedPackages("*");
+    deserializer.setUseTypeMapperForKey(true);
+
+    Map<String, Object> props = new HashMap<>();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "smsCreateCommandeDto");
+    return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> smsCreateCommandeKafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    factory.setConsumerFactory(smsCreateCommandeConsumerFactory());
     return factory;
   }
 
