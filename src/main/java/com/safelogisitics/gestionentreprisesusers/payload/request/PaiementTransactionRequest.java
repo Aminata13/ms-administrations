@@ -13,9 +13,9 @@ public class PaiementTransactionRequest {
   private String numeroCarte;
 
   @NotBlank
-  private String password;
+  private String coadeValidation;
 
-  @DecimalMin(value = "0")
+  @DecimalMin(value = "100")
   private BigDecimal montant;
 
   @NotBlank
@@ -34,8 +34,8 @@ public class PaiementTransactionRequest {
     return this.numeroCarte.replaceAll("\\D+","");
   }
 
-  public String getPassword() {
-    return this.password;
+  public String getCoadeValidation() {
+    return this.coadeValidation.replaceAll("\\D+","");
   }
 
   public BigDecimal getMontant() {

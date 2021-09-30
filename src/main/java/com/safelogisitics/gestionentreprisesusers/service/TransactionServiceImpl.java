@@ -21,6 +21,7 @@ import java.util.function.Function;
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.dao.PaiementValidationDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TransactionDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
@@ -28,6 +29,7 @@ import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.model.PushNotification;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.User;
@@ -72,6 +74,9 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
   private UserDao userDao;
+
+  @Autowired
+  private PaiementValidationDao paiementValidationDao;
 
   @Autowired
   MongoTemplate mongoTemplate;
@@ -289,8 +294,8 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
-    Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
+  public Boolean createPaiementValidation(PaiementValidation paiementValidationRequest) {
+    Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(paiementValidationRequest.getNumeroCarte());
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted()) {
       throw new IllegalArgumentException("Cette abonnement n'existe pas.");
@@ -304,11 +309,50 @@ public class TransactionServiceImpl implements TransactionService {
 
     InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
-    Optional<User> userExist = userDao.findByInfosPersoId(infosPerso.getId());
+    Optional<PaiementValidation> oldPaiementValidation = paiementValidationDao.findByNumeroCommande(paiementValidationRequest.getNumeroCommande());
 
-    if (!userExist.isPresent() || !encoder.matches(transactionRequest.getPassword(), userExist.get().getPassword())) {
-      throw new UsernameNotFoundException("Mot de passe invalide.");
+    if (oldPaiementValidation.isPresent()) {
+      paiementValidationDao.delete(oldPaiementValidation.get());
     }
+
+    String codeValidation = this.genererCodeValidation(paiementValidationRequest.getNumeroCarte());
+
+    PaiementValidation paiementValidation = new PaiementValidation(paiementValidationRequest.getNumeroCarte(),
+      paiementValidationRequest.getNumeroCommande(), paiementValidationRequest.getService(), paiementValidationRequest.getMontant(), codeValidation);
+
+    paiementValidationDao.save(paiementValidation);
+
+    String smsText  = String.format("Bonjour %,\nLe code de validation pour le paiement de votre commande est: %s.\nVeuillez ne pas tenir compte de ce message si vous n'avez pas créé(e) de commande.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
+    infosPerso.getNomComplet(), paiementValidation.getCodeValidation());
+
+    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));
+
+    smsService.sendSms(sms);
+
+    return true;
+  }
+
+  @Override
+  public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
+    Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
+      transactionRequest.getCoadeValidation(), transactionRequest.getNumeroCommande());
+
+    if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true) {
+      throw new UsernameNotFoundException("Code de validation invalide.");
+    }
+
+    PaiementValidation paiementValidation = _paiementValidation.get();
+
+    LocalDateTime dateNow = LocalDateTime.now();
+    LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(2);
+
+    if (!dateNow.isBefore(previous)) {
+      throw new UsernameNotFoundException("Code de validation expirée.");
+    }
+
+    Abonnement abonnement = abonnementDao.findByNumeroCarte(paiementValidation.getNumeroCarte()).get();
+
+    InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -330,6 +374,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     if (montant == null) {
       throw new UsernameNotFoundException("Montant invalide");
+    }
+
+    if (transactionDao.existsByNumeroCommande(transactionRequest.getNumeroCommande())) {
+      throw new UsernameNotFoundException("Cette commande est déjà payée.");
     }
 
     int res = abonnement.getSolde().compareTo(montant);
@@ -377,6 +425,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     abonnement.rechargerCarte(montant);
     abonnementDao.save(abonnement);
+
+    Optional<PaiementValidation> paiementValidation = paiementValidationDao.findByNumeroCommande(transaction.getNumeroCommande());
+    if (paiementValidation.isPresent()) {
+      paiementValidationDao.delete(paiementValidation.get());
+    }
+
     transactionDao.delete(transaction);
 
     String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
@@ -458,6 +512,19 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     return referenceTransction;
+  }
+
+  private String genererCodeValidation(String numeroCarte) {
+    int m = (int) Math.pow(10, 6 - 1);
+    int randomInt = m + new Random().nextInt(9 * m);
+
+    String codeValidation = String.valueOf(randomInt);
+
+    while (paiementValidationDao.existsByNumeroCarteAndCodeValidation(numeroCarte, codeValidation)) {
+      codeValidation = genererCodeValidation(numeroCarte);
+    }
+
+    return codeValidation;
   }
 
   private Page<Map<String, Object>> customTransactionsData(Page<Transaction> transactions) {

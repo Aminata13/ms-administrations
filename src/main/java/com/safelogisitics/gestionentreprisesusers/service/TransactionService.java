@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
+import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
@@ -45,10 +46,12 @@ public interface TransactionService {
   public Map<String, Set<String>> approuveTransaction(ApprouveTransactionRequest request);
 
   public Optional<Transaction> findByReference(String reference);
-  
+
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType compteCreateur);
 
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
+
+  public Boolean createPaiementValidation(PaiementValidation paiementValidationRequest);
 
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest);
 

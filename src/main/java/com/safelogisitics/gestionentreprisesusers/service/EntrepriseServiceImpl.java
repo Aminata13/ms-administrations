@@ -60,7 +60,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     if (agentId != null && !agentId.isEmpty())
       criteria.add(Criteria.where("agentId").is(agentId));
-    
+
     if (denomination != null && !denomination.isEmpty())
       criteria.add(Criteria.where("denomination").is(denomination));
 
