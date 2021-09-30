@@ -335,7 +335,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
     Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
-      transactionRequest.getCoadeValidation(), transactionRequest.getNumeroCommande());
+      transactionRequest.getCodeValidation(), transactionRequest.getNumeroCommande());
 
     if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true) {
       throw new UsernameNotFoundException("Code de validation invalide.");

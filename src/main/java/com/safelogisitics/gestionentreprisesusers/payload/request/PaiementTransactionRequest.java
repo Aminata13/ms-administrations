@@ -13,7 +13,7 @@ public class PaiementTransactionRequest {
   private String numeroCarte;
 
   @NotBlank
-  private String coadeValidation;
+  private String codeValidation;
 
   @DecimalMin(value = "100")
   private BigDecimal montant;
@@ -34,8 +34,8 @@ public class PaiementTransactionRequest {
     return this.numeroCarte.replaceAll("\\D+","");
   }
 
-  public String getCoadeValidation() {
-    return this.coadeValidation.replaceAll("\\D+","");
+  public String getCodeValidation() {
+    return this.codeValidation.replaceAll("\\D+","");
   }
 
   public BigDecimal getMontant() {
