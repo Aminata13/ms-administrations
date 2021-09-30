@@ -87,16 +87,14 @@ public class AbonnementController {
 
   @ApiOperation(value = "Liste de tous les abonnements", tags = "Gestion des abonnements")
   @GetMapping("/list")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> allAbonnements(@RequestParam Map<String,String> parameters, @PageableDefault(size = 20) Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.findByCustomSearch(parameters, pageable));
 	}
 
   @ApiOperation(value = "Liste des abonnements par type d'abonnement", tags = "Gestion des abonnements")
   @GetMapping("/list-by-type/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> allAbonnementsByType(@PathVariable(value = "id") String id, @PageableDefault(size = 20) Pageable pageable) {
     Optional<TypeAbonnement> typeAbonnementExist = typeAbonnementDao.findById(id);
     if (!typeAbonnementExist.isPresent()) {
@@ -107,16 +105,14 @@ public class AbonnementController {
 
   @ApiOperation(value = "Infos d'un abonnement, NB: on passe en paramètre l'id de l'abonnement", tags = "Gestion des abonnements")
   @GetMapping("/get/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> getAbonnement(@PathVariable(value = "id") String id) {
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnementById(id));
 	}
 
   @ApiOperation(value = "Infos d'un abonnement d'un client, NB: on passe en paramètre l'id infosPerso du client", tags = "Gestion des abonnements")
   @GetMapping("/get-by-client/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> getAbonnementByClient(@PathVariable(value = "id") String id) {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
     if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
@@ -127,8 +123,7 @@ public class AbonnementController {
 
   @ApiOperation(value = "Liste des abonnements crées par un admnistrateur, NB: on passe en paramètre l'id infosPerso de l'administrateur", tags = "Gestion des abonnements")
   @GetMapping("/get-by-createur/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> getAbonnementByCreateur(@PathVariable(value = "id") String id, @PageableDefault(size = 20) Pageable pageable) {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_ADMINISTRATEUR);
     if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
@@ -138,8 +133,7 @@ public class AbonnementController {
 	}
 
   @PostMapping("/add")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> addAbonnement(@Valid @RequestBody AbonnementRequest request) {
     Abonnement abonnement = abonnementService.createAbonnement(request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(abonnement);
@@ -176,8 +170,7 @@ public class AbonnementController {
 	}
 
   @PutMapping("/changer/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'UPDATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'UPDATE')")
 	public ResponseEntity<?> updateAbonnement(@PathVariable(value = "id") String id, @Valid @RequestBody AbonnementRequest request) {
     Abonnement abonnement = abonnementService.changerAbonnement(id, request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.OK).body(abonnement);
@@ -194,16 +187,14 @@ public class AbonnementController {
 	}
 
   @PostMapping("/recharger-carte")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> rechargerCarte(@Valid @RequestBody RechargementTransactionRequest request) {
     Transaction transaction = transactionService.createRechargementTransaction(request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
 
   @PostMapping("/paiement-carte")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 
@@ -231,8 +222,7 @@ public class AbonnementController {
 
   @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
   @GetMapping("/transactions/{id}")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> listTransactions(@PathVariable(value = "id", required = true) String id, @RequestParam Optional<String> date, @PageableDefault(size = 20) Pageable pageable) {
     if (date.isPresent()) {
       return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnementAndDateCreation(id, LocalDate.parse(date.get()), pageable));
@@ -242,8 +232,7 @@ public class AbonnementController {
 
   @ApiOperation(value = "Rapport des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Gestion des abonnements")
   @GetMapping("/transactions/rapport/pdf")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'READ')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
 	public ResponseEntity<?> transactionsRapport(
     @RequestParam(required = false) String idClient,
     @RequestParam(required = false) String dateDebut,
@@ -262,24 +251,21 @@ public class AbonnementController {
 
   @ApiOperation(value = "Liste des transactions à approuver", tags = "Gestion des abonnements")
   @GetMapping("/transactions/approbations")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
 	public ResponseEntity<?> listTransactionsEnApprobations(@PageableDefault(size = 20) Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findTransactionsEnApprobations(pageable));
 	}
 
   @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id des transaction", tags = "Gestion des abonnements")
   @PostMapping("/transactions/approbations")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
 	public ResponseEntity<?> approuveTransaction(@Valid @RequestBody ApprouveTransactionRequest request) {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.approuveTransaction(request));
 	}
 
   @ApiOperation(value = "Historique des transactions approuver", tags = "Gestion des abonnements")
   @GetMapping("/transactions/approbations/historique")
-  @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
-  @PreAuthorize("hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
 	public ResponseEntity<?> historiqueTransactionsApprobations(@PageableDefault(size = 20) Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findMyHistoriqueTransactionsApprobations(pageable));
 	}

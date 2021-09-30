@@ -23,7 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/clients")
-@PostAuthorize("hasRole('COMPTE_PARTICULIER')")
+@PreAuthorize("hasRole('COMPTE_PARTICULIER')")
 @Api(tags = "Mon abonnement", description = "Api de gestion de mon abonnement")
 public class ClientAbonnementController {
 
@@ -68,7 +68,7 @@ public class ClientAbonnementController {
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnementByCompteClient(compteExist.get()));
 	}
 
-  @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id de l'infosPerso", tags = "Mon abonnement")
+  @ApiOperation(value = "Liste des transactions du client connecté", tags = "Mon abonnement")
   @GetMapping("/transactions")
 	public ResponseEntity<?> listTransactions(@RequestParam(required = false) Optional<String> date, @PageableDefault(size = 20) Pageable pageable) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

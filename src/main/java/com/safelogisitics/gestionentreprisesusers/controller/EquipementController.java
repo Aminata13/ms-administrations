@@ -13,7 +13,6 @@ import com.safelogisitics.gestionentreprisesusers.service.EquipementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/equipements")
-@PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+@PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
 @Api(tags = "Gestion des équipements", description = "Api client: gestion des équipements")
 public class EquipementController {
 

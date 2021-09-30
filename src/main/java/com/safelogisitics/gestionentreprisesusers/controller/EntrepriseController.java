@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/entreprises")
-@PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
+@PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR')")
 @Api(tags = "Gestion des entreprises", description = "Api client: gestion des entreprises")
 public class EntrepriseController {
 

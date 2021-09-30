@@ -293,11 +293,11 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<Abonnement> abonnementExist = abonnementDao.findByNumeroCarte(transactionRequest.getNumeroCarte());
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted()) {
-      throw new IllegalArgumentException("0");
+      throw new IllegalArgumentException("Cette abonnement n'existe pas.");
     }
 
     if (abonnementExist.get().isCarteBloquer()) {
-      throw new IllegalArgumentException("0");
+      throw new IllegalArgumentException("Cette carte est bloqué");
     }
 
     Abonnement abonnement = abonnementExist.get();
@@ -307,7 +307,7 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<User> userExist = userDao.findByInfosPersoId(infosPerso.getId());
 
     if (!userExist.isPresent() || !encoder.matches(transactionRequest.getPassword(), userExist.get().getPassword())) {
-      throw new UsernameNotFoundException("0");
+      throw new UsernameNotFoundException("Mot de passe invalide.");
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -321,7 +321,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     if (!compteClientExist.isPresent() || compteClientExist.get().isDeleted()) {
-      throw new IllegalArgumentException("0");
+      throw new IllegalArgumentException("Ce compte client n'existe pas");
     }
 
     Compte compteClient = compteClientExist.get();
@@ -329,13 +329,13 @@ public class TransactionServiceImpl implements TransactionService {
     BigDecimal montant = transactionRequest.getMontant();
 
     if (montant == null) {
-      throw new UsernameNotFoundException("0");
+      throw new UsernameNotFoundException("Montant invalide");
     }
 
     int res = abonnement.getSolde().compareTo(montant);
 
     if (res == -1) {
-      throw new IllegalArgumentException(String.format("-1", abonnement.getSolde()));
+      throw new IllegalArgumentException(String.format("Solde insuffisant, solde actuel:", abonnement.getSolde()));
     }
 
     abonnement.debiterCarte(montant);
