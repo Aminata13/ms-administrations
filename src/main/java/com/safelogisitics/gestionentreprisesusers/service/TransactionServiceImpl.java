@@ -322,7 +322,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     paiementValidationDao.save(paiementValidation);
 
-    String smsText  = String.format("Bonjour %,\nLe code de validation pour le paiement de votre commande est: %s.\nVeuillez ne pas tenir compte de ce message si vous n'avez pas créé(e) de commande.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
+    String smsText  = String.format("Bonjour %s\nLe code de validation pour le paiement de votre commande est: %s.\nVeuillez ne pas tenir compte de ce message si vous n'avez pas créé(e) de commande.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
     infosPerso.getNomComplet(), paiementValidation.getCodeValidation());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));

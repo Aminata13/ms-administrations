@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
@@ -27,11 +28,11 @@ public class PaiementValidation extends AuditMetadata {
   @Field(value = "numeroCommande")
   private String numeroCommande;
 
-  @NotBlank(message = "Le type de service est obligatoire.")
+  @NotNull(message = "Le type de service est obligatoire.")
   @Field(value = "service")
   private EServiceType service;
 
-  @NotBlank(message = "Le montant est obligatoire.")
+  @NotNull(message = "Le montant est obligatoire.")
   @Field(value = "montant")
   private BigDecimal montant;
 
@@ -70,7 +71,7 @@ public class PaiementValidation extends AuditMetadata {
   }
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
   public void setNumeroCarte(String numeroCarte) {
