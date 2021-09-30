@@ -642,7 +642,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!compteExist.isPresent() && !compteExist.get().isDeleted())
       throw new IllegalArgumentException("Cet client n'existe pas!");
 
-    return updateUserInfos(request);
+    return updateUserInfos(request, id);
   }
 
   @Override
@@ -666,8 +666,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String id = currentUser.getInfosPerso().getId();
 
+    return updateUserInfos(request, currentUser.getInfosPerso().getId());
+  }
+
+  @Override
+  public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request, String id) {
     if (request.getPassword() != null && !request.getPassword().isEmpty()) {
       Optional<User> userExist = userDao.findByInfosPersoId(id);
 

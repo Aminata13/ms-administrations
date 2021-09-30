@@ -84,6 +84,8 @@ public interface InfosPersoService {
 
   public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request); // Inscription en tant que client (particulier)
 
+  public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request, String id);
+
   public Collection<Compte> getInfosPersoComptes(String id);
 
   // public void sendEmailRegistration(User user); // Suppression d'un agent (coursier) (Soft delete)
