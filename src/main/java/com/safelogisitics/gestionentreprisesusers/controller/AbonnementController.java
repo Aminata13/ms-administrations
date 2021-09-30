@@ -13,6 +13,7 @@ import com.safelogisitics.gestionentreprisesusers.dto.CreatePaiementDto;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
@@ -191,6 +192,12 @@ public class AbonnementController {
 	public ResponseEntity<?> rechargerCarte(@Valid @RequestBody RechargementTransactionRequest request) {
     Transaction transaction = transactionService.createRechargementTransaction(request, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
+	}
+
+  @PostMapping("/paiement-validation/sms")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+	public ResponseEntity<?> smsPaiementValidation(@Valid @RequestBody PaiementValidation request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createPaiementValidation(request));
 	}
 
   @PostMapping("/paiement-carte")
