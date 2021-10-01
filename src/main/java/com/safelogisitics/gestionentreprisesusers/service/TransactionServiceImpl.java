@@ -337,14 +337,14 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
       transactionRequest.getCodeValidation(), transactionRequest.getNumeroCommande());
 
-    if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true) {
+    if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true || !_paiementValidation.get().getNumeroCarte().equals(transactionRequest.getNumeroCarte())) {
       throw new UsernameNotFoundException("Code de validation invalide.");
     }
 
     PaiementValidation paiementValidation = _paiementValidation.get();
 
     LocalDateTime dateNow = LocalDateTime.now();
-    LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(2);
+    LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(5);
 
     if (!dateNow.isBefore(previous)) {
       throw new UsernameNotFoundException("Code de validation expirée.");
@@ -401,6 +401,10 @@ public class TransactionServiceImpl implements TransactionService {
     transaction.setNumeroCommande(transactionRequest.getNumeroCommande());
 
     transactionDao.save(transaction);
+
+    paiementValidation.setApprobation(true);
+
+    paiementValidationDao.save(paiementValidation);
 
     String smsText  = String.format("Bonjour %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de FCFA%s.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
     infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
