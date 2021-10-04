@@ -57,11 +57,9 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class InfosPersoServiceImpl implements InfosPersoService {
@@ -269,7 +267,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
-    return infosPersoDao.findByIdIn(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
+    return infosPersoDao.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
       @Override
       public UserInfosResponse apply(InfosPerso infosPerso) {
         User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
@@ -296,7 +294,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
-    return infosPersoDao.findByIdIn(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
+    return infosPersoDao.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPerso, UserInfosResponse>() {
       @Override
       public UserInfosResponse apply(InfosPerso infosPerso) {
         User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
@@ -315,7 +313,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     InfosPerso _infosPerso = findInfosPerso(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone(), infosPersoRequest.getNumeroPermis(), infosPersoRequest.getNumeroPiece());
 
     if (_infosPerso != null &&_infosPerso.getId() != null)
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existe déjà!");
+      throw new IllegalArgumentException("Ces informations existe déjà!");
 
     InfosPerso infosPerso = new InfosPerso(
       infosPersoRequest.getPrenom(),
@@ -756,7 +754,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId())) {
       // On creée un abonnement s'il n'a pas d'abonnement
       abonnementService.createAbonnement(
-        new AbonnementRequest(carte.getTypeAbonnementId(), infosPerso.getId(), 1, carte.getNumero(), false),
+        new AbonnementRequest(carte.getTypeAbonnementId(), infosPerso.getId(), null, 1, carte.getNumero(), false),
         compteType
       );
     }
@@ -791,7 +789,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), compteType);
 
     if (!compteExist.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN , "Accès non autorisé!");
+      throw new IllegalArgumentException( "Accès non autorisé!");
     }
 
     Page<Abonnement> abonnements = abonnementService.getAbonnementByCompteCreateur(compteExist.get(), pageable);
@@ -862,7 +860,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       return null;
 
     if (results.size() > 1)
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "L'email ou le numero téléphone ou le numéro permis ou le numéro pièce existe déjà!");
+      throw new IllegalArgumentException("L'email ou le numero téléphone ou le numéro permis ou le numéro pièce existe déjà!");
 
     return results.iterator().next();
   }
@@ -877,7 +875,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
 
       if (_compte.isPresent() && !_compte.get().isDeleted())
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet utilisateur a déjà un compte administrateur!");
+        throw new IllegalArgumentException("Cet utilisateur a déjà un compte administrateur!");
 
       compte = _compte.get();
       compte.setDeleted(false);
@@ -913,17 +911,17 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   private InfosPerso updateCompte(String id, InfosPersoAvecCompteRequest request, ECompteType compteType) {
     Optional<InfosPerso> infosPersoExist = infosPersoDao.findById(id);
     if (!infosPersoExist.isPresent())
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cet utilisateur n'existe pas!");
+      throw new IllegalArgumentException("Cet utilisateur n'existe pas!");
 
     Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, compteType);
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet utilisateur n'a pas de compte administrateur!");
+      throw new IllegalArgumentException("Cet utilisateur n'a pas de compte administrateur!");
 
     InfosPerso _infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 
     if (_infosPerso != null && !infosPersoExist.get().getId().equals(_infosPerso.getId()))
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Ces informations existent déjà!");
+      throw new IllegalArgumentException("Ces informations existent déjà!");
 
     InfosPerso infosPerso = infosPersoExist.get();
 

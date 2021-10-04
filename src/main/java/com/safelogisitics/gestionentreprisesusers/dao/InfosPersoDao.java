@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public interface InfosPersoDao extends PagingAndSortingRepository<InfosPerso, String> {
   Page<InfosPerso> findByComptesIsNull(Pageable pageable);
 
-  Page<InfosPerso> findByIdIn(List<String> ids, Pageable pageable);
+  Page<InfosPerso> findByIdInOrderByDateCreationDesc(List<String> ids, Pageable pageable);
 
   Optional<InfosPerso> findByEmail(String email);
 

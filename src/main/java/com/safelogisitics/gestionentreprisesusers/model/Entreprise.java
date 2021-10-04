@@ -47,6 +47,9 @@ public class Entreprise extends AuditMetadata {
   @Field(value = "adresse")
   private String adresse;
 
+  @Field(value = "numeroCarte")
+  private String numeroCarte;
+
   @JsonIgnore
   @Field(value = "deleted")
   private boolean deleted;
@@ -158,6 +161,14 @@ public class Entreprise extends AuditMetadata {
 
   public void setAdresse(String adresse) {
     this.adresse = adresse;
+  }
+
+  public String getNumeroCarte() {
+    return this.numeroCarte;
+  }
+
+  public void setNumeroCarte(String numeroCarte) {
+    this.numeroCarte = numeroCarte;
   }
 
   public boolean isDeleted() {

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dto.CreatePaiementDto;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
@@ -77,6 +78,11 @@ public class ClientAbonnementController {
       return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnementAndDateCreation(id, LocalDate.parse(date.get()), pageable));
     }
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findByAbonnement(id, pageable));
+	}
+
+  @PostMapping("/paiement-validation/sms")
+	public ResponseEntity<?> smsPaiementValidation(@Valid @RequestBody PaiementValidation request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createPaiementValidation(request));
 	}
 
   @ApiOperation(value = "Paiement par carte pour un service", tags = "Mon abonnement")

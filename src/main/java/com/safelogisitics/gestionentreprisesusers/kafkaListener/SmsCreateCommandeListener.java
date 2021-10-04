@@ -51,8 +51,7 @@ public class SmsCreateCommandeListener {
 
       SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
 
-      System.out.println(sms);
-      // smsService.sendSms(sms);
+      smsService.sendSms(sms);
     }
   }
 }

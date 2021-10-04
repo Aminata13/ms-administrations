@@ -14,10 +14,10 @@
     "icon": "gold"
   },
   {
-    "libelle": "Platinium",
+    "libelle": "Platinum",
     "reduction": 1,
     "prix": 10000,
     "statut": 1,
-    "icon": "platinium"
+    "icon": "platinum"
   }
 ]

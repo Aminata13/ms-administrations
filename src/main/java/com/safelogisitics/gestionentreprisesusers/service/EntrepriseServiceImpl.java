@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
+import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
+import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -18,6 +23,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvec
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,6 +42,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   private CompteDao compteDao;
 
   @Autowired
+  private AbonnementDao abonnementDao;
+
+  @Autowired
+  private NumeroCarteDao numeroCarteDao;
+
+  @Autowired
   private InfosPersoService infosPersoService;
 
   @Autowired
@@ -49,7 +61,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Override
   public Page<Entreprise> getEntreprises(String typeEntreprise, String domaineActivite, String agentId, String denomination, String ninea, Pageable pageable) {
-    final Query query = new Query().with(pageable);
+    final Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.DESC, "dateCreation"));
     final List<Criteria> criteria = new ArrayList<>();
 
     if (typeEntreprise != null)
@@ -86,9 +98,21 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
   @Override
   public Entreprise createEntreprise(EntrepriseRequest request) {
-    if (entrepriseDao.existsByDenominationAndDeletedIsFalse(request.getDenomination())) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
-    }
+    Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(request.getNumeroCarte());
+
+    if (entrepriseDao.existsByDenominationAndDeletedIsFalse(request.getDenomination()))
+      throw new IllegalArgumentException("Cette entreprise existe déjà!");
+
+    if (!numeroCarteExist.isPresent())
+      throw new IllegalArgumentException("Cette carte n'existe pas!");
+
+    if (numeroCarteExist.get().isActive())
+      throw new IllegalArgumentException("Cette carte est déjà activé!");
+
+    if (!numeroCarteExist.get().getNumero().startsWith("20210030"))
+      throw new IllegalArgumentException("Cette carte ne correspond pas avec les cartes entreprises!");
+
+    NumeroCarte carte = numeroCarteExist.get();
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
 
@@ -101,6 +125,14 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     compte.setEntreprise(entreprise);
     compteDao.save(compte);
+
+    abonnementService.createAbonnement(
+      new AbonnementRequest(carte.getTypeAbonnementId(), null, entreprise.getId(), 1, carte.getNumero(), false),
+      ECompteType.COMPTE_ADMINISTRATEUR
+    );
+
+    entreprise.setNumeroCarte(carte.getNumero());
+    entrepriseDao.save(entreprise);
 
     return entreprise;
   }
@@ -123,9 +155,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   public Entreprise updateEntreprise(String id, EntrepriseRequest request) {
     Optional<Entreprise> _entreprise = entrepriseDao.findById(id);
 
-    if (!_entreprise.isPresent() || _entreprise.get().isDeleted()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cette entreprise n'existe pas ou a été supprimé!");
-    }
+    if (!_entreprise.isPresent() || _entreprise.get().isDeleted())
+      throw new IllegalArgumentException("Cette entreprise n'existe pas ou a été supprimé!");
 
     Entreprise entreprise = _entreprise.get();
 
@@ -152,6 +183,44 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     compte.setEntreprise(entreprise);
     compteDao.save(compte);
+
+    Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(request.getNumeroCarte());
+
+    if (!numeroCarteExist.isPresent())
+      throw new IllegalArgumentException("Cette carte n'existe pas!");
+
+    if (numeroCarteExist.get().isActive() && (entreprise.getNumeroCarte() == null || !entreprise.getNumeroCarte().equals(numeroCarteExist.get().getNumero())))
+      throw new IllegalArgumentException("Cette carte est déjà activé!SA");
+
+    if (!numeroCarteExist.get().getNumero().startsWith("20210030"))
+      throw new IllegalArgumentException("Cette carte ne correspond pas avec les cartes entreprises!");
+
+    NumeroCarte carte = numeroCarteExist.get();
+
+    Optional<Abonnement> _abonnement = abonnementDao.findByEntrepriseId(entreprise.getId());
+
+    if (!_abonnement.isPresent()) {
+      abonnementService.createAbonnement(
+        new AbonnementRequest(carte.getTypeAbonnementId(), null, entreprise.getId(), 1, carte.getNumero(), false),
+        ECompteType.COMPTE_ADMINISTRATEUR
+      );
+    } else {
+      Abonnement abonnement = _abonnement.get();
+      if (!abonnement.getNumeroCarte().equals(request.getNumeroCarte())) {
+        NumeroCarte oldCarte = numeroCarteDao.findByNumero(abonnement.getNumeroCarte()).get();
+
+        abonnement.setNumeroCarte(request.getNumeroCarte());
+        abonnementDao.save(abonnement);
+
+        oldCarte.setActive(false);
+        carte.setActive(true);
+        numeroCarteDao.save(oldCarte);
+        numeroCarteDao.save(carte);
+      }
+    }
+
+    entreprise.setNumeroCarte(carte.getNumero());
+    entrepriseDao.save(entreprise);
 
     return entreprise;
   }

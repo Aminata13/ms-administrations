@@ -21,6 +21,9 @@ public class Abonnement extends AuditMetadata {
   @Field(value = "compteClient")
   private Compte compteClient;
 
+  @Field(value = "entreprise")
+  private Entreprise entreprise;
+
   @Field(value = "compteCreateur")
   private Compte compteCreateur;
 
@@ -65,6 +68,16 @@ public class Abonnement extends AuditMetadata {
     this.dateCreation = LocalDate.now();
   }
 
+  public Abonnement(TypeAbonnement typeAbonnement, Entreprise entreprise, Compte compteCreateur, int statut) {
+    this.typeAbonnement = typeAbonnement;
+    this.entreprise = entreprise;
+    this.compteCreateur = compteCreateur;
+    this.statut = statut;
+    this.solde = BigDecimal.valueOf(0);
+    this.deleted = false;
+    this.dateCreation = LocalDate.now();
+  }
+
 
   public String getId() {
     return this.id;
@@ -88,6 +101,14 @@ public class Abonnement extends AuditMetadata {
 
   public void setCompteClient(Compte compteClient) {
     this.compteClient = compteClient;
+  }
+
+  public Entreprise getEntreprise() {
+    return this.entreprise;
+  }
+
+  public void setEntreprise(Entreprise entreprise) {
+    this.entreprise = entreprise;
   }
 
   public Compte getCompteCreateur() {

@@ -13,6 +13,8 @@ public interface EntrepriseDao extends PagingAndSortingRepository<Entreprise, St
 
   Optional<Entreprise> findByDenominationOrNineaAndDeletedIsFalse(String denomination, String ninea);
 
+  boolean existsByIdAndDeletedIsFalse(String id);
+
   boolean existsByDenominationAndDeletedIsFalse(String denomination);
 
   boolean existsByDenominationOrNineaAndDeletedIsFalse(String denomination, String ninea);

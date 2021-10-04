@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
@@ -47,6 +49,9 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Autowired
   private CompteDao compteDao;
+
+  @Autowired
+  private EntrepriseDao entrepriseDao;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -164,20 +169,22 @@ public class AbonnementServiceImpl implements AbonnementService {
     TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
     Compte compteClient = null;
+    Entreprise entreprise = null;
 
     if (abonnementRequest.getInfosPersoId() != null)
       compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
 
     if (abonnementRequest.getEntrepriseId() != null)
-      compteClient = compteDao.findByEntrepriseIdAndType(abonnementRequest.getEntrepriseId(), ECompteType.COMPTE_ENTREPRISE).get();
+      entreprise = entrepriseDao.findById(abonnementRequest.getEntrepriseId()).get();
 
-    if (compteClient == null)
+    if (compteClient == null && entreprise == null)
       throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
 
-    Optional<Abonnement> abonnementExist = abonnementDao.findByCompteClientId(compteClient.getId());
+    Optional<Abonnement> abonnementExist = compteClient != null ? abonnementDao.findByCompteClientId(compteClient.getId()) :
+      abonnementDao.findByEntrepriseId(entreprise.getId());
 
     if (abonnementExist.isPresent() && !abonnementExist.get().isDeleted())
-      throw new IllegalArgumentException("Client déjà abonné!");
+      throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
@@ -190,7 +197,8 @@ public class AbonnementServiceImpl implements AbonnementService {
       abonnement.setDeleted(false);
       abonnement.setSolde(BigDecimal.valueOf(0));
     } else {
-      abonnement = new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut());
+      abonnement = compteClient != null ? new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut()) :
+        new Abonnement(typeAbonnement, entreprise, compteCreateur, abonnementRequest.getStatut());
     }
 
     abonnement.setTypeAbonnement(typeAbonnement);
@@ -213,6 +221,9 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted())
       throw new IllegalArgumentException("Cette abonnement n'existe pas!");
+
+    if (abonnementExist.get().getEntreprise() != null)
+      throw new IllegalArgumentException("Cette abonnement ne peut être changer!");
 
     NumeroCarte newNumeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
@@ -264,8 +275,11 @@ public class AbonnementServiceImpl implements AbonnementService {
   }
 
   private NumeroCarte validateNewCarteAbonnement(AbonnementRequest abonnementRequest) {
-    if (!compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER))
-      throw new IllegalArgumentException("Cette compte client n'existe pas!");
+    if (abonnementRequest.getInfosPersoId() != null && !compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER))
+        throw new IllegalArgumentException("Cette compte client n'existe pas!");
+        
+    if (abonnementRequest.getEntrepriseId() != null && !entrepriseDao.existsByIdAndDeletedIsFalse(abonnementRequest.getEntrepriseId()))
+        throw new IllegalArgumentException("Cette entreprise n'existe pas!"); 
 
     if (!typeAbonnementDao.existsById(abonnementRequest.getTypeAbonnementId()))
       throw new IllegalArgumentException("Ce type d'abonnement n'existe pas!");

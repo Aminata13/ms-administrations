@@ -411,8 +411,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Paiement commande", smsText, Arrays.asList(infosPerso.getTelephone()));
 
-    System.out.println(sms);
-    // smsService.sendSms(sms);
+    smsService.sendSms(sms);
 
     return transaction;
   }

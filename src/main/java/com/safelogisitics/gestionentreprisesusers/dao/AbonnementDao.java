@@ -23,18 +23,19 @@ public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, St
 
   Optional<Abonnement> findByCompteClientId(String compteClientId);
 
+  Optional<Abonnement> findByEntrepriseId(String compteClientId);
+
   Optional<Abonnement> findByCompteClientInfosPersoIdAndDeletedIsFalse(String infosPersoId);
 
   Optional<Abonnement> findByNumeroCarte(String numeroCarte);
 
   boolean existsByCompteClientInfosPersoIdAndNumeroCarteAndDeletedIsFalse(String infosPersoId, String numeroCarte);
 
-
   boolean existsByCompteClientInfosPersoId(String infosPersoId);
+
+  boolean existsByCompteClientEntrepriseId(String entrepriseId);
 
   boolean existsByCompteClientInfosPersoIdOrNumeroCarte(String infosPersoId, String numeroCarte);
 
-
   boolean existsByNumeroCarte(String numeroCarte);
-
 }

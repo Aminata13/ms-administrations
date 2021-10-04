@@ -81,7 +81,7 @@ public class EntrepriseRequest {
   }
 
   public String getNumeroCarte() {
-    return this.numeroCarte;
+    return this.numeroCarte.replaceAll("\\D+","");
   }
 
 }
