@@ -67,3 +67,23 @@ db.abonnements.aggregate([
 ])
 
 mongoexport --db=slAdministrations --collection=listAbonnees --fields=dateCreation,infosPerso.prenom,infosPerso.nom,infosPerso.email,infosPerso.telephone,typeAbonnement.libelle,numeroCarte,solde --type=csv --out=data/listAbonnees.csv
+
+//*********** MOSQUITTO ************//
+
+listener 1883 localhost
+
+listener 8883
+certfile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/cert.pem
+cafile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/chain.pem
+keyfile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/privkey.pem
+
+listener 8083
+protocol websockets
+certfile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/cert.pem
+cafile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/chain.pem
+keyfile /etc/letsencrypt/live/mqtt.safelogistics-senegal.com/privkey.pem
+
+listener 1883
+
+listener 8083
+protocol websockets

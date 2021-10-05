@@ -18,15 +18,18 @@ public class SmsCreateCommandeDto {
 
   private BigDecimal montant;
 
+  private String duree;
+
   public SmsCreateCommandeDto() { }
 
-  public SmsCreateCommandeDto(String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant) {
+  public SmsCreateCommandeDto(String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree) {
     this.service = EServiceType.LIVRAISON;
     this.serviceId = serviceId;
     this.clientId = clientId;
     this.numeroCommande = numeroCommande;
     this.codeRetrait = codeRetrait;
     this.montant = montant;
+    this.duree = duree;
   }
 
   public EServiceType getService() {
@@ -75,6 +78,14 @@ public class SmsCreateCommandeDto {
 
   public void setMontant(BigDecimal montant) {
     this.montant = montant;
+  }
+
+  public String getDuree() {
+    return this.duree;
+  }
+
+  public void setDuree(String duree) {
+    this.duree = duree;
   }
 
 }
