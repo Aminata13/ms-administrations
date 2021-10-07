@@ -46,8 +46,9 @@ public class SmsCreateCommandeListener {
     Compte compte = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getUniqueMappedResult();
 
     if (compte != null && compte.getId() != null) {
-      String smsText  = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans %s qui suivent.\n Le code de retrait est %s.\nPour le retrait de votre colis si vous disposez d’une carte merci de la remettre à l’agent pour scan.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
-      compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), smsCreateCommandeDto.getDuree(), smsCreateCommandeDto.getCodeRetrait());
+      String formatedDuree = String.format("%sheures%s", smsCreateCommandeDto.getDuree().split(":")[0], smsCreateCommandeDto.getDuree().split(":")[1]);
+      String smsText  = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
+      compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), formatedDuree, smsCreateCommandeDto.getCodeRetrait());
 
       SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
 

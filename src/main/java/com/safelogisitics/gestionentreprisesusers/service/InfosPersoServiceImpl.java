@@ -41,6 +41,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequ
 import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
@@ -108,6 +109,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Autowired
 	private PasswordEncoder encoder;
+
+  @Autowired
+  private SMSService smsService;
 
   @Override
   public UserInfosResponse getUserInfos() {
@@ -616,6 +620,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPersoDao.save(infosPerso);
 
     User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+    
+
+    String smsText  = String.format("Cher client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’information rendez-vous sur notre site :xxxxxxx\nSafelogistics vous remercie.\nService commercial : 78 306 45 45", 
+    infosPerso.getNomComplet(), request.getUsername(), request.getPassword());
+
+    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Message d'inscription", smsText, Arrays.asList(infosPerso.getTelephone()));
+
+    smsService.sendSms(sms);
 
     return new UserInfosResponse(infosPerso, null, user);
   }

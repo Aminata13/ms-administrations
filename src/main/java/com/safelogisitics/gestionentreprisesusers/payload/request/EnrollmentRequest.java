@@ -8,21 +8,21 @@ import javax.validation.constraints.NotBlank;
 
 public class EnrollmentRequest {
 
-  @NotBlank
+  @NotBlank(message = "Le prénom est obligatoire.")
   protected String prenom;
 
-  @NotBlank
+  @NotBlank(message = "Le prénom est obligatoire.")
   protected String nom;
 
-  @NotBlank
+  @NotBlank(message = "Le numéro de carte est obligatoire.")
   private String numeroCarte;
 
-  @DecimalMin(value = "2000", message = "Montant invalide")
+  @DecimalMin(value = "2000", message = "Le montant est invalide.")
   private BigDecimal montant;
 
   protected String email;
 
-  @NotBlank
+  @NotBlank(message = "Le numéro de téléphone est obligatoire.")
   protected String telephone;
 
   protected String adresse;

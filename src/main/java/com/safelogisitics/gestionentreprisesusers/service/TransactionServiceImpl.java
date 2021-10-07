@@ -322,7 +322,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     paiementValidationDao.save(paiementValidation);
 
-    String smsText  = String.format("Bonjour %s. Le code de validation pour le paiement de votre commande est: %s. Merci de ne pas tenir compte de ce message si vous n'avez pas fait de commande.\nService commercial : 78 306 45 45", 
+    String smsText  = String.format("Bonjour %s. Le code de validation de votre commande est: %s. Le code expire dans 5 minutes.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45", 
     infosPerso.getNomComplet(), paiementValidation.getCodeValidation());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -406,7 +406,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     paiementValidationDao.save(paiementValidation);
 
-    String smsText  = String.format("Bonjour %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de FCFA%s.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
+    String smsText  = String.format("Bonjour %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
     infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Paiement commande", smsText, Arrays.asList(infosPerso.getTelephone()));

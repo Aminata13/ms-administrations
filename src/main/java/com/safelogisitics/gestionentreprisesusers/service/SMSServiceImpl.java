@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
@@ -58,6 +60,10 @@ public class SMSServiceImpl implements SMSService {
   
   private Logger logger = LoggerFactory.getLogger(SMSServiceImpl.class);
 
+  public static int noOfQuickServiceThreads = 20;
+
+	private ScheduledExecutorService quickService = Executors.newScheduledThreadPool(noOfQuickServiceThreads); 
+
   @Value("${sms.private_key}")
   private String privateKey;
 
@@ -87,53 +93,58 @@ public class SMSServiceImpl implements SMSService {
 
   @Override
   public void sendSms(Set<SMSRequest> messages) {
-    System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
-    String documentJSON = handleSmsRequestsToJson(messages);
-    // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
-    String inputString = null;
-    int responseCode = 0;
-    String password = token;
-    String authString = login + ":" + password;
-    String authStringEnc = Base64.getEncoder().encodeToString(authString.getBytes());
-    try {
-      long timestamp = System.currentTimeMillis()/1000;
-      String msgToEncrypt=token+documentJSON+timestamp;
-      String key=hmacSha(privateKey, msgToEncrypt); // HMAC
-      String URLAddress = apiUrl+"?token="+token+"&key="+key+"&timestamp="+timestamp;
-      URL url = new URL(URLAddress);
-      try {
-        // Get an HttpURLConnection subclass object instead of URLConnection
-        HttpsURLConnection myHttpConnection = (HttpsURLConnection) url.openConnection();
-        myHttpConnection.setRequestMethod("POST");
-        myHttpConnection.setDoOutput(true);
-        myHttpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-        myHttpConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        //
-        // Output the results
-        OutputStream output = myHttpConnection.getOutputStream();
-        output.write(documentJSON.toString().getBytes("UTF-8"));
-        // output.write(queryParam.toString().getBytes("UTF-8"));
-        output.flush();
-        // get the response-code from the response
-        responseCode = myHttpConnection.getResponseCode();
-        if (responseCode == 401) {throw new RuntimeException("LOGIN ou TOKEN incorrect: Acces non autorise HTTP error code : "+ responseCode);}
-        else if (responseCode == 400) {throw new RuntimeException("Erreur 103: Acces non autorise HTTP error code : "+ responseCode);}
-        // open the contents of the URL as an inputStream and print to stdout
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-        myHttpConnection.getInputStream()));
-        while ((inputString = in.readLine()) != null) {
-        System.out.println(inputString);
-        logger.info(inputString);
+    quickService.submit(new Runnable() {
+			@Override
+			public void run() {
+        System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
+        String documentJSON = handleSmsRequestsToJson(messages);
+        // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+        String inputString = null;
+        int responseCode = 0;
+        String password = token;
+        String authString = login + ":" + password;
+        String authStringEnc = Base64.getEncoder().encodeToString(authString.getBytes());
+				try {
+          long timestamp = System.currentTimeMillis()/1000;
+          String msgToEncrypt=token+documentJSON+timestamp;
+          String key=hmacSha(privateKey, msgToEncrypt); // HMAC
+          String URLAddress = apiUrl+"?token="+token+"&key="+key+"&timestamp="+timestamp;
+          URL url = new URL(URLAddress);
+          try {
+            // Get an HttpURLConnection subclass object instead of URLConnection
+            HttpsURLConnection myHttpConnection = (HttpsURLConnection) url.openConnection();
+            myHttpConnection.setRequestMethod("POST");
+            myHttpConnection.setDoOutput(true);
+            myHttpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+            myHttpConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
+            //
+            // Output the results
+            OutputStream output = myHttpConnection.getOutputStream();
+            output.write(documentJSON.toString().getBytes("UTF-8"));
+            // output.write(queryParam.toString().getBytes("UTF-8"));
+            output.flush();
+            // get the response-code from the response
+            responseCode = myHttpConnection.getResponseCode();
+            if (responseCode == 401) {throw new RuntimeException("LOGIN ou TOKEN incorrect: Acces non autorise HTTP error code : "+ responseCode);}
+            else if (responseCode == 400) {throw new RuntimeException("Erreur 103: Acces non autorise HTTP error code : "+ responseCode);}
+            // open the contents of the URL as an inputStream and print to stdout
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+            myHttpConnection.getInputStream()));
+            while ((inputString = in.readLine()) != null) {
+            System.out.println(inputString);
+            logger.info(inputString);
+            }
+            in.close();
+          } catch (IOException e) {
+            logger.error(e.getMessage(), e.getCause());
+            System.out.println(e.getMessage());
+          }
+        } catch (MalformedURLException e) {
+          logger.error(e.getMessage(), e.getCause());
+          System.out.println(e.getMessage());
         }
-        in.close();
-      } catch (IOException e) {
-        logger.error(e.getMessage(), e.getCause());
-        System.out.println(e.getMessage());
-      }
-    } catch (MalformedURLException e) {
-      logger.error(e.getMessage(), e.getCause());
-      System.out.println(e.getMessage());
-    }
+			}
+		});
   }
 
   @Override
