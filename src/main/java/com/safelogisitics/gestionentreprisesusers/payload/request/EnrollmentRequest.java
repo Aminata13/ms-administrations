@@ -29,6 +29,8 @@ public class EnrollmentRequest {
 
   private LocalDate dateNaissance;
 
+  private String anneeNaissance;
+
   private String numeroPiece;
 
   private String username;
@@ -69,6 +71,10 @@ public class EnrollmentRequest {
 
   public LocalDate getDateNaissance() {
     return this.dateNaissance;
+  }
+
+  public String getAnneeNaissance() {
+    return this.anneeNaissance;
   }
 
   public String getNumeroPiece() {
