@@ -67,7 +67,7 @@ public class UserController {
 
   @GetMapping("/infos/search/{emailOrTelephone}")
 	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
-    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, emailOrTelephone));
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone));
 	}
 
   @GetMapping("/verifier/abonnement/{telephone}")

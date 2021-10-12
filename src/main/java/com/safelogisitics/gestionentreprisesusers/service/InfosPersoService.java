@@ -34,7 +34,7 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findByCompteId(String id);
 
-  public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone);
+  public Optional<InfosPerso> findByEmailOrTelephone(String emailOrTelephone);
 
   public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType);
 

@@ -66,6 +66,22 @@ db.abonnements.aggregate([
   }
 ])
 
+db.infosPersos.update(
+  { telephone: { $regex: " " } },
+  [{
+    $set: {
+      telephone: {
+        $replaceAll: {
+          input: "$telephone",
+          find: " ",
+          replacement: ""
+        }
+      }
+    }
+  }],
+  { multi: true }
+)
+
 mongoexport --db=slAdministrations --collection=listAbonnees --fields=dateCreation,infosPerso.prenom,infosPerso.nom,infosPerso.email,infosPerso.telephone,typeAbonnement.libelle,numeroCarte,solde --type=csv --out=data/listAbonnees.csv
 
 //*********** MOSQUITTO ************//

@@ -198,13 +198,24 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Optional<InfosPerso> findByEmailOrTelephone(String email, String telephone) {
-    Optional<InfosPerso> infosPerso = infosPersoDao.findByEmailOrTelephone(email, telephone);
+  public Optional<InfosPerso> findByEmailOrTelephone(String emailOrTelephone) {
+    final Query query = new Query();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>();
+    emailOrTelephone = emailOrTelephone.replaceAll(" ", "");
 
-    if (infosPerso.isPresent() && !compteDao.existsByInfosPersoIdAndDeletedIsFalse(infosPerso.get().getId())) {
-      return null;
-    }
-    return infosPerso;
+    listCritarias.add(Criteria.where("email").regex(".*"+emailOrTelephone.trim()+".*","i"));
+    listCritarias.add(Criteria.where("telephone").regex(".*"+emailOrTelephone.trim()+".*","xi"));
+
+    query.addCriteria(new Criteria().orOperator(listCritarias.toArray(new Criteria[listCritarias.size()])));
+
+    Collection<InfosPerso> results = mongoTemplate.find(query, InfosPerso.class);
+
+    System.out.println("DSDFDSDFS DSDSZ DSDSSD FSDFSDFSDFLFV DSFLKVJDKFDNFX" + query.getQueryObject());
+
+    if (results == null || results.size() <= 0)
+      return Optional.ofNullable(null);
+
+    return Optional.ofNullable(results.iterator().next());
   }
 
   @Override

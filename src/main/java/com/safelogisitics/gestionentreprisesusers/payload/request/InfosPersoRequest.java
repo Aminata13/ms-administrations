@@ -53,7 +53,7 @@ public class InfosPersoRequest {
   }
   
   public String getTelephone() {
-    return this.telephone;
+    return this.telephone.replaceAll("\\s+","");
   }
 
   public String getAdresse() {
