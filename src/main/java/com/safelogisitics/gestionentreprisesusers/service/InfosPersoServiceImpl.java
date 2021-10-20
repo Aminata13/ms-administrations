@@ -624,7 +624,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     final List<Criteria> listCritarias = new ArrayList<Criteria>();
 
     listCritarias.add(Criteria.where("type").is(ECompteType.COMPTE_ENTREPRISE));
-    listCritarias.add(Criteria.where("entreprise.id").is(entrepriseId));
+    listCritarias.add(Criteria.where("entrepriseId").is(entrepriseId));
     listCritarias.add(Criteria.where("entrepriseUser").is(true));
 
     listCritarias.add(Criteria.where("deleted").is(false));
@@ -644,6 +644,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     CompteAggregationDto aggregationResult = mongoTemplate.aggregate(aggregation, Compte.class, CompteAggregationDto.class).getUniqueMappedResult();
 
+    if (aggregationResult == null)
+      return new PageImpl<>(new ArrayList<>(), pageable, 0);
+
     List<UserInfosResponse> listUsers = aggregationResult.getComptes().stream().map(compte -> {
       User user = userDao.findByInfosPersoId(compte.getInfosPersoId()).get();
       return new UserInfosResponse(compte.getUserInfos(), null, user);
@@ -654,7 +657,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteEntreprise(String id, InfosPersoAvecCompteRequest request) {
-    Optional<Entreprise> _entreprise = entrepriseDao.findById(id);
+    Optional<Entreprise> _entreprise = entrepriseDao.findById(request.getEntrepriseId());
 
     if (!_entreprise.isPresent() || _entreprise.get().isDeleted())
       throw new IllegalArgumentException("Cette entreprise n'existe pas ou a été supprimé!");

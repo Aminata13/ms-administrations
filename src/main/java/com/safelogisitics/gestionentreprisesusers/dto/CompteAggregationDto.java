@@ -13,6 +13,8 @@ public class CompteAggregationDto {
 
   private List<Compte> comptes;
 
+  public CompteAggregationDto() {}
+
   public int getCount() {
     return this.count;
   }

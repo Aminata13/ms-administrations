@@ -46,6 +46,9 @@ public class Compte extends AuditMetadata {
   @Field(value = "entreprise")
   private Entreprise entreprise;
 
+  @Field(value = "entrepriseId")
+  private String entrepriseId;
+
   @Field(value = "entrepriseUser")
   private boolean entrepriseUser;
 
@@ -130,6 +133,7 @@ public class Compte extends AuditMetadata {
   public Compte(ECompteType type, Entreprise entreprise, String infosPersoId, Role role, Set<Service> services, int statut) {
     this.type = type;
     this.entreprise = entreprise;
+    this.entrepriseId = entreprise.getId();
     this.infosPersoId = infosPersoId;
     this.role = role;
     this.services = services;
@@ -169,6 +173,15 @@ public class Compte extends AuditMetadata {
 
   public void setEntreprise(Entreprise entreprise) {
     this.entreprise = entreprise;
+    this.entrepriseId = entreprise.getId();
+  }
+
+  public String getEntrepriseId() {
+    return this.entrepriseId;
+  }
+
+  public void setEntrepriseId(String entrepriseId) {
+    this.entrepriseId = entrepriseId;
   }
 
   public boolean isEntrepriseUser() {
