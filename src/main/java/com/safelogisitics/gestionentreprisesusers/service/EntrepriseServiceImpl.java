@@ -115,16 +115,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     NumeroCarte carte = numeroCarteExist.get();
 
     Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    entrepriseDao.save(entreprise);
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
+    infosAgentRequest.setEntrepriseId(entreprise.getId());
     InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
     entreprise.setGerantId(compte.getId());
     entrepriseDao.save(entreprise);
-
-    compte.setEntreprise(entreprise);
-    compteDao.save(compte);
 
     abonnementService.createAbonnement(
       new AbonnementRequest(carte.getTypeAbonnementId(), null, entreprise.getId(), 1, carte.getNumero(), false),
@@ -171,6 +170,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     entreprise.setAdresse(request.getAdresse());
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
+    infosAgentRequest.setEntrepriseId(entreprise.getId());
     id = null;
     if (entreprise.getGerantId() != null  && compteDao.existsById(entreprise.getGerantId())) {
       id = compteDao.findById(entreprise.getGerantId()).get().getInfosPersoId();
@@ -180,9 +180,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     entreprise.setGerantId(compte.getId());
     entrepriseDao.save(entreprise);
-
-    compte.setEntreprise(entreprise);
-    compteDao.save(compte);
 
     Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(request.getNumeroCarte());
 

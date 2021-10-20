@@ -18,6 +18,10 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
     return this.entrepriseId;
   }
 
+  public void setEntrepriseId(String entrepriseId) {
+    this.entrepriseId = entrepriseId;
+  }
+
   public String getRoleId() {
     return this.roleId;
   }

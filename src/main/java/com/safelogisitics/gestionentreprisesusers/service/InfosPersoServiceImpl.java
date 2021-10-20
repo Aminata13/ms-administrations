@@ -18,15 +18,18 @@ import java.util.stream.StreamSupport;
 
 import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.dao.EquipementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.dao.MoyenTransportDao;
 import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.dto.CompteAggregationDto;
 import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.model.Equipement;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
@@ -51,11 +54,13 @@ import org.bson.Document;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -105,6 +110,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   private MoyenTransportDao moyenTransportDao;
 
   @Autowired
+  private EntrepriseDao entrepriseDao;
+
+  @Autowired
   private MongoTemplate mongoTemplate;
 
   @Autowired
@@ -124,6 +132,18 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (_abonnement.isPresent()) {
       abonnement = _abonnement.get();
     }
+
+    return new UserInfosResponse(infosPerso, abonnement, user);
+  }
+
+  @Override
+  public UserInfosResponse getUserInfos(String id) {
+    InfosPerso infosPerso = infosPersoDao.findById(id).get();
+    User user = userDao.findByInfosPersoId(id).get();
+    Abonnement abonnement = null;
+    Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(id);
+    if (_abonnement.isPresent())
+      abonnement = _abonnement.get();
 
     return new UserInfosResponse(infosPerso, abonnement, user);
   }
@@ -382,6 +402,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request) {
+    if (request.getNumeroReference() == null || request.getNumeroReference().isEmpty())
+      throw new IllegalArgumentException("Matricule est obligatoire!");
+
+    Optional<Compte> _compte = compteDao.findByNumeroReference(request.getNumeroReference());
+
+    if (_compte.isPresent() && (id == null || !_compte.get().getId().equals(id)))
+      throw new IllegalArgumentException("Ce matricule existe déjà!");
+
     if (request.getRoleId() == null || request.getRoleId().isEmpty())
       throw new IllegalArgumentException("Role est requis!");
 
@@ -405,6 +433,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     compte.setRole(role);
     compte.setStatut(request.getStatut());
+    compte.setNumeroReference(request.getNumeroReference());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
@@ -590,7 +619,48 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
+  public Page<UserInfosResponse> getEntrepriseUsers(String entrepriseId, Map<String, String> requestParams, Pageable pageable) {
+    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+    final List<Criteria> listCritarias = new ArrayList<Criteria>();
+
+    listCritarias.add(Criteria.where("type").is(ECompteType.COMPTE_ENTREPRISE));
+    listCritarias.add(Criteria.where("entreprise.id").is(entrepriseId));
+    listCritarias.add(Criteria.where("entrepriseUser").is(true));
+
+    listCritarias.add(Criteria.where("deleted").is(false));
+    listCritarias.add(Criteria.where("statut").ne(-1));
+
+    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+    listAggregations.add(Aggregation.unwind("userInfos"));
+    listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+
+    listAggregations.add(new SkipOperation(pageable.getPageNumber() * pageable.getPageSize()));
+    listAggregations.add(Aggregation.limit(pageable.getPageSize()));
+
+    listAggregations.add(Aggregation.group().addToSet(Aggregation.ROOT).as("comptes").count().as("count"));
+
+    Aggregation aggregation = Aggregation.newAggregation(listAggregations);
+
+    CompteAggregationDto aggregationResult = mongoTemplate.aggregate(aggregation, Compte.class, CompteAggregationDto.class).getUniqueMappedResult();
+
+    List<UserInfosResponse> listUsers = aggregationResult.getComptes().stream().map(compte -> {
+      User user = userDao.findByInfosPersoId(compte.getInfosPersoId()).get();
+      return new UserInfosResponse(compte.getUserInfos(), null, user);
+    }).collect(Collectors.toList());
+
+    return new PageImpl<>(listUsers, pageable, aggregationResult.getCount());
+  }
+
+  @Override
   public InfosPerso createOrUpdateCompteEntreprise(String id, InfosPersoAvecCompteRequest request) {
+    Optional<Entreprise> _entreprise = entrepriseDao.findById(id);
+
+    if (!_entreprise.isPresent() || _entreprise.get().isDeleted())
+      throw new IllegalArgumentException("Cette entreprise n'existe pas ou a été supprimé!");
+
+    Entreprise entreprise = _entreprise.get();
+
     InfosPerso infosPerso = null;
 
     if (id == null) {
@@ -603,7 +673,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
     compte.setStatut(request.getStatut());
+    compte.setEntreprise(entreprise);
+    compte.setEntrepriseUser(true);
     compteDao.save(compte);
+
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
 
@@ -898,7 +971,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
 
       if (_compte.isPresent() && !_compte.get().isDeleted())
-        throw new IllegalArgumentException("Cet utilisateur a déjà un compte administrateur!");
+        throw new IllegalArgumentException("Cet utilisateur a déjà un compte.");
 
       compte = _compte.get();
       compte.setDeleted(false);
@@ -969,6 +1042,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Compte compte = _compte.get();
     compte.setDeleted(true);
+    compte.setNumeroEmei(null);
+    compte.setNumeroReference(null);
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);

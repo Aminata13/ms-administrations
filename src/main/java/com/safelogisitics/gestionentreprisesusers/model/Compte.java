@@ -46,6 +46,9 @@ public class Compte extends AuditMetadata {
   @Field(value = "entreprise")
   private Entreprise entreprise;
 
+  @Field(value = "entrepriseUser")
+  private boolean entrepriseUser;
+
   @DBRef
   @Field(value = "role")
   private Role role;
@@ -82,6 +85,7 @@ public class Compte extends AuditMetadata {
 
   public Compte() {
     this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -89,6 +93,7 @@ public class Compte extends AuditMetadata {
     this.type = type;
     this.infosPersoId = infosPersoId;
     this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -97,6 +102,7 @@ public class Compte extends AuditMetadata {
     this.infosPersoId = infosPersoId;
     this.statut = statut;
     this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -106,6 +112,7 @@ public class Compte extends AuditMetadata {
     this.role = role;
     this.statut = statut;
     this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -115,6 +122,8 @@ public class Compte extends AuditMetadata {
     this.role = role;
     this.services = services;
     this.statut = statut;
+    this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -125,6 +134,8 @@ public class Compte extends AuditMetadata {
     this.role = role;
     this.services = services;
     this.statut = statut;
+    this.deleted = false;
+    this.entrepriseUser = false;
     this.dateCreation = new Date();
   }
 
@@ -159,6 +170,15 @@ public class Compte extends AuditMetadata {
   public void setEntreprise(Entreprise entreprise) {
     this.entreprise = entreprise;
   }
+
+  public boolean isEntrepriseUser() {
+    return this.entrepriseUser;
+  }
+
+  public void setEntrepriseUser(boolean entrepriseUser) {
+    this.entrepriseUser = entrepriseUser;
+  }
+
 
   public Role getRole() {
     return this.role;

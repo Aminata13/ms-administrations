@@ -24,6 +24,8 @@ public interface InfosPersoService {
 
   public UserInfosResponse getUserInfos();
 
+  public UserInfosResponse getUserInfos(String id);
+
   public Optional<InfosPerso> findInfosPersoById(String id);
 
   public Map<String, String> verifierAbonnement(String telephone);
@@ -63,6 +65,8 @@ public interface InfosPersoService {
   public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request); // Création et modification d'un infosPerso avec compte agent (Coursier)
 
   public void deleteComptePrestataire(String infosPersoId); // Suppression d'un agent (coursier) (Soft delete)
+
+  public Page<UserInfosResponse> getEntrepriseUsers(String entrepriseId, Map<String, String> requestParams, Pageable pageable);
 
   public InfosPerso createOrUpdateCompteEntreprise(String id, InfosPersoAvecCompteRequest request);
 

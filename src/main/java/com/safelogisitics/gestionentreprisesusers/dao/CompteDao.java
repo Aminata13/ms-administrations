@@ -22,6 +22,8 @@ public interface CompteDao extends PagingAndSortingRepository<Compte, String> {
   Optional<Compte> findByIdAndType(String id, ECompteType type);
 
   Optional<Compte> findByNumeroEmei(String numeroEmei);
+
+  Optional<Compte> findByNumeroReference(String numeroReference);
   
   Optional<Compte> findByInfosPersoIdAndEntrepriseId(String infosPersoId, String entrepriseId);
 
