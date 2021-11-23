@@ -46,6 +46,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTr
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.response.EntrepriseInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
@@ -134,6 +135,29 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     }
 
     return new UserInfosResponse(infosPerso, abonnement, user);
+  }
+
+  @Override
+  public EntrepriseInfosResponse getEntrepriseInfos() {
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte compte = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
+    if (compte.isDeleted() || !compte.isEntrepriseUser())
+      return null;
+
+    Entreprise entreprise = entrepriseDao.findById(compte.getEntrepriseId()).get();
+    InfosPerso gerant = null; 
+    Abonnement abonnement = null;
+
+    Optional<Compte> _gerant = compteDao.findById(entreprise.getGerantId());
+    if (_gerant.isPresent()) {
+      gerant = infosPersoDao.findById(_gerant.get().getInfosPersoId()).get();
+    }
+    Optional<Abonnement> _abonnement = abonnementDao.findByEntrepriseId(entreprise.getId());
+    if (_abonnement.isPresent()) {
+      abonnement = _abonnement.get();
+    }
+
+    return new EntrepriseInfosResponse(entreprise, gerant, abonnement);
   }
 
   @Override
@@ -407,7 +431,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Optional<Compte> _compte = compteDao.findByNumeroReference(request.getNumeroReference());
 
-    if (_compte.isPresent() && (id == null || !_compte.get().getId().equals(id)))
+    if (_compte.isPresent() && (id == null || !_compte.get().getInfosPersoId().equals(id)))
       throw new IllegalArgumentException("Ce matricule existe déjà!");
 
     if (request.getRoleId() == null || request.getRoleId().isEmpty())
@@ -523,6 +547,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       }
 
       if (affectationEquipement.getQuantite() > 0) {
+        if (affectationEquipement.getQuantite() > stock) {
+          affectationEquipement.setQuantite(stock);
+        }
         compte.addEquipement(affectationEquipement);
         quantiteAffecter = quantiteAffecter + affectationEquipement.getQuantite();
         stock = stock - affectationEquipement.getQuantite();

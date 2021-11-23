@@ -70,8 +70,6 @@ public class MoyenTransportServiceImpl implements MoyenTransportService {
     if (!listCriteria.isEmpty())
       query.addCriteria(new Criteria().andOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
 
-    query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
-
     List<MoyenTransport> moyenTransports = mongoTemplate.find(query, MoyenTransport.class);
 
     return PageableExecutionUtils.getPage(

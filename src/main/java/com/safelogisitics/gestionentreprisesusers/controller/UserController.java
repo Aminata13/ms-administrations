@@ -44,6 +44,11 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getUserInfos());
   }
 
+  @GetMapping("/infos/entreprise")
+	public ResponseEntity<?> infosEntreprise() {
+		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.getEntrepriseInfos());
+  }
+
   @PostMapping("/infos")
 	public ResponseEntity<?> updateInfos(@Valid @RequestBody UpdateInfosPersoRequest updateInfosPersoRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.updateUserInfos(updateInfosPersoRequest));

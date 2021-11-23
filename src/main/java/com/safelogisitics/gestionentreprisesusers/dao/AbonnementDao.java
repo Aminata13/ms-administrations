@@ -23,7 +23,7 @@ public interface AbonnementDao extends PagingAndSortingRepository<Abonnement, St
 
   Optional<Abonnement> findByCompteClientId(String compteClientId);
 
-  Optional<Abonnement> findByEntrepriseId(String compteClientId);
+  Optional<Abonnement> findByEntrepriseId(String entrepriseId);
 
   Optional<Abonnement> findByCompteClientInfosPersoIdAndDeletedIsFalse(String infosPersoId);
 

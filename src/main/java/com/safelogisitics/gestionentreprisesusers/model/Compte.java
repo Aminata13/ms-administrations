@@ -330,7 +330,7 @@ public class Compte extends AuditMetadata {
   }
 
   public int hashCode() {
-    return Objects.hash(type, infosPersoId, entreprise, 1000);
+    return Objects.hash(type, infosPersoId, entrepriseId, 1000);
   }
 
   public boolean equals(Object obj) {

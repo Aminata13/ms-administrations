@@ -14,6 +14,7 @@ import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvec
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.payload.response.EntrepriseInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
 
@@ -23,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 public interface InfosPersoService {
 
   public UserInfosResponse getUserInfos();
+
+  public EntrepriseInfosResponse getEntrepriseInfos();
 
   public UserInfosResponse getUserInfos(String id);
 
