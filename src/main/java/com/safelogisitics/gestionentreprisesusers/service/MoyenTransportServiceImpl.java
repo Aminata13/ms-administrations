@@ -89,7 +89,7 @@ public class MoyenTransportServiceImpl implements MoyenTransportService {
 
     final List<Criteria> listCriteria = new ArrayList<>();
 
-    if (searchValue == null || !searchValue.isEmpty())
+    if (searchValue == null || searchValue.isEmpty())
       return new ArrayList<>();
 
     listCriteria.add(Criteria.where("reference").regex(".*"+searchValue.trim()+".*","i"));
