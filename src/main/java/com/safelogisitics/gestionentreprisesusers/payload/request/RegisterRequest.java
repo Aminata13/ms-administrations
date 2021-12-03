@@ -12,6 +12,8 @@ public class RegisterRequest extends InfosPersoRequest {
   @NotBlank
   private String password;
 
+  public RegisterRequest() {}
+
   public RegisterRequest(String prenom, String nom, String email, String telephone, String username, String password, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece, String photoProfil) {
     this.prenom = prenom;
     this.nom = nom;

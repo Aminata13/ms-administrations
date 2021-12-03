@@ -16,9 +16,7 @@ public class SendSmsRequest {
 
   private Collection<Map<String, String>> recipients = new ArrayList<>();
 
-  public SendSmsRequest() {
-    
-  }
+  public SendSmsRequest() {}
 
   public SendSmsRequest(String signature, String subject, String content, Collection<String> recipients) {
     this.signature = signature;

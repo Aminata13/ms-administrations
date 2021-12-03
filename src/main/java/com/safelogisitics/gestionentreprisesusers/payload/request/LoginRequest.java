@@ -12,6 +12,8 @@ public class LoginRequest {
   @NotBlank
   private String password;
 
+  public LoginRequest() {}
+
   public LoginRequest(String username, String password) {
     this.username = username;
     this.password = password;

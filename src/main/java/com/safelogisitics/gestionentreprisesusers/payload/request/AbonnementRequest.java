@@ -20,6 +20,8 @@ public class AbonnementRequest {
 
   private boolean carteBloquer = false;
 
+  public AbonnementRequest() {}
+
   public AbonnementRequest(String typeAbonnementId, String infosPersoId, String entrepriseId, int statut, String numeroCarte, boolean carteBloquer) {
     this.typeAbonnementId = typeAbonnementId;
     this.infosPersoId = infosPersoId;

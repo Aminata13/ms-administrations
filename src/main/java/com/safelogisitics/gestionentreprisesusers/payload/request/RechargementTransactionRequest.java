@@ -15,6 +15,8 @@ public class RechargementTransactionRequest {
 
   private String agentPassword;
 
+  public RechargementTransactionRequest() {}
+
   public RechargementTransactionRequest(String numeroCarte, BigDecimal montant) {
     this.numeroCarte = numeroCarte;
     this.montant = montant;
