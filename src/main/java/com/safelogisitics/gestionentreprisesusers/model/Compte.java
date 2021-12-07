@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -55,6 +56,9 @@ public class Compte extends AuditMetadata {
   @DBRef
   @Field(value = "role")
   private Role role;
+
+  @Field(value = "serviceConciergerie")
+  private EServiceConciergeType serviceConciergerie;
 
   @DBRef
   @Field(value = "services")
@@ -201,6 +205,14 @@ public class Compte extends AuditMetadata {
     this.role = role;
   }
 
+  public EServiceConciergeType getServiceConciergerie() {
+    return this.serviceConciergerie;
+  }
+
+  public void setServiceConciergerie(EServiceConciergeType serviceConciergerie) {
+    this.serviceConciergerie = serviceConciergerie;
+  }
+
   public Set<Service> getServices() {
     return this.services;
   }
@@ -295,6 +307,7 @@ public class Compte extends AuditMetadata {
     _customRoleField.put("type", getType());
     _customRoleField.put("entreprise", entreprise != null ? entreprise.getId() : "");
     _customRoleField.put("role", "");
+    _customRoleField.put("serviceConciergerie", getServiceConciergerie());
     _customRoleField.put("privileges", new ArrayList<>());
     if (role != null) {
       _customRoleField.put("role", role.getLibelle());

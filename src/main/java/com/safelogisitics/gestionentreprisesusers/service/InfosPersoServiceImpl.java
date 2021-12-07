@@ -37,6 +37,7 @@ import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -263,12 +264,15 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType) {
+  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType, EServiceConciergeType serviceConciergeType) {
     final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
     final List<Criteria> listCritarias = new ArrayList<Criteria>();
 
     if (compteType != null)
       listCritarias.add(Criteria.where("type").is(compteType));
+
+    if (serviceConciergeType != null)
+      listCritarias.add(Criteria.where("serviceConciergerie").is(serviceConciergeType));
 
     if (prenom != null && !prenom.isEmpty())
       listCritarias.add(Criteria.where("userInfos.prenom").regex(".*"+prenom.trim()+".*","i"));
@@ -293,9 +297,11 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
     listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
-    listAggregations.add(Aggregation.lookup("abonnements", "infosPersoId", "compteClient.infosPersoId", "abonnement"));
     listAggregations.add(Aggregation.unwind("userInfos"));
-    listAggregations.add(Aggregation.unwind("abonnement"));
+    if (numeroCarte != null && !numeroCarte.isEmpty()) {
+      listAggregations.add(Aggregation.lookup("abonnements", "infosPersoId", "compteClient.infosPersoId", "abonnement"));
+      listAggregations.add(Aggregation.unwind("abonnement"));
+    }
     listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
 
     Aggregation aggregation = Aggregation.newAggregation(listAggregations);
@@ -617,6 +623,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request) {
+    if (!request.valideFieldsComptePrestataire())
+      throw new IllegalArgumentException("Informations prestataire manquant!");
+
     InfosPerso infosPerso = null;
 
     if (id == null) {
@@ -629,6 +638,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).get();
 
     compte.setStatut(request.getStatut());
+    compte.setServiceConciergerie(request.getServiceConciergerie());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);

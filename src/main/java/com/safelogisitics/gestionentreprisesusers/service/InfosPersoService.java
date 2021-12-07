@@ -9,6 +9,7 @@ import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoRequest;
@@ -41,7 +42,7 @@ public interface InfosPersoService {
 
   public Optional<InfosPerso> findByEmailOrTelephone(String emailOrTelephone);
 
-  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType);
+  public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType, EServiceConciergeType serviceConciergeType);
 
   public Page<InfosPerso> getInfosPersos(Pageable pageable); // list infosPerso sans compte
 

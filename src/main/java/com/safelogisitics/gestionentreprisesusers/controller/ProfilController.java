@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.UpdateInfosPersoRequest;
@@ -57,10 +58,11 @@ public class ProfilController {
     @RequestParam(required = false) String email,
     @RequestParam(required = false) String telephone,
     @RequestParam(required = false) String numeroCarte,
-    @RequestParam(required = false) ECompteType compteType
+    @RequestParam(required = false) ECompteType compteType,
+    @RequestParam(required = false) EServiceConciergeType serviceConciergeType
   ) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, numeroCarte, compteType));
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByCustomSearch(prenom, nom, email, telephone, numeroCarte, compteType, serviceConciergeType));
 	}
 
   @ApiOperation(value = "", tags = "personnels")
