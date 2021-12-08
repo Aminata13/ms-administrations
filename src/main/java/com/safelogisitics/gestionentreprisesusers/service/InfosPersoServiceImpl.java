@@ -639,6 +639,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     compte.setStatut(request.getStatut());
     compte.setServiceConciergerie(request.getServiceConciergerie());
+    compte.setNumeroReference(request.getNumeroReference());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
