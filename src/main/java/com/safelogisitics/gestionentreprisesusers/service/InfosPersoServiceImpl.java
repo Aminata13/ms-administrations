@@ -1003,36 +1003,41 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   private InfosPerso createCompte(InfosPersoRequest request, ECompteType compteType, String _username, String _password) {
-
     InfosPerso infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 
     Compte compte;
 
-    if (infosPerso != null) {
-      Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
+    if (infosPerso != null && compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(infosPerso.getId(), compteType)) {
+      throw new IllegalArgumentException("Cet utilisateur a déjà un compte.");
+    }
 
-      if (_compte.isPresent() && !_compte.get().isDeleted())
-        throw new IllegalArgumentException("Cet utilisateur a déjà un compte.");
+    String username = _username != null ? _username : infosPerso != null ? infosPerso.getEmail() : request.getEmail();
+    Optional<User> _user = userDao.findByUsername(username);
 
-      compte = _compte.get();
-      compte.setDeleted(false);
-      compteDao.save(compte);
-      infosPerso.updateCompte(compte);
-      infosPersoDao.save(infosPerso);
-    } else {
-      if (userDao.existsByUsername(request.getEmail()))
-        throw new IllegalArgumentException("Email déjà utilisé!");
+    if (_user.isPresent() && (infosPerso == null || !_user.get().getInfosPerso().getId().equals(infosPerso.getId()))) {
+      throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà!");
+    }
 
+    if (infosPerso == null) {
       infosPerso = createInfosPerso(request);
+    }
 
+    Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
+
+    if (!_compte.isPresent()) {
       compte = new Compte(compteType, infosPerso.getId());
       compteDao.save(compte);
       infosPerso.addCompte(compte);
-      infosPersoDao.save(infosPerso);
+    } else {
+      compte = _compte.get();
     }
 
+    compte.setDeleted(false);
+    compteDao.save(compte);
+    infosPerso.updateCompte(compte);
+    infosPersoDao.save(infosPerso);
+
     if (!userDao.existsByInfosPersoId(infosPerso.getId())) {
-      String username = _username != null ? _username : infosPerso.getEmail();
       String password = _password != null ? _password : alphaNumericString(1, 8);
       User user = new User(infosPerso, username, encoder.encode(password), 1);
       userDao.save(user);
@@ -1053,7 +1058,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(id, compteType);
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
-      throw new IllegalArgumentException("Cet utilisateur n'a pas de compte administrateur!");
+      throw new IllegalArgumentException("Cet utilisateur n'a pas de compte " + compteType.name());
 
     InfosPerso _infosPerso = findInfosPerso(request.getEmail(), request.getTelephone(), request.getNumeroPermis(), request.getNumeroPiece());
 
