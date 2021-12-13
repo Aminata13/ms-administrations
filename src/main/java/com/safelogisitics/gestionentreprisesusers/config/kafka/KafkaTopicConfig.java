@@ -31,12 +31,11 @@ public class KafkaTopicConfig {
 
   @Bean
   public NewTopic topic1() {
-    return new NewTopic(createPaiementTopicName, 5, (short) 5);
+    return new NewTopic(createPaiementTopicName, 1, (short) 1);
   }
 
   @Bean
   public NewTopic topic2() {
-    return new NewTopic(blacklistAccesstokenName, 5, (short) 5);
+    return new NewTopic(blacklistAccesstokenName, 1, (short) 1);
   }
-
 }

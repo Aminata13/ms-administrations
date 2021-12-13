@@ -196,18 +196,5 @@
       "DELETE",
       "VALIDATE"
     ]
-  },
-  {
-    "libelle": "Gestion des commandes de conciergerie",
-    "valeur": "GESTION_COMMANDE_CONCIERGERIES",
-    "type": "COMPTE_ADMINISTRATEUR",
-    "statut": 1,
-    "actions": [
-      "READ",
-      "CREATE",
-      "UPDATE",
-      "DELETE",
-      "ASSIGN"
-    ]
   }
 ]
