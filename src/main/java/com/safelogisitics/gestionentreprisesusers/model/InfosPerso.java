@@ -255,6 +255,7 @@ public class InfosPerso extends AuditMetadata {
       public final String id = getId();
       public final String prenom = getPrenom();
       public final String nom = getNom();
+      public final String nomComplet = getNomComplet();
       public final String email = getEmail();
       public final String telephone = getTelephone();
       public final String adresse = getAdresse();
@@ -263,7 +264,7 @@ public class InfosPerso extends AuditMetadata {
 
       @Override
       public String toString() {
-        return String.format("%s %s %s %s %s %s %s %s", id, prenom, nom, email, telephone, adresse, typeAbonnement, dateCreation); 
+        return String.format("%s %s %s %s %s %s %s %s %s", id, prenom, nom, nomComplet, email, telephone, adresse, typeAbonnement, dateCreation); 
       }
     };
     return defaultFields;
