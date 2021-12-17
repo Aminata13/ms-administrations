@@ -160,7 +160,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @GetMapping("/prestataires/list")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
+  @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'READ')")
 	public ResponseEntity<?> allPrestataires(@PageableDefault(size = 20) Pageable pageable) {
     Page<UserInfosResponse> roles = infosPersoService.getInfosPersos(ECompteType.COMPTE_PRESTATAIRE, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(roles);
@@ -168,7 +168,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @PostMapping("/prestataires/add")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE')")
+  @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'CREATE')")
 	public ResponseEntity<?> addPrestataire(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -176,7 +176,7 @@ public class ProfilController {
 
   @ApiOperation(value = "", tags = "prestataires")
   @PutMapping("/prestataires/update/{id}")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
+  @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'UPDATE')")
 	public ResponseEntity<?> updatePrestataire(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
     InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
@@ -184,7 +184,7 @@ public class ProfilController {
 
   @ApiOperation(value = "Suppression d'un prestataire", tags = "prestataires")
   @DeleteMapping("/prestataires/delete/{id}")
-  @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'DELETE')")
+  @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'DELETE')")
 	public ResponseEntity<?> deleteprestataire(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
