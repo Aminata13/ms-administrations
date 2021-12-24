@@ -40,7 +40,7 @@ public class CompteJsonSerializer extends JsonSerializer<Compte> {
         jsonGenerator.writeObjectField("moyenTransport", compte.getMoyenTransportId() != null ? moyenTransportDao.findById(compte.getMoyenTransportId()) : null);
         jsonGenerator.writeStringField("numeroEmei", compte.getNumeroEmei());
         jsonGenerator.writeStringField("numeroReference", compte.getNumeroReference());
-        jsonGenerator.writeStringField("serviceConciergerie", compte.getServiceConciergerie() != null ? compte.getServiceConciergerie().name() : null);
+        jsonGenerator.writeObjectField("serviceConciergeries", compte.getServiceConciergeries() != null ? compte.getServiceConciergeries() : null);
         jsonGenerator.writeNumberField("statut", compte.getStatut());
         jsonGenerator.writeObjectField("services", compte.getServices());
 

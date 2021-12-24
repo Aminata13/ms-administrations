@@ -1,5 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.payload.request;
 
+import java.util.Set;
+
 import javax.validation.constraints.NotNull;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
@@ -16,7 +18,7 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
   @NotNull(message = "Le statut est obligatoire.")
   private Integer statut;
 
-  private EServiceConciergeType serviceConciergerie;
+  private Set<EServiceConciergeType> serviceConciergeries;
 
   public String getEntrepriseId() {
     return this.entrepriseId;
@@ -42,12 +44,12 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
     return this.statut;
   }
 
-  public EServiceConciergeType getServiceConciergerie() {
-    return this.serviceConciergerie;
+  public Set<EServiceConciergeType> getServiceConciergeries() {
+    return this.serviceConciergeries;
   }
 
-  public void setServiceConciergerie(EServiceConciergeType serviceConciergerie) {
-    this.serviceConciergerie = serviceConciergerie;
+  public void setServiceConciergeries(Set<EServiceConciergeType> serviceConciergeries) {
+    this.serviceConciergeries = serviceConciergeries;
   }
 
   public boolean valideFieldsCompteAgent() {
@@ -62,7 +64,7 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
   public boolean valideFieldsComptePrestataire() {
     if (
       (this.getNumeroReference() == null || this.getNumeroReference().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty()) ||
-      this.getServiceConciergerie() == null
+      this.getServiceConciergeries() == null || this.serviceConciergeries.isEmpty()
     ) return false;
 
     return true;

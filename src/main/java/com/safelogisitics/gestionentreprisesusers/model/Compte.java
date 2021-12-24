@@ -57,8 +57,8 @@ public class Compte extends AuditMetadata {
   @Field(value = "role")
   private Role role;
 
-  @Field(value = "serviceConciergerie")
-  private EServiceConciergeType serviceConciergerie;
+  @Field(value = "serviceConciergeries")
+  private Set<EServiceConciergeType> serviceConciergeries;
 
   @DBRef
   @Field(value = "services")
@@ -205,12 +205,12 @@ public class Compte extends AuditMetadata {
     this.role = role;
   }
 
-  public EServiceConciergeType getServiceConciergerie() {
-    return this.serviceConciergerie;
+  public Set<EServiceConciergeType> getServiceConciergeries() {
+    return this.serviceConciergeries;
   }
 
-  public void setServiceConciergerie(EServiceConciergeType serviceConciergerie) {
-    this.serviceConciergerie = serviceConciergerie;
+  public void setServiceConciergeries(Set<EServiceConciergeType> serviceConciergeries) {
+    this.serviceConciergeries = serviceConciergeries;
   }
 
   public Set<Service> getServices() {
@@ -308,7 +308,7 @@ public class Compte extends AuditMetadata {
     _customRoleField.put("entreprise", entrepriseId != null ? entrepriseId : "");
     _customRoleField.put("isEntrepriseUser", entreprise != null && entrepriseUser == true ? true : false);
     _customRoleField.put("role", "");
-    _customRoleField.put("serviceConciergerie", getServiceConciergerie());
+    _customRoleField.put("serviceConciergeries", getServiceConciergeries());
     _customRoleField.put("privileges", new ArrayList<>());
     if (role != null) {
       _customRoleField.put("role", role.getLibelle());

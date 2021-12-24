@@ -638,7 +638,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PRESTATAIRE).get();
 
     compte.setStatut(request.getStatut());
-    compte.setServiceConciergerie(request.getServiceConciergerie());
+    compte.setServiceConciergeries(request.getServiceConciergeries());
     compte.setNumeroReference(request.getNumeroReference());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
