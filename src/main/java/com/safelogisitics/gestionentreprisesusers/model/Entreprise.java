@@ -186,4 +186,30 @@ public class Entreprise extends AuditMetadata {
   public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
   }
+
+  @JsonIgnore
+  public Object getDefaultFields() {
+    Object defaultFields = new Object() {
+      public final String id = getId();
+      public final String typeEntreprise = getTypeEntreprise();
+      public final String domaineActivite = getDomaineActivite();
+      public final String typePartenariats = getTypePartenariats().toString();
+      public final String denomination = getDenomination();
+      public final String ninea = getNinea();
+      public final String raisonSociale = getRaisonSociale();
+      public final String gerantId = getGerantId();
+      public final String numeroCarte = getNumeroCarte();
+      public final String email = getEmail();
+      public final String telephone = getTelephone();
+      public final String adresse = getAdresse();
+      public final String dateCreation = getDateCreation().toString();
+
+      @Override
+      public String toString() {
+        return String.format("%s %s %s %s %s %s %s %s %s %s %s %s %s", id, typeEntreprise, domaineActivite, typePartenariats, denomination, ninea,
+          raisonSociale, gerantId, numeroCarte, email, telephone, adresse, dateCreation); 
+      }
+    };
+    return defaultFields;
+  }
 }

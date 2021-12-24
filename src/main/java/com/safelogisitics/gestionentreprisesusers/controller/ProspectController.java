@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EProspecteurType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.ProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.service.ProspectService;
 
@@ -55,7 +56,7 @@ public class ProspectController {
   @PostMapping("/add")
   @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'CREATE')")
 	public ResponseEntity<Map<String, Object>> addProspect(@Valid @RequestBody ProspectRequest request) {
-    Map<String, Object> prospect = prospectService.createProspect(request);
+    Map<String, Object> prospect = prospectService.createProspect(request, EProspecteurType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(prospect);
 	}
 
@@ -63,7 +64,7 @@ public class ProspectController {
   @PutMapping("/update/{id}")
   @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'UPDATE')")
 	public ResponseEntity<Map<String, Object>> updateProspect(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
-    Map<String, Object> prospect = prospectService.updateProspect(id, request);
+    Map<String, Object> prospect = prospectService.updateProspect(id, request, false);
 
 		return ResponseEntity.status(HttpStatus.OK).body(prospect);
 	}

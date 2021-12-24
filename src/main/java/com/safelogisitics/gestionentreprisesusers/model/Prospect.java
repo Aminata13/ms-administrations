@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EProspecteurType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeProspect;
 
 import org.springframework.data.annotation.Id;
@@ -36,6 +37,9 @@ public class Prospect extends AuditMetadata {
 
   @Field(value = "personneRencontrer")
   private Map<String,String> personneRencontrer;
+
+  @Field(value = "prospecteurType")
+  private EProspecteurType prospecteurType;
 
   @Field(value = "prospecteurId")
   private String prospecteurId;
@@ -131,6 +135,14 @@ public class Prospect extends AuditMetadata {
   public void setPersonneRencontrer(Map<String,String> personneRencontrer) {
 		this.personneRencontrer = personneRencontrer;
 	}
+
+  public EProspecteurType getProspecteurType() {
+    return this.prospecteurType;
+  }
+
+  public void setProspecteurType(EProspecteurType prospecteurType) {
+    this.prospecteurType = prospecteurType;
+  }
 
   public String getProspecteurId() {
     return this.prospecteurId;
