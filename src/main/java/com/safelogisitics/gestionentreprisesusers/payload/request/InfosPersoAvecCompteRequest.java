@@ -16,7 +16,7 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
   private String numeroReference;
 
   @NotNull(message = "Le statut est obligatoire.")
-  private Integer statut;
+  private int statut;
 
   private Set<EServiceConciergeType> serviceConciergeries;
 
@@ -42,6 +42,10 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
 
   public int getStatut() {
     return this.statut;
+  }
+
+  public void setStatut(int statut) {
+    this.statut = statut;
   }
 
   public Set<EServiceConciergeType> getServiceConciergeries() {
