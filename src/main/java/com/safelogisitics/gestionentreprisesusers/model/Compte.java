@@ -305,7 +305,8 @@ public class Compte extends AuditMetadata {
 
     _customRoleField.put("id", getId());
     _customRoleField.put("type", getType());
-    _customRoleField.put("entreprise", entreprise != null ? entreprise.getId() : "");
+    _customRoleField.put("entreprise", entrepriseId != null ? entrepriseId : "");
+    _customRoleField.put("isEntrepriseUser", entreprise != null && entrepriseUser == true ? true : false);
     _customRoleField.put("role", "");
     _customRoleField.put("serviceConciergerie", getServiceConciergerie());
     _customRoleField.put("privileges", new ArrayList<>());
