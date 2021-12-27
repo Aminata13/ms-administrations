@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -54,7 +55,7 @@ public class EntrepriseProfilController {
 
     if (compte.isDeleted() || !compte.isEntrepriseUser() || !compte.getEntreprise().getGerantId().equals(compte.getId())
     || !compteDao.existsByInfosPersoIdAndEntrepriseId(id, compte.getEntreprise().getId()))
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(infosPersoService.getUserInfos(id));
 	}
@@ -65,7 +66,7 @@ public class EntrepriseProfilController {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compte = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
     if (compte.isDeleted() || !compte.isEntrepriseUser() || !compte.getEntreprise().getGerantId().equals(compte.getId()))
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     Page<UserInfosResponse> users = infosPersoService.getEntrepriseUsers(compte.getEntreprise().getId(), parameters, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(users);
@@ -77,7 +78,7 @@ public class EntrepriseProfilController {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compte = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
     if (compte.isDeleted() || !compte.isEntrepriseUser() || !compte.getEntreprise().getGerantId().equals(compte.getId()))
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     request.setEntrepriseId(compte.getEntreprise().getId());
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteEntreprise(null, request);
@@ -90,7 +91,7 @@ public class EntrepriseProfilController {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compte = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
     if (compte.isDeleted() || !compte.isEntrepriseUser() || !compte.getEntreprise().getGerantId().equals(compte.getId()))
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     request.setEntrepriseId(compte.getEntreprise().getId());
     InfosPerso infosPerso = infosPersoService.createOrUpdateCompteEntreprise(id, request);
@@ -104,9 +105,9 @@ public class EntrepriseProfilController {
     Compte compte = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
     if (compte.isDeleted() || !compte.isEntrepriseUser() || !compte.getEntreprise().getGerantId().equals(compte.getId())
     || !compteDao.existsByInfosPersoIdAndEntrepriseId(id, compte.getEntreprise().getId()))
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     infosPersoService.deleteCompteEntreprise(id);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body("DELETED");
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Collections.singletonMap("message", "DELETED"));
 	}
 }

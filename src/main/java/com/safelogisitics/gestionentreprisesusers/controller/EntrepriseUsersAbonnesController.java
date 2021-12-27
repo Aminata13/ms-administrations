@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class EntrepriseUsersAbonnesController {
     
     Compte compte = validateUserAccount();
     if (compte == null)
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     if (parameters == null)
       parameters = new HashMap<>();
@@ -67,7 +68,7 @@ public class EntrepriseUsersAbonnesController {
 	public ResponseEntity<?> oneUserAbonnee(@PathVariable(value = "id") String id) {
     Compte compte = validateUserAccount();
     if (compte == null)
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     Map<String,String>parameters = new HashMap<>();
     parameters.put("prospecteurId", compte.getEntrepriseId());
@@ -82,7 +83,7 @@ public class EntrepriseUsersAbonnesController {
 	public ResponseEntity<Map<String, Object>> addUserAbonnee(@Valid @RequestBody ProspectRequest request) {
     Compte compte = validateUserAccount();
     if (compte == null)
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     Map<String, Object> prospect = prospectService.createProspect(request, EProspecteurType.COMPTE_ENTREPRISE);
 		return ResponseEntity.status(HttpStatus.CREATED).body(prospect);
@@ -93,7 +94,7 @@ public class EntrepriseUsersAbonnesController {
 	public ResponseEntity<Map<String, Object>> updateUserAbonnee(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
     Compte compte = validateUserAccount();
     if (compte == null)
-      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accès refusé");
+      ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     Map<String, Object> prospect = prospectService.updateProspect(id, request, false);
 
@@ -104,7 +105,7 @@ public class EntrepriseUsersAbonnesController {
   @DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> deleteUserAbonnee(@PathVariable(value = "id") String id) {
     prospectService.deleteProspect(id);
-    return ResponseEntity.status(HttpStatus.OK).body("OK!");
+    return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "OK!"));
 	}
 
   private Compte validateUserAccount() {

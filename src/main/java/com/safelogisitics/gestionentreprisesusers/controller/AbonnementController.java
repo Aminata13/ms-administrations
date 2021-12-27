@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.controller;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -99,7 +100,7 @@ public class AbonnementController {
 	public ResponseEntity<?> allAbonnementsByType(@PathVariable(value = "id") String id, @PageableDefault(size = 20) Pageable pageable) {
     Optional<TypeAbonnement> typeAbonnementExist = typeAbonnementDao.findById(id);
     if (!typeAbonnementExist.isPresent()) {
-      ResponseEntity.status(HttpStatus.NOT_FOUND).body("Type abonnement is not found");
+      ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Type abonnement is not found"));
     }
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnements(typeAbonnementExist.get(), pageable));
 	}
@@ -117,7 +118,7 @@ public class AbonnementController {
 	public ResponseEntity<?> getAbonnementByClient(@PathVariable(value = "id") String id) {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
     if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
-      ResponseEntity.status(HttpStatus.NOT_FOUND).body("Compte is not found");
+      ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Compte is not found"));
     }
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnementByCompteClient(compteExist.get()));
 	}
@@ -128,7 +129,7 @@ public class AbonnementController {
 	public ResponseEntity<?> getAbonnementByCreateur(@PathVariable(value = "id") String id, @PageableDefault(size = 20) Pageable pageable) {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_ADMINISTRATEUR);
     if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
-      ResponseEntity.status(HttpStatus.NOT_FOUND).body("Compte is not found");
+      ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Compte is not found"));
     }
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnementByCompteCreateur(compteExist.get(), pageable));
 	}
@@ -145,7 +146,7 @@ public class AbonnementController {
 	public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody EnrollmentRequest request) {
     InfosPerso infosPerso = infosPersoService.newEnrollment(request);
     if (infosPerso == null)
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informaions d'inscription incomplet");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", "Informaions d'inscription incomplet"));
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -181,10 +182,10 @@ public class AbonnementController {
   @PreAuthorize("hasPermission('GESTION_ABONNEMENTS', 'DELETE')")
 	public ResponseEntity<?> deleteAbonnement(@PathVariable(value = "id") String id) {
     if (!infosPersoService.findInfosPersoById(id).isPresent())
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Personnel with that id does not exists!");
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Personnel with that id does not exists!"));
 
     abonnementService.deleteAbonnement(id);
-    return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+    return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Supprimé"));
 	}
 
   @PostMapping("/recharger-carte")

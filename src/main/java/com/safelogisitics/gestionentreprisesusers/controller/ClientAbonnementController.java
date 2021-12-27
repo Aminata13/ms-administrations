@@ -2,6 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.controller;
 
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -64,7 +65,7 @@ public class ClientAbonnementController {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_PARTICULIER);
     if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
-      ResponseEntity.status(HttpStatus.NOT_FOUND).body("Compte is not found");
+      ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Compte is not found"));
     }
     return ResponseEntity.status(HttpStatus.OK).body(abonnementService.getAbonnementByCompteClient(compteExist.get()));
 	}
