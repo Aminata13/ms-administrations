@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -104,7 +105,7 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Personnel with that id does not exists!");
 
     infosPersoService.deleteCompteAdministrateur(id);
-		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+		return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "supprimé"));
 	}
 
   @ApiOperation(value = "", tags = "agents")
@@ -155,7 +156,7 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent with that id does not exists!");
 
     infosPersoService.deleteCompteAgent(id);
-		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+		return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "supprimé"));
 	}
 
   @ApiOperation(value = "", tags = "prestataires")
@@ -190,7 +191,7 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "prestataire with that id does not exists!");
 
     infosPersoService.deleteComptePrestataire(id);
-		return ResponseEntity.status(HttpStatus.CREATED).body("DELETED");
+		return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "supprimé"));
 	}
 
   @ApiOperation(value = "", tags = "clients")
@@ -240,6 +241,6 @@ public class ProfilController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with that id does not exists!");
 
     infosPersoService.deleteCompteClient(id);
-		return ResponseEntity.status(HttpStatus.OK).body("DELETED");
+		return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "supprimé"));
 	}
 }

@@ -1,5 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.controller;
 
+import java.util.Collections;
+
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
@@ -72,7 +74,7 @@ public class EntrepriseController {
     Entreprise entreprise = entrepriseService.updateEntreprise(id, request);
 
     if (entreprise == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise is not found!");
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", "Entreprise is not found!"));
     }
 		return ResponseEntity.status(HttpStatus.OK).body(entreprise);
 	}
@@ -82,6 +84,6 @@ public class EntrepriseController {
   @PreAuthorize("hasPermission('GESTION_CLIENTS', 'CREATE')")
 	public ResponseEntity<?> deleteEntreprise(@PathVariable(value = "id") String id) {
     entrepriseService.deleteEntreprise(id);
-    return ResponseEntity.status(HttpStatus.OK).body("OK!");
+    return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Supprimé"));
 	}
 }

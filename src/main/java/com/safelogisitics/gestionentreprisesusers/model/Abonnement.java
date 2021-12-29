@@ -36,6 +36,9 @@ public class Abonnement extends AuditMetadata {
   @Field(value = "solde")
   private BigDecimal solde;
 
+  @Field(value = "pointGratuites")
+  private long pointGratuites;
+
   @Field(value = "prixCarte")
   private BigDecimal prixCarte;
 
@@ -54,6 +57,7 @@ public class Abonnement extends AuditMetadata {
 
   public Abonnement() {
     this.solde = BigDecimal.valueOf(0);
+    this.pointGratuites = 0;
     this.deleted = false;
     this.dateCreation = LocalDate.now();
   }
@@ -64,6 +68,7 @@ public class Abonnement extends AuditMetadata {
     this.compteCreateur = compteCreateur;
     this.statut = statut;
     this.solde = BigDecimal.valueOf(0);
+    this.pointGratuites = 0;
     this.deleted = false;
     this.dateCreation = LocalDate.now();
   }
@@ -74,10 +79,10 @@ public class Abonnement extends AuditMetadata {
     this.compteCreateur = compteCreateur;
     this.statut = statut;
     this.solde = BigDecimal.valueOf(0);
+    this.pointGratuites = 0;
     this.deleted = false;
     this.dateCreation = LocalDate.now();
   }
-
 
   public String getId() {
     return this.id;
@@ -143,12 +148,24 @@ public class Abonnement extends AuditMetadata {
     this.solde = solde;
   }
 
-  public void rechargerCarte(BigDecimal montant) {
+  public void rechargerSolde(BigDecimal montant) {
     this.solde = this.solde.add(montant);
   }
 
-  public void debiterCarte(BigDecimal montant) {
+  public void debiterSolde(BigDecimal montant) {
     this.solde = this.solde.subtract(montant);
+  }
+
+  public long getPointGratuites() {
+    return this.pointGratuites;
+  }
+
+  public void rechargerPointGratuites(long points) {
+    this.pointGratuites = this.pointGratuites + points;
+  }
+
+  public void debiterPointGratuites(long points) {
+    this.pointGratuites = this.pointGratuites - points;
   }
 
   public BigDecimal getPrixCarte() {

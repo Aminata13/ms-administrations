@@ -35,6 +35,7 @@ import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
@@ -198,7 +199,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     for (String transactionId : request.getTransactionIds()) {
       Optional<Transaction> _transaction = transactionDao.findByIdAndApprobation(transactionId, 0);
-      if (!_transaction.isPresent()) {
+      if (!_transaction.isPresent() || !_transaction.get().getType().equals(ETransactionType.SOLDE_COMPTE)) {
         noTraites.add(transactionId);
         continue;
       }
@@ -206,7 +207,7 @@ public class TransactionServiceImpl implements TransactionService {
       if (approbation == 1) {
         Abonnement abonnement = abonnementDao.findById(transaction.getAbonnement().getId()).get();
         BigDecimal montant = transaction.getMontant();
-        abonnement.rechargerCarte(montant);
+        abonnement.rechargerSolde(montant);
         abonnementDao.save(abonnement);
         transaction.setNouveauSolde(abonnement.getSolde());
       }
@@ -231,7 +232,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType type) {
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ETransactionType transactionType, ECompteType type) {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = getCompteByType(currentUser.getInfosPerso().getId(), type);
 
@@ -245,33 +246,53 @@ public class TransactionServiceImpl implements TransactionService {
       throw new IllegalArgumentException("Cette carte est bloqué!");
     }
 
-    BigDecimal montant = transactionRequest.getMontant();
+    Abonnement abonnement = abonnementExist.get();
 
     String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
 
-    Transaction transaction = new Transaction(abonnementExist.get(), reference, ETransactionAction.RECHARGEMENT, compteCreateur, montant);
+    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.RECHARGEMENT, compteCreateur);
 
-    transaction.setApprobation(0);
+    if (transactionType.equals(ETransactionType.POINT_GRATUITE)) {
+      if (transactionRequest.getPoints() == null) {
+        throw new IllegalArgumentException("Veuillez donner le nombre de points à offrir.");
+      }
+      abonnement.rechargerPointGratuites(transactionRequest.getPoints().longValue());
+      abonnementDao.save(abonnement);
+
+      transaction.setPoints(transactionRequest.getPoints());
+      transaction.setTotalPoints(abonnement.getPointGratuites());
+      transaction.setApprobation(1);
+    } else {
+      if (transactionRequest.getMontant() == null) {
+        throw new IllegalArgumentException("Veuillez donner le montant à recharger.");
+      }
+      transaction.setMontant(transactionRequest.getMontant());
+      transaction.setApprobation(0);
+    }
+
+    transaction.setType(transactionType);
 
     transactionDao.save(transaction);
 
-    try {
-      Map<String, String> data = new HashMap<>();
-
-      PushNotification pushNotification = new PushNotification(
-        String.valueOf("Nouveau rechargement"),
-        String.valueOf("Vous avez un nouveau rechargement à valider."),
-        String.valueOf("validation-nouveau-rechargement")
-      );
-
-      data.put("transactionId", transaction.getId());
-
-      pushNotification.setData(data);
-
-      String resp = this.firebaseMessagingService.sendNotification(pushNotification);
-      System.out.println("RESPONSE ================================> "+resp);
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
+    if (transaction.getType().equals(ETransactionType.SOLDE_COMPTE)) {
+      try {
+        Map<String, String> data = new HashMap<>();
+  
+        PushNotification pushNotification = new PushNotification(
+          String.valueOf("Nouveau rechargement"),
+          String.valueOf("Vous avez un nouveau rechargement à valider."),
+          String.valueOf("validation-nouveau-rechargement")
+        );
+  
+        data.put("transactionId", transaction.getId());
+  
+        pushNotification.setData(data);
+  
+        String resp = this.firebaseMessagingService.sendNotification(pushNotification);
+        System.out.println("RESPONSE ================================> "+resp);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
     }
 
     return transaction;
@@ -288,7 +309,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     ECompteType type = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
 
-    Transaction transaction = createRechargementTransaction(transactionRequest, type);
+    Transaction transaction = createRechargementTransaction(transactionRequest, ETransactionType.SOLDE_COMPTE, type);
 
     return transaction;
   }
@@ -368,36 +389,42 @@ public class TransactionServiceImpl implements TransactionService {
       throw new IllegalArgumentException("Ce compte client n'existe pas");
     }
 
-    Compte compteClient = compteClientExist.get();
-
-    BigDecimal montant = transactionRequest.getMontant();
-
-    if (montant == null) {
-      throw new UsernameNotFoundException("Montant invalide");
-    }
-
     if (transactionDao.existsByNumeroCommande(transactionRequest.getNumeroCommande())) {
       throw new UsernameNotFoundException("Cette commande est déjà payée.");
     }
 
-    int res = abonnement.getSolde().compareTo(montant);
-
-    if (res == -1) {
-      throw new IllegalArgumentException(String.format("Solde insuffisant, solde actuel:", abonnement.getSolde()));
-    }
-
-    abonnement.debiterCarte(montant);
-
-    abonnementDao.save(abonnement);
+    Compte compteClient = compteClientExist.get();
 
     String reference = genererReferenceTransction(ETransactionAction.PAIEMENT);
 
-    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.PAIEMENT, compteClient, montant);
+    Transaction transaction = new Transaction(abonnement, reference, ETransactionAction.PAIEMENT, compteClient);
 
-    transaction.setNouveauSolde(abonnement.getSolde());
+    if (transactionRequest.getCompteDebiter().equals(ETransactionType.POINT_GRATUITE)) {
+      if (transactionRequest.getPoints() == null) {
+        throw new IllegalArgumentException("Nombre de points à débiter invalide.");
+      }
+      if (abonnement.getPointGratuites() < transactionRequest.getPoints().longValue()) {
+        throw new IllegalArgumentException(String.format("Nombre de points gratuite insuffisant, total points gratuites actuel:", abonnement.getPointGratuites()));
+      }
+      abonnement.debiterPointGratuites(transactionRequest.getPoints().longValue());
+      transaction.setPoints(transactionRequest.getPoints().longValue());
+      transaction.setTotalPoints(abonnement.getPointGratuites());
+    } else {
+      if (transactionRequest.getMontant() == null) {
+        throw new UsernameNotFoundException("Montant invalide");
+      }
+      if (abonnement.getSolde().compareTo(transactionRequest.getMontant()) == -1) {
+        throw new IllegalArgumentException(String.format("Solde insuffisant, solde actuel:", abonnement.getSolde()));
+      }
+      abonnement.debiterSolde(transactionRequest.getMontant());
+      transaction.setMontant(transactionRequest.getMontant());
+      transaction.setNouveauSolde(abonnement.getSolde());
+    }
 
+    abonnementDao.save(abonnement);
+
+    transaction.setType(transactionRequest.getCompteDebiter());
     transaction.setService(transactionRequest.getService());
-
     transaction.setNumeroCommande(transactionRequest.getNumeroCommande());
 
     transactionDao.save(transaction);
@@ -426,7 +453,7 @@ public class TransactionServiceImpl implements TransactionService {
     Abonnement abonnement = abonnementDao.findById(transaction.getAbonnement().getId()).get();
     BigDecimal montant = transaction.getMontant();
 
-    abonnement.rechargerCarte(montant);
+    abonnement.rechargerSolde(montant);
     abonnementDao.save(abonnement);
 
     Optional<PaiementValidation> paiementValidation = paiementValidationDao.findByNumeroCommande(transaction.getNumeroCommande());
