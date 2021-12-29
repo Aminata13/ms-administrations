@@ -1,7 +1,9 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,6 +25,9 @@ public class TypeAbonnement extends AuditMetadata {
 
   @Field(value = "prix")
   private BigDecimal prix;
+
+  @Field
+  private Set<EServiceType> services;
 
   @Field(value = "statut")
   private int statut;
@@ -73,6 +78,14 @@ public class TypeAbonnement extends AuditMetadata {
 
   public void setPrix(BigDecimal prix) {
     this.prix = prix;
+  }
+
+  public Set<EServiceType> getServices() {
+    return services;
+  }
+
+  public void setServices(Set<EServiceType> services) {
+    this.services = services;
   }
 
   public int getStatut() {

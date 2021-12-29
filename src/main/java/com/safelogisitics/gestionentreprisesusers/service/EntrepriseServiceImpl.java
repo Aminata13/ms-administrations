@@ -99,6 +99,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   @Override
   public Entreprise createEntreprise(EntrepriseRequest request) {
     Optional<NumeroCarte> numeroCarteExist = numeroCarteDao.findByNumero(request.getNumeroCarte());
+    System.out.println(request.getNumeroCarte());
 
     if (entrepriseDao.existsByDenominationAndDeletedIsFalse(request.getDenomination()))
       throw new IllegalArgumentException("Cette entreprise existe déjà!");

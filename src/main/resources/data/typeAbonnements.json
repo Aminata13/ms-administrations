@@ -4,20 +4,31 @@
     "reduction": 20,
     "prix": 2000,
     "statut": 1,
-    "icon": "silver"
+    "icon": "silver",
+    "services": [
+      "LIVRAISON"
+    ]
   },
   {
     "libelle": "Gold",
     "reduction": 10,
     "prix": 5000,
     "statut": 1,
-    "icon": "gold"
+    "icon": "gold",
+    "services": [
+      "LIVRAISON",
+      "PRESTATION"
+    ]
   },
   {
     "libelle": "Platinum",
     "reduction": 1,
     "prix": 10000,
     "statut": 1,
-    "icon": "platinum"
+    "icon": "platinum",
+    "services": [
+      "LIVRAISON",
+      "PRESTATION"
+    ]
   }
 ]

@@ -1,18 +1,12 @@
 package com.safelogisitics.gestionentreprisesusers.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -60,9 +54,8 @@ public class Compte extends AuditMetadata {
   @Field(value = "serviceConciergeries")
   private Set<EServiceConciergeType> serviceConciergeries;
 
-  @DBRef
   @Field(value = "services")
-  private Set<Service> services = new HashSet<>();
+  private Set<EServiceType> services = new HashSet<>(Arrays.asList(EServiceType.LIVRAISON));
 
   @Field(value = "equipements")
   private Set<AffectationEquipement> equipements = new HashSet<>();
@@ -102,6 +95,9 @@ public class Compte extends AuditMetadata {
     this.deleted = false;
     this.entrepriseUser = false;
     this.dateCreation = new Date();
+    if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
+      this.services.add(EServiceType.PRESTATION);
+    }
   }
 
   public Compte(ECompteType type, String infosPersoId, int statut) {
@@ -111,6 +107,9 @@ public class Compte extends AuditMetadata {
     this.deleted = false;
     this.entrepriseUser = false;
     this.dateCreation = new Date();
+    if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
+      this.services.add(EServiceType.PRESTATION);
+    }
   }
 
   public Compte(ECompteType type, String infosPersoId, Role role, int statut) {
@@ -121,9 +120,12 @@ public class Compte extends AuditMetadata {
     this.deleted = false;
     this.entrepriseUser = false;
     this.dateCreation = new Date();
+    if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
+      this.services.add(EServiceType.PRESTATION);
+    }
   }
 
-  public Compte(ECompteType type, String infosPersoId, Role role, Set<Service> services, int statut) {
+  public Compte(ECompteType type, String infosPersoId, Role role, Set<EServiceType> services, int statut) {
     this.type = type;
     this.infosPersoId = infosPersoId;
     this.role = role;
@@ -132,9 +134,12 @@ public class Compte extends AuditMetadata {
     this.deleted = false;
     this.entrepriseUser = false;
     this.dateCreation = new Date();
+    if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
+      this.services.add(EServiceType.PRESTATION);
+    }
   }
 
-  public Compte(ECompteType type, Entreprise entreprise, String infosPersoId, Role role, Set<Service> services, int statut) {
+  public Compte(ECompteType type, Entreprise entreprise, String infosPersoId, Role role, Set<EServiceType> services, int statut) {
     this.type = type;
     this.entreprise = entreprise;
     this.entrepriseId = entreprise.getId();
@@ -145,6 +150,9 @@ public class Compte extends AuditMetadata {
     this.deleted = false;
     this.entrepriseUser = false;
     this.dateCreation = new Date();
+    if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
+      this.services.add(EServiceType.PRESTATION);
+    }
   }
 
   public String getId() {
@@ -213,11 +221,11 @@ public class Compte extends AuditMetadata {
     this.serviceConciergeries = serviceConciergeries;
   }
 
-  public Set<Service> getServices() {
+  public Set<EServiceType> getServices() {
     return this.services;
   }
 
-  public void setServices(Set<Service> services) {
+  public void setServices(Set<EServiceType> services) {
     this.services = services;
   }
 
@@ -309,6 +317,7 @@ public class Compte extends AuditMetadata {
     _customRoleField.put("isEntrepriseUser", entreprise != null && entrepriseUser == true ? true : false);
     _customRoleField.put("role", "");
     _customRoleField.put("serviceConciergeries", getServiceConciergeries());
+    _customRoleField.put("services", getServices());
     _customRoleField.put("privileges", new ArrayList<>());
     if (role != null) {
       _customRoleField.put("role", role.getLibelle());

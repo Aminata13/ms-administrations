@@ -59,7 +59,7 @@ public class NumeroCarteServiceImpl implements NumeroCarteService {
       throw new IllegalArgumentException("Type abonnement invalide");
 
     if (numeroCarteDao.existsByNumero(numeroCarte.getNumero()))
-      throw new IllegalArgumentException("Cette numero existe déjà");
+      throw new IllegalArgumentException("Ce numero existe déjà");
 
     numeroCarte.setActive(false);
     numeroCarte.setDateCreation(LocalDateTime.now());

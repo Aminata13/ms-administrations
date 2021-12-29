@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.safelogisitics.gestionentreprisesusers.dto.SmsCreateCommandeDto;
 import com.safelogisitics.gestionentreprisesusers.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.service.SMSService;
 
@@ -22,37 +23,46 @@ import org.springframework.stereotype.Component;
 public class SmsCreateCommandeListener {
 
 
-  @Autowired
-  private SMSService smsService;
+    @Autowired
+    private SMSService smsService;
 
-  @Autowired
-  MongoTemplate mongoTemplate;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
-  @KafkaListener(topics = "${kafka.topics.smsCreateCommande.name}", containerFactory = "smsCreateCommandeKafkaListenerContainerFactory", autoStartup = "${kafka.enabled}")
-  public void listenSmsCreateCommande(SmsCreateCommandeDto smsCreateCommandeDto) {
-    final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
-    final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(Criteria.where("_id").is(smsCreateCommandeDto.getClientId())));
+    @KafkaListener(topics = "${kafka.topics.smsCreateCommande.name}", containerFactory = "smsCreateCommandeKafkaListenerContainerFactory", autoStartup = "${kafka.enabled}")
+    public void listenSmsCreateCommande(SmsCreateCommandeDto smsCreateCommandeDto) {
+        final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
+        final List<Criteria> listCritarias = new ArrayList<Criteria>(Arrays.asList(Criteria.where("_id").is(smsCreateCommandeDto.getClientId())));
 
-    listCritarias.add(Criteria.where("deleted").is(false));
-    listCritarias.add(Criteria.where("statut").ne(-1));
+        listCritarias.add(Criteria.where("deleted").is(false));
+        listCritarias.add(Criteria.where("statut").ne(-1));
 
-    listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
-    listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
-    listAggregations.add(Aggregation.unwind("userInfos"));
-    listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
+        listAggregations.add(l -> new Document("$addFields", new Document("infosPersoObjectId", new Document("$toObjectId", "$infosPersoId"))));
+        listAggregations.add(Aggregation.lookup("infosPersos", "infosPersoObjectId", "_id", "userInfos"));
+        listAggregations.add(Aggregation.unwind("userInfos"));
+        listAggregations.add(Aggregation.match(new Criteria().andOperator(listCritarias.toArray(new Criteria[listCritarias.size()]))));
 
-    Aggregation aggregation = Aggregation.newAggregation(listAggregations);
+        Aggregation aggregation = Aggregation.newAggregation(listAggregations);
 
-    Compte compte = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getUniqueMappedResult();
+        Compte compte = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getUniqueMappedResult();
 
-    if (compte != null && compte.getId() != null) {
-      String formatedDuree = String.format("%sheures%s", smsCreateCommandeDto.getDuree().split(":")[0], smsCreateCommandeDto.getDuree().split(":")[1]);
-      String smsText  = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45", 
-      compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), formatedDuree, smsCreateCommandeDto.getCodeRetrait());
+        if (compte != null && compte.getId() != null) {
+            SendSmsRequest sms = null;
 
-      SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
+            if (smsCreateCommandeDto.getService().equals(EServiceType.LIVRAISON)) {
+                String formatedDuree = String.format("%sheures%s", smsCreateCommandeDto.getDuree().split(":")[0], smsCreateCommandeDto.getDuree().split(":")[1]);
+                String smsText = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                        compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), formatedDuree, smsCreateCommandeDto.getCodeRetrait());
 
-      smsService.sendSms(sms);
+                sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
+            } else {
+                String smsText = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                        compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande());
+                sms = new SendSmsRequest("ALL IN ONE", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
+            }
+
+
+            smsService.sendSms(sms);
+        }
     }
-  }
 }

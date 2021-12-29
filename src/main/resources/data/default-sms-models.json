@@ -7,5 +7,14 @@
     "cible": "PARTICULIERS",
     "repetition": "UNIQUE",
     "motCle": "commande-livraison-effectuer"
+  },
+  {
+    "signature": "ALL IN ONE",
+    "subject": "Commande prestation effectuée",
+    "content": "Bonjour %s,\nVotre demande n° %s à bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
+    "data": ["CLIENT_NOM_COMPLET", "COMMANDE_NUMERO"],
+    "cible": "PARTICULIERS",
+    "repetition": "UNIQUE",
+    "motCle": "commande-prestation-effectuer"
   }
 ]
