@@ -2,11 +2,14 @@ package com.safelogisitics.gestionentreprisesusers.dto;
 
 import java.math.BigDecimal;
 
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 
 public class SmsCreateCommandeDto {
   
   private EServiceType service;
+
+  private EServiceConciergeType serviceConciergerie;
 
   private String serviceId;
 
@@ -22,8 +25,9 @@ public class SmsCreateCommandeDto {
 
   public SmsCreateCommandeDto() { }
 
-  public SmsCreateCommandeDto(String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree) {
+  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree) {
     this.service = EServiceType.LIVRAISON;
+    this.serviceConciergerie = serviceConciergerie;
     this.serviceId = serviceId;
     this.clientId = clientId;
     this.numeroCommande = numeroCommande;
@@ -38,6 +42,14 @@ public class SmsCreateCommandeDto {
 
   public void setService(EServiceType service) {
     this.service = service;
+  }
+
+  public EServiceConciergeType getServiceConciergerie() {
+    return serviceConciergerie;
+  }
+
+  public void setServiceConciergerie(EServiceConciergeType serviceConciergerie) {
+    this.serviceConciergerie = serviceConciergerie;
   }
 
   public String getServiceId() {

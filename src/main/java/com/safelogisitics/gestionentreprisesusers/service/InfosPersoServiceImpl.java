@@ -2,16 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,18 +17,10 @@ import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.dto.CompteAggregationDto;
-import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.model.AffectationEquipement;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.model.Equipement;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
-import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
-import com.safelogisitics.gestionentreprisesusers.model.Role;
-import com.safelogisitics.gestionentreprisesusers.model.User;
+import com.safelogisitics.gestionentreprisesusers.model.*;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -431,7 +414,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request) {
+  public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request) { // chnager
     if (request.getNumeroReference() == null || request.getNumeroReference().isEmpty())
       throw new IllegalArgumentException("Matricule est obligatoire!");
 
@@ -747,7 +730,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
     
 
-    String smsText  = String.format("Cher client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’information rendez-vous sur notre site :xxxxxxx\nSafelogistics vous remercie.\nService commercial : 78 306 45 45", 
+    String smsText  = String.format("Cher(e) client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’informations, rendez-vous sur notre site :xxxxxxx\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     infosPerso.getNomComplet(), request.getUsername(), request.getPassword());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Message d'inscription", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -762,7 +745,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
 
     if (!compteExist.isPresent() && !compteExist.get().isDeleted())
-      throw new IllegalArgumentException("Cet client n'existe pas!");
+      throw new IllegalArgumentException("Ce client n'existe pas!");
 
     InfosPerso infosPerso = infosPersoDao.findById(id).get();
     User user = userDao.findByInfosPersoId(id).get();
@@ -775,7 +758,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Optional<Compte> compteExist = compteDao.findByInfosPersoIdAndType(id, ECompteType.COMPTE_PARTICULIER);
 
     if (!compteExist.isPresent() && !compteExist.get().isDeleted())
-      throw new IllegalArgumentException("Cet client n'existe pas!");
+      throw new IllegalArgumentException("Ce client n'existe pas!");
 
     return updateUserInfos(request, id);
   }
@@ -811,7 +794,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<User> userExist = userDao.findByInfosPersoId(id);
 
       if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
-        throw new IllegalArgumentException("Encien mot de passe invalide!");
+        throw new IllegalArgumentException("Ancien mot de passe invalide!");
     }
 
     Optional<User> accessExist = userDao.findByUsername(request.getUsername());
@@ -851,7 +834,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (infosPerso != null && abonnementDao.existsByCompteClientInfosPersoId(infosPerso.getId()))
       throw new IllegalArgumentException("Cet utilisateur est déjà abonné!");
 
-    BigDecimal prixCarte = typeAbonnementDao.findById(numeroCarteExist.get().getTypeAbonnementId()).get().getPrix();
+    TypeAbonnement typeAbonnement = typeAbonnementDao.findById(numeroCarteExist.get().getTypeAbonnementId()).get();
+    BigDecimal prixCarte = typeAbonnement.getPrix();
 
     if (enrollmentRequest.getMontant() == null || enrollmentRequest.getMontant().compareTo(prixCarte) == -1)
       throw new IllegalArgumentException("Le montant à recharger est insuffisant!");
@@ -897,6 +881,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     }
 
     compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
+    compte.setServices(typeAbonnement.getServices());
 
     abonnement = abonnementService.getAbonnementByCompteClient(compte).get();
 
