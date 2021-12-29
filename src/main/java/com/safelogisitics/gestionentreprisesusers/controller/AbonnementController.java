@@ -19,6 +19,7 @@ import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
@@ -191,7 +192,14 @@ public class AbonnementController {
   @PostMapping("/recharger-carte")
   @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
 	public ResponseEntity<?> rechargerCarte(@Valid @RequestBody RechargementTransactionRequest request) {
-    Transaction transaction = transactionService.createRechargementTransaction(request, ECompteType.COMPTE_ADMINISTRATEUR);
+    Transaction transaction = transactionService.createRechargementTransaction(request, ETransactionType.SOLDE_COMPTE, ECompteType.COMPTE_ADMINISTRATEUR);
+		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
+	}
+
+  @PostMapping("/ajouter-points")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'POINT_GRATUITE')")
+	public ResponseEntity<?> ajouterPoints(@Valid @RequestBody RechargementTransactionRequest request) {
+    Transaction transaction = transactionService.createRechargementTransaction(request, ETransactionType.POINT_GRATUITE, ECompteType.COMPTE_ADMINISTRATEUR);
 		return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
 	}
 
@@ -202,7 +210,7 @@ public class AbonnementController {
 	}
 
   @PostMapping("/paiement-carte")
-  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'CREATE')")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'POINT_GRATUITE')")
 	public ResponseEntity<?> paiementCarte(@Valid @RequestBody PaiementTransactionRequest request) {
     Transaction transaction = transactionService.createPaiementTransaction(request);
 

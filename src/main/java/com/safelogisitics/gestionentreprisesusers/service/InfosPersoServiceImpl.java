@@ -38,6 +38,7 @@ import com.safelogisitics.gestionentreprisesusers.model.Role;
 import com.safelogisitics.gestionentreprisesusers.model.User;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.InfosPersoAvecCompteRequest;
@@ -745,7 +746,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPersoDao.save(infosPerso);
 
     User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
-    
 
     String smsText  = String.format("Cher client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’information rendez-vous sur notre site :xxxxxxx\nSafelogistics vous remercie.\nService commercial : 78 306 45 45", 
     infosPerso.getNomComplet(), request.getUsername(), request.getPassword());
@@ -910,6 +910,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (abonnement.getDepotInitial().compareTo(BigDecimal.valueOf(5)) != -1) {
       transactionService.createRechargementTransaction(
         new RechargementTransactionRequest(abonnement.getNumeroCarte(), abonnement.getDepotInitial()),
+        ETransactionType.SOLDE_COMPTE,
         compteType
       );
     }

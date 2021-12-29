@@ -12,6 +12,7 @@ import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
@@ -47,7 +48,7 @@ public interface TransactionService {
 
   public Optional<Transaction> findByReference(String reference);
 
-  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ECompteType compteCreateur);
+  public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest, ETransactionType transactionType, ECompteType compteCreateur);
 
   public Transaction createRechargementTransaction(RechargementTransactionRequest transactionRequest);
 

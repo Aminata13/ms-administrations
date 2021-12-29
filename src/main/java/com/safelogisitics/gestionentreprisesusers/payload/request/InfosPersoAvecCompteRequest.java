@@ -68,7 +68,7 @@ public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
   public boolean valideFieldsComptePrestataire() {
     if (
       (this.getNumeroReference() == null || this.getNumeroReference().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty()) ||
-      this.getServiceConciergeries() == null || this.serviceConciergeries.isEmpty()
+      this.getServiceConciergeries() == null || this.getServiceConciergeries().isEmpty()
     ) return false;
 
     return true;

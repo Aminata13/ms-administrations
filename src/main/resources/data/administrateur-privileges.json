@@ -105,7 +105,8 @@
       "UPDATE",
       "DELETE",
       "VALIDATE",
-      "ACTIVATE"
+      "ACTIVATE",
+      "POINT_GRATUITE"
     ]
   },
   {

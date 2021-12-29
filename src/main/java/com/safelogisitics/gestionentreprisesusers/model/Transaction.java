@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,6 +24,9 @@ public class Transaction extends AuditMetadata {
   @Field(value = "reference")
   private String reference;
 
+  @Field(value = "type")
+  private ETransactionType type = ETransactionType.SOLDE_COMPTE;
+
   @Field(value = "action")
   private ETransactionAction action;
 
@@ -38,10 +42,16 @@ public class Transaction extends AuditMetadata {
   private Compte approbateur;
 
   @Field(value = "montant")
-  private BigDecimal montant;
+  private BigDecimal montant = BigDecimal.valueOf(0);
+
+  @Field(value = "points")
+  private long points = 0;
 
   @Field(value = "nouveauSolde")
-  private BigDecimal nouveauSolde;
+  private BigDecimal nouveauSolde = BigDecimal.valueOf(0);
+
+  @Field(value = "totalPoints")
+  private long totalPoints = 0;
 
   @Field(value = "approbation")
   private int approbation;
@@ -56,12 +66,20 @@ public class Transaction extends AuditMetadata {
     this.dateCreation = LocalDateTime.now();
   }
 
-  public Transaction(Abonnement abonnement, String reference, ETransactionAction action, Compte compteCreateur, BigDecimal montant) {
+  public Transaction(Abonnement abonnement, String reference, ETransactionAction action, Compte compteCreateur) {
     this.abonnement = abonnement;
     this.reference = reference;
     this.action = action;
     this.compteCreateur = compteCreateur;
+    this.dateCreation = LocalDateTime.now();
+  }
+
+  public Transaction(Abonnement abonnement, String reference, ETransactionAction action, Compte compteCreateur, BigDecimal montant) {
+    this.abonnement = abonnement;
+    this.reference = reference;
+    this.action = action;
     this.montant = montant;
+    this.compteCreateur = compteCreateur;
     this.dateCreation = LocalDateTime.now();
   }
 
@@ -87,6 +105,14 @@ public class Transaction extends AuditMetadata {
 
   public void setReference(String reference) {
     this.reference = reference;
+  }
+
+  public ETransactionType getType() {
+    return this.type;
+  }
+
+  public void setType(ETransactionType type) {
+    this.type = type;
   }
 
   public ETransactionAction getAction() {
@@ -137,12 +163,28 @@ public class Transaction extends AuditMetadata {
     this.montant = montant;
   }
 
+  public long getPoints() {
+    return this.points;
+  }
+
+  public void setPoints(long points) {
+    this.points = points;
+  }
+
   public BigDecimal getNouveauSolde() {
     return this.nouveauSolde;
   }
 
   public void setNouveauSolde(BigDecimal nouveauSolde) {
     this.nouveauSolde = nouveauSolde;
+  }
+
+  public long getTotalPoints() {
+    return this.totalPoints;
+  }
+
+  public void setTotalPoints(long totalPoints) {
+    this.totalPoints = totalPoints;
   }
 
   public int getApprobation() {
