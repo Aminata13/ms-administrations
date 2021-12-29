@@ -574,13 +574,16 @@ public class TransactionServiceImpl implements TransactionService {
         abonnement.put("dateCreation", _abonnement.getDateCreation());
 
         customFields.put("id", transaction.getId());
+        customFields.put("type", transaction.getType());
         customFields.put("action", transaction.getAction());
         customFields.put("reference", transaction.getReference());
         customFields.put("numeroCommande", transaction.getNumeroCommande());
         customFields.put("abonnement", abonnement);
         customFields.put("compteCreateur", infosPersoDao.findById(transaction.getCompteCreateur().getInfosPersoId()).get().getDefaultFields());
         customFields.put("montant", transaction.getMontant());
+        customFields.put("points", transaction.getPoints());
         customFields.put("nouveauSolde", transaction.getNouveauSolde());
+        customFields.put("totalPoints", transaction.getTotalPoints());
         customFields.put("approbation", transaction.getApprobation());
         customFields.put("dateCreation", transaction.getDateCreation());
 
