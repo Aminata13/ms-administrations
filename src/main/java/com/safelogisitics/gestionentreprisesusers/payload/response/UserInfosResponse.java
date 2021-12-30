@@ -114,6 +114,7 @@ public class UserInfosResponse {
     _customRoleField.put("numeroCarte", this.abonnement.getNumeroCarte());
     _customRoleField.put("carteBloquer", this.abonnement.isCarteBloquer());
     _customRoleField.put("solde", this.abonnement.getSolde());
+    _customRoleField.put("pointGratuites", this.abonnement.getPointGratuites());
     _customRoleField.put("prixCarte", this.abonnement.getPrixCarte());
     _customRoleField.put("depotInitial", this.abonnement.getDepotInitial());
     _customRoleField.put("statut", this.abonnement.getStatut());
