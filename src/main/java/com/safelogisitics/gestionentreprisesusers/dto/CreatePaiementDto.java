@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.dto;
 import java.math.BigDecimal;
 
 import com.safelogisitics.gestionentreprisesusers.model.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
 
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,8 @@ public class CreatePaiementDto {
   private String typePaiementId;
 
   private String reference;
+
+  private ETransactionType compteDebiter;
 
   private EServiceType service;
 
@@ -25,9 +28,10 @@ public class CreatePaiementDto {
 
   public CreatePaiementDto() {}
 
-  public CreatePaiementDto(String typePaiementId, String reference, EServiceType service, String serviceId, String clientId, String auteurId, BigDecimal montant) {
+  public CreatePaiementDto(String typePaiementId, String reference, ETransactionType compteDebiter, EServiceType service, String serviceId, String clientId, String auteurId, BigDecimal montant) {
     this.typePaiementId = typePaiementId;
     this.reference = reference;
+    this.compteDebiter = compteDebiter;
     this.service = service;
     this.serviceId = serviceId;
     this.clientId = clientId;
@@ -49,6 +53,14 @@ public class CreatePaiementDto {
 
   public void setReference(String reference) {
     this.reference = reference;
+  }
+
+  public ETransactionType getCompteDebiter() {
+    return this.compteDebiter;
+  }
+
+  public void setCompteDebiter(ETransactionType compteDebiter) {
+    this.compteDebiter = compteDebiter;
   }
 
   public EServiceType getService() {

@@ -97,6 +97,7 @@ public class ClientAbonnementController {
     CreatePaiementDto createPaiementDto = new CreatePaiementDto(
       request.getTypePaiementId(),
       transaction.getReference(),
+      transaction.getType(),
       request.getService(),
       request.getServiceId(),
       transaction.getAbonnement().getCompteClient().getId(),
