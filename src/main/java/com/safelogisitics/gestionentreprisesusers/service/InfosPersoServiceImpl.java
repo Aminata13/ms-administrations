@@ -606,6 +606,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateComptePrestataire(String id, InfosPersoAvecCompteRequest request) {
+
     if (!request.valideFieldsComptePrestataire())
       throw new IllegalArgumentException("Informations prestataire manquant!");
 

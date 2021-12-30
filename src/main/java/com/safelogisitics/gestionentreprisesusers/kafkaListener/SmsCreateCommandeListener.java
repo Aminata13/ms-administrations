@@ -58,9 +58,8 @@ public class SmsCreateCommandeListener {
             } else {
                 String smsText = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                         compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande());
-                sms = new SendSmsRequest("ALL IN ONE", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
+                sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
             }
-
 
             smsService.sendSms(sms);
         }
