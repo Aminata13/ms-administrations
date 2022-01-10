@@ -39,8 +39,8 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         Long numberClientsEntreprises = mongoTemplate.estimatedCount(Entreprise.class);
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre de clients particuliers", numberClientsParticuliers);
-        results.put("Nombre de clients entreprises", numberClientsEntreprises);
+        results.put("clientsParticuliers", numberClientsParticuliers);
+        results.put("clientsEntreprises", numberClientsEntreprises);
 
         return results;
     }
@@ -52,15 +52,13 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         final List<Criteria> criterias1 = new ArrayList<>();
         final List<Criteria> criterias2 = new ArrayList<>();
 
-        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), 23, 59, 59);
-        criterias1.add(Criteria.where("dateCreation").gte(startDate));
-        criterias1.add(Criteria.where("dateCreation").lte(endDate));
+        criterias1.add(Criteria.where("dateCreation").gte(LocalDate.now().atStartOfDay()));
+        criterias1.add(Criteria.where("dateCreation").lte(LocalDate.now().atTime(23, 59)));
         query1.addCriteria(new Criteria().andOperator(criterias1.toArray(new Criteria[criterias1.size()])));
 
 
-        criterias2.add(Criteria.where("dateCreation").gte(startDate.minusDays(1)));
-        criterias2.add(Criteria.where("dateCreation").lte(endDate.minusDays(1)));
+        criterias2.add(Criteria.where("dateCreation").gte(LocalDate.now().atStartOfDay().minusDays(1)));
+        criterias2.add(Criteria.where("dateCreation").lte(LocalDate.now().atTime(23, 59).minusDays(1)));
         query2.addCriteria(new Criteria().andOperator(criterias2.toArray(new Criteria[criterias2.size()])));
 
         Long yesterdayCount = mongoTemplate.count(query2, Abonnement.class);
@@ -68,8 +66,8 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         long percentage = yesterdayCount != 0 ? (todayCount - yesterdayCount) * 100 / yesterdayCount : 100;
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre d'abonnements", todayCount);
-        results.put("Pourcentage", percentage);
+        results.put("nombreAbonnements", todayCount);
+        results.put("pourcentage", percentage);
 
         return results;
     }
@@ -115,9 +113,9 @@ public class StatistiquesServiceImpl implements StatistiquesService {
 
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre de cartes Silver", silver);
-        results.put("Nombre de cartes Gold", gold);
-        results.put("Nombre de cartes Platinum", platinum);
+        results.put("silver", silver);
+        results.put("gold", gold);
+        results.put("platinum", platinum);
 
         return results;
     }

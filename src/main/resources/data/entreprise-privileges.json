@@ -67,5 +67,18 @@
       "DELETE",
       "VALIDATE"
     ]
+  },
+  {
+    "libelle": "Gestion des consommations de carburant",
+    "valeur": "GESTION_CARBURANTS",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "VALIDATE"
+    ]
   }
 ]
