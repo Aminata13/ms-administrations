@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
-import com.safelogisitics.gestionentreprisesusers.model.User;
+import com.safelogisitics.gestionentreprisesusers.data.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.data.model.User;
 
 public interface RefreshTokenService {
   public Optional<RefreshToken> findByToken(String token); // Find a RefreshToken based on the natural id i.e the token itself

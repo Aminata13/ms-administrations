@@ -13,7 +13,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.dto.CreatePaiementDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.CreatePaiementDto;
 
 @Configuration
 public class KafkaProducerConfig {

@@ -1,0 +1,12 @@
+package com.safelogisitics.gestionentreprisesusers.data.model.enums;
+
+public enum ESMSData {
+  CLIENT_NOM_COMPLET,
+  TRANSACTION_TYPE,
+  TRANSACTION_MONTANT,
+  ABONNEMENT_NUMERO_CARTE,
+  ABONNEMENT_SOLDE,
+  ABONNEMENT_SOLDE_PROGRESSIF,
+  COMMANDE_NUMERO,
+  COMMANDE_CODE_RETRAIT
+}

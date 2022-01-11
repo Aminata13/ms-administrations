@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
+import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.helper.UploadFileHelper;
-import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
-import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

@@ -3,11 +3,11 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import java.util.Map;
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

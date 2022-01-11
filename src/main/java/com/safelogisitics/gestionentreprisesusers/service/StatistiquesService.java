@@ -1,10 +1,11 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import com.safelogisitics.gestionentreprisesusers.model.Evenement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Map;
+
+import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;
 
 public interface StatistiquesService {
 

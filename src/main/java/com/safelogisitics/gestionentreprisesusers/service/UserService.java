@@ -1,9 +1,9 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import com.safelogisitics.gestionentreprisesusers.model.User;
-import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.TokenRefreshRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.data.model.User;
 
 public interface UserService {
 

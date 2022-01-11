@@ -10,14 +10,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.EvenementDao;
-import com.safelogisitics.gestionentreprisesusers.dao.TypeEvenementDao;
-import com.safelogisitics.gestionentreprisesusers.dto.EvenementDto;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.Evenement;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.EvenementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.TypeEvenementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.EvenementDto;
+import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

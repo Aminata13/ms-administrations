@@ -3,17 +3,17 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
-import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
-import com.safelogisitics.gestionentreprisesusers.model.User;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.payload.request.LoginRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.TokenRefreshRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.response.JwtResponse;
-import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtUtils;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.LoginRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.TokenRefreshRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
+import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.data.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.data.model.User;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.web.exception.TokenRefreshException;
+import com.safelogisitics.gestionentreprisesusers.web.security.jwt.JwtUtils;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

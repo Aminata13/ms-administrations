@@ -3,8 +3,8 @@ package com.safelogisitics.gestionentreprisesusers.config.kafka;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
-import com.safelogisitics.gestionentreprisesusers.dto.SmsCreateCommandeDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.SmsCreateCommandeDto;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
