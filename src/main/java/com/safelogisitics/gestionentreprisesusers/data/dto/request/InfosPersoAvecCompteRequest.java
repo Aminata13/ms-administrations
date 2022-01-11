@@ -4,7 +4,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 
 public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
   private String entrepriseId;

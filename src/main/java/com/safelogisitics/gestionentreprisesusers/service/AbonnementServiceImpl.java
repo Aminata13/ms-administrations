@@ -15,13 +15,13 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;

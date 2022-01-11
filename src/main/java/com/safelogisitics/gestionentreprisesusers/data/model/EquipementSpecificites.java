@@ -3,7 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.data.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESpecificiteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESpecificiteType;
 
 public class EquipementSpecificites {
 

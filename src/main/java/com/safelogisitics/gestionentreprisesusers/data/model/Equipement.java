@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.annotations.NotNull;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EEquipementCategorie;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EEquipementCategorie;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 

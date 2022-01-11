@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EMoyenTransportType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EMoyenTransportType;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

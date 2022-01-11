@@ -15,13 +15,13 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.SMSModelDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.data.model.Role;
 import com.safelogisitics.gestionentreprisesusers.data.model.SMSModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
 
 import java.math.BigDecimal;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceConciergeType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 
 public class SmsCreateCommandeDto {
   

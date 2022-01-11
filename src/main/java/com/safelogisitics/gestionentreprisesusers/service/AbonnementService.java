@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

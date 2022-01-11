@@ -3,9 +3,9 @@ package com.safelogisitics.gestionentreprisesusers.data.dao.filter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionAction;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 
 import org.springframework.beans.factory.annotation.Value;
 

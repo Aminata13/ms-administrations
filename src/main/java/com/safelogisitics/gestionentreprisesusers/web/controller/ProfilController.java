@@ -9,10 +9,10 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoAve
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.UpdateInfosPersoRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.data.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 
 import org.springframework.beans.factory.annotation.Autowired;

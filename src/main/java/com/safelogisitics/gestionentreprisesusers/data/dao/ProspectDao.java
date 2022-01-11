@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.data.dao;
 
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypeProspect;
 import com.safelogisitics.gestionentreprisesusers.data.model.Prospect;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypeProspect;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

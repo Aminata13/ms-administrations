@@ -7,8 +7,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 
 public class PaiementTransactionRequest {
   

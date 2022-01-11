@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypePartenariat;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypePartenariat;
 
 public class EntrepriseInfosResponse {
   

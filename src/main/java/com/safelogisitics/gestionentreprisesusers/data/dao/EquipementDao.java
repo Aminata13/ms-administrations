@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EEquipementCategorie;
 import com.safelogisitics.gestionentreprisesusers.data.model.Equipement;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EEquipementCategorie;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

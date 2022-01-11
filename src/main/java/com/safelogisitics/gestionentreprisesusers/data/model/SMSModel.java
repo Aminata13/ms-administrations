@@ -3,9 +3,9 @@ package com.safelogisitics.gestionentreprisesusers.data.model;
 import java.util.Collection;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSCible;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSData;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSRepetition;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSCible;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSData;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSRepetition;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

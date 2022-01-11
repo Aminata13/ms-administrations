@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypePartenariat;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypePartenariat;
 
 public class EntrepriseRequest {
   

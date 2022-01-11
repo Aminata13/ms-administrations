@@ -3,8 +3,8 @@ package com.safelogisitics.gestionentreprisesusers.data.dao;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

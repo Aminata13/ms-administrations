@@ -8,9 +8,9 @@ import javax.validation.Valid;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 

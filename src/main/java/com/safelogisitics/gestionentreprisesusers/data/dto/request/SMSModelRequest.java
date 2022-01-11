@@ -5,9 +5,9 @@ import java.util.Collection;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSCible;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSData;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSRepetition;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSCible;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSData;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSRepetition;
 
 public class SMSModelRequest {
 

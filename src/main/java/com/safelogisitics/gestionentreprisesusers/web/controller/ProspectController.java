@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ProspectRequest;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EProspecteurType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EProspecteurType;
 import com.safelogisitics.gestionentreprisesusers.service.ProspectService;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,9 +14,9 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.EvenementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeEvenementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.EvenementDto;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;

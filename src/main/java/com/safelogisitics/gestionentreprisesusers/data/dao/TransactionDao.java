@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionAction;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

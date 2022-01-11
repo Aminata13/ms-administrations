@@ -15,13 +15,13 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.ProspectDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ProspectRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RegisterRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EProspecteurType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypeProspect;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
 import com.safelogisitics.gestionentreprisesusers.data.model.Prospect;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EProspecteurType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypeProspect;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;

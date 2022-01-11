@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EProspecteurType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypeProspect;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EProspecteurType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypeProspect;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

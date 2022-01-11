@@ -3,8 +3,8 @@ package com.safelogisitics.gestionentreprisesusers.data.dao;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EMoyenTransportType;
 import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EMoyenTransportType;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

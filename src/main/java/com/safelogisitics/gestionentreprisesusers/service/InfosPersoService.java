@@ -13,11 +13,11 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.UpdateInfosPe
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.EntrepriseInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.data.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceConciergeType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

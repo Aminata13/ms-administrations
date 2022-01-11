@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RoleRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Role;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 public interface RoleService {
 

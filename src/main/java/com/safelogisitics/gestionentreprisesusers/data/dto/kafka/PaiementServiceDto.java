@@ -1,6 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 
 import org.springframework.stereotype.Component;
 

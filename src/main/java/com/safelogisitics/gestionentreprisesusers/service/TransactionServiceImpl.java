@@ -30,6 +30,9 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTrans
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
@@ -37,9 +40,6 @@ import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.data.model.PushNotification;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionAction;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,11 +11,11 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementService
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionAction;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

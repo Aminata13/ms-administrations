@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
 
 import java.math.BigDecimal;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 
 import org.springframework.stereotype.Component;
 

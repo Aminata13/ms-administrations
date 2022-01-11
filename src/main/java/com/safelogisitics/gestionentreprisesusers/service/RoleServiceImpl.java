@@ -11,8 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.data.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RoleRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Role;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

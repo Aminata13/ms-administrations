@@ -29,10 +29,10 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.UpdateInfosPe
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.EntrepriseInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceConciergeType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.bson.Document;

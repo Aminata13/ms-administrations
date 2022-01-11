@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EServiceType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

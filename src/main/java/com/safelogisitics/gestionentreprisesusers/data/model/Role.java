@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

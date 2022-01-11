@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypePartenariat;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypePartenariat;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

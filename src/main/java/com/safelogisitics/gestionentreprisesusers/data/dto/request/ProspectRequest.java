@@ -3,7 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.data.dto.request;
 import java.util.Collection;
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypeProspect;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETypeProspect;
 
 public class ProspectRequest {
 

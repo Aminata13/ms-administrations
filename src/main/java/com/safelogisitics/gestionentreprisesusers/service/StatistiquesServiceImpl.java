@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.data.domain.Page;

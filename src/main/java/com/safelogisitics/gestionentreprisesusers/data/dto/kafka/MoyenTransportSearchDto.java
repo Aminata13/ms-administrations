@@ -1,6 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
 
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.EMoyenTransportType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EMoyenTransportType;
 
 public class MoyenTransportSearchDto {
   

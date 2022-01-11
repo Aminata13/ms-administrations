@@ -34,12 +34,12 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.SMSModelDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SMSModelRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SMSRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSCible;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSData;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.SMSModel;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSCible;
-import com.safelogisitics.gestionentreprisesusers.data.model.enums.ESMSData;
 
 import org.bson.Document;
 import org.slf4j.Logger;
