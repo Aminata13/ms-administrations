@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.safelogisitics.gestionentreprisesusers.dao.filter.TransactionDefaultFields;
-import com.safelogisitics.gestionentreprisesusers.dto.PaiementServiceDto;
-import com.safelogisitics.gestionentreprisesusers.model.PaiementValidation;
-import com.safelogisitics.gestionentreprisesusers.model.Transaction;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionAction;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETransactionType;
-import com.safelogisitics.gestionentreprisesusers.payload.request.ApprouveTransactionRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.PaiementTransactionRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
+import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionAction;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETransactionType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

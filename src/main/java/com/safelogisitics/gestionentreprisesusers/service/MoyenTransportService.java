@@ -3,8 +3,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.dto.MoyenTransportSearchDto;
-import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.MoyenTransportSearchDto;
+import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

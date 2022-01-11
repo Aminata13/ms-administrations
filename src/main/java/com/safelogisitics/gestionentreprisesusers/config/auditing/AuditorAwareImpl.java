@@ -2,7 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.config.auditing;
 
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

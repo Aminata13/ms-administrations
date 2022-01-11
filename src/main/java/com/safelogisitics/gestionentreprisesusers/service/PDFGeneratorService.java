@@ -24,11 +24,11 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
-import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.Transaction;
+import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
 
 @Service
 public class PDFGeneratorService {

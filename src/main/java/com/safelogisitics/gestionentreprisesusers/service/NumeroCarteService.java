@@ -2,7 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
+import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

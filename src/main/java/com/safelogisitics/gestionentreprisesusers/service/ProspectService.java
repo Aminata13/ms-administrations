@@ -2,8 +2,8 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Map;
 
-import com.safelogisitics.gestionentreprisesusers.model.enums.EProspecteurType;
-import com.safelogisitics.gestionentreprisesusers.payload.request.ProspectRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.ProspectRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.EProspecteurType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

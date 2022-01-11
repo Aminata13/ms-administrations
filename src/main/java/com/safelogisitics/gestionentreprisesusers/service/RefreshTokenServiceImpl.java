@@ -4,12 +4,12 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.safelogisitics.gestionentreprisesusers.dao.RefreshTokenDao;
-import com.safelogisitics.gestionentreprisesusers.dao.UserDao;
-import com.safelogisitics.gestionentreprisesusers.exception.TokenRefreshException;
-import com.safelogisitics.gestionentreprisesusers.model.RefreshToken;
-import com.safelogisitics.gestionentreprisesusers.model.User;
-import com.safelogisitics.gestionentreprisesusers.security.jwt.JwtConfig;
+import com.safelogisitics.gestionentreprisesusers.data.dao.RefreshTokenDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.data.model.RefreshToken;
+import com.safelogisitics.gestionentreprisesusers.data.model.User;
+import com.safelogisitics.gestionentreprisesusers.web.exception.TokenRefreshException;
+import com.safelogisitics.gestionentreprisesusers.web.security.jwt.JwtConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

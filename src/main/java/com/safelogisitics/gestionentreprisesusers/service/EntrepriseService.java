@@ -2,9 +2,9 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseProspectRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.EntrepriseRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.EntrepriseProspectRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.EntrepriseRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

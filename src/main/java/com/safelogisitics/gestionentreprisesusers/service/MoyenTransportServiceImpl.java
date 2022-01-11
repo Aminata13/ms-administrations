@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.dao.MoyenTransportDao;
-import com.safelogisitics.gestionentreprisesusers.dto.MoyenTransportSearchDto;
-import com.safelogisitics.gestionentreprisesusers.model.MoyenTransport;
+import com.safelogisitics.gestionentreprisesusers.data.dao.MoyenTransportDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.MoyenTransportSearchDto;
+import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

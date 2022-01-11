@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.model.Equipement;
-import com.safelogisitics.gestionentreprisesusers.model.FournitureEquipement;
+import com.safelogisitics.gestionentreprisesusers.data.model.Equipement;
+import com.safelogisitics.gestionentreprisesusers.data.model.FournitureEquipement;
 
 public interface EquipementService {
 

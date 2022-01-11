@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.safelogisitics.gestionentreprisesusers.model.SMSModel;
-import com.safelogisitics.gestionentreprisesusers.payload.request.SMSModelRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.SMSRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.SendSmsRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.SMSModelRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.SMSRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.SMSModel;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

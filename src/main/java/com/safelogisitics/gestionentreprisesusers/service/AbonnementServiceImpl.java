@@ -9,20 +9,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.safelogisitics.gestionentreprisesusers.dao.AbonnementDao;
-import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
-import com.safelogisitics.gestionentreprisesusers.dao.NumeroCarteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
-import com.safelogisitics.gestionentreprisesusers.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.NumeroCarte;
-import com.safelogisitics.gestionentreprisesusers.model.TypeAbonnement;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.payload.request.AbonnementRequest;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.EntrepriseDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
+import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -168,38 +168,41 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    Compte compteClient = null;
-    Entreprise entreprise = null;
-
-    if (abonnementRequest.getInfosPersoId() != null)
-      compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
-
-    if (abonnementRequest.getEntrepriseId() != null)
-      entreprise = entrepriseDao.findById(abonnementRequest.getEntrepriseId()).get();
-
-    if (compteClient == null && entreprise == null)
+    if (abonnementRequest.getInfosPersoId() == null && abonnementRequest.getEntrepriseId() == null)
       throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
 
-    Optional<Abonnement> abonnementExist = compteClient != null ? abonnementDao.findByCompteClientId(compteClient.getId()) :
-      abonnementDao.findByEntrepriseId(entreprise.getId());
+    final Query query = new Query();
 
-    if (abonnementExist.isPresent() && !abonnementExist.get().isDeleted())
+    query.addCriteria(abonnementRequest.getInfosPersoId() != null ?
+      Criteria.where("compteClient.infosPersoId").is(abonnementRequest.getInfosPersoId()) :
+      Criteria.where("entreprise.id").is(abonnementRequest.getInfosPersoId())
+    );
+
+    Abonnement abonnement = mongoTemplate.findOne(query, Abonnement.class);
+
+    if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
 
-    Abonnement abonnement;
+    Compte compteClient = null;
+    Entreprise entreprise = null;
 
-    if (abonnementExist.isPresent()) {
-      abonnement = abonnementExist.get();
-      abonnement.setCompteCreateur(compteCreateur);
-      abonnement.setDeleted(false);
-      abonnement.setSolde(BigDecimal.valueOf(0));
-    } else {
-      abonnement = compteClient != null ? new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut()) :
-        new Abonnement(typeAbonnement, entreprise, compteCreateur, abonnementRequest.getStatut());
+    if (abonnement == null) {
+      if (abonnementRequest.getInfosPersoId() != null) {
+        compteClient = compteDao.findByInfosPersoIdAndType(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
+        abonnement = new Abonnement(typeAbonnement, compteClient, compteCreateur, abonnementRequest.getStatut());
+      } else {
+        entreprise = entrepriseDao.findById(abonnementRequest.getEntrepriseId()).get();
+        abonnement = new Abonnement(typeAbonnement, entreprise, compteCreateur, abonnementRequest.getStatut());
+      }
     }
+
+    abonnement.setResponsableId(compteCreateur.getId());
+    abonnement.setCompteCreateur(compteCreateur);
+    abonnement.setDeleted(false);
+    abonnement.setSolde(BigDecimal.valueOf(0));
 
     abonnement.setTypeAbonnement(typeAbonnement);
     abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
@@ -211,6 +214,11 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     numeroCarte.setActive(true);
     numeroCarteDao.save(numeroCarte);
+
+    if (compteClient != null) {
+      compteClient.setServices(typeAbonnement.getServices());
+      compteDao.save(compteClient);
+    }
 
     return abonnement;
   }
@@ -247,6 +255,12 @@ public class AbonnementServiceImpl implements AbonnementService {
     newNumeroCarte.setActive(true);
     oldNumeroCarte.setActive(false);
     numeroCarteDao.saveAll(Arrays.asList(newNumeroCarte, oldNumeroCarte));
+
+    if (abonnement.getCompteClient() != null) {
+      Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnement.getCompteClient().getId(), ECompteType.COMPTE_PARTICULIER).get();
+      compteClient.setServices(typeAbonnement.getServices());
+      compteDao.save(compteClient);
+    }
 
     return abonnement;
   }

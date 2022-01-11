@@ -1,10 +1,11 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.TypeAbonnementDao;
-import com.safelogisitics.gestionentreprisesusers.model.*;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.model.*;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;

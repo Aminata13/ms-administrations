@@ -8,21 +8,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.safelogisitics.gestionentreprisesusers.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.dao.EntrepriseDao;
-import com.safelogisitics.gestionentreprisesusers.dao.InfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.dao.ProspectDao;
-import com.safelogisitics.gestionentreprisesusers.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.model.InfosPerso;
-import com.safelogisitics.gestionentreprisesusers.model.Prospect;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.model.enums.EProspecteurType;
-import com.safelogisitics.gestionentreprisesusers.model.enums.ETypeProspect;
-import com.safelogisitics.gestionentreprisesusers.payload.request.ProspectRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.request.RegisterRequest;
-import com.safelogisitics.gestionentreprisesusers.payload.response.UserInfosResponse;
-import com.safelogisitics.gestionentreprisesusers.security.services.UserDetailsImpl;
+import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.EntrepriseDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.ProspectDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.ProspectRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.RegisterRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
+import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.Prospect;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.EProspecteurType;
+import com.safelogisitics.gestionentreprisesusers.data.model.enums.ETypeProspect;
+import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -294,6 +294,17 @@ public class ProspectServiceImpl implements ProspectService {
     updateProspect(id, prospectRequest, true);
     Prospect prospect = prospectDao.findById(id).get();
 
+    if (prospect.getNiveauAvancement() == 100) {
+      throw new IllegalArgumentException("Le niveau d'avancement doit atteindre 100%.");
+    }
+
+    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Compte enroleur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
+
+    if (!prospect.getProspecteurId().equals(enroleur.getId()) && prospect.getProspecteurType().equals(EProspecteurType.COMPTE_ADMINISTRATEUR)) {
+      throw new IllegalArgumentException("Vous ne pouvez pas.");
+    }
+
     if (prospect.getType().equals(ETypeProspect.PARTICULIER)) {
       RegisterRequest registerRequest = new RegisterRequest(
         prospectRequest.getInfosParticulier().getPrenom(),
@@ -313,7 +324,6 @@ public class ProspectServiceImpl implements ProspectService {
         compteDao.save(compteClient);
       }
       prospect.getInfosParticulier().setId(infosPerso.getId());
-      
     }
 
     if (prospect.getType().equals(ETypeProspect.ENTREPRISE)) {
@@ -321,13 +331,9 @@ public class ProspectServiceImpl implements ProspectService {
       prospect.getInfosEntreprise().setId(entreprise.getId());
     }
 
-    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Compte enroleur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
-
     prospect.setStatutProspection(1);
     prospect.setEnroleurId(enroleur.getId());
     prospect.setDateEnrolement(LocalDateTime.now());
-    prospect.setNiveauAvancement(100);
 
     prospectDao.save(prospect);
 

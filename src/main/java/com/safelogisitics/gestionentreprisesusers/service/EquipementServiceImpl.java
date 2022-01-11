@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.safelogisitics.gestionentreprisesusers.dao.EquipementDao;
-import com.safelogisitics.gestionentreprisesusers.model.Equipement;
-import com.safelogisitics.gestionentreprisesusers.model.FournitureEquipement;
+import com.safelogisitics.gestionentreprisesusers.data.dao.EquipementDao;
+import com.safelogisitics.gestionentreprisesusers.data.model.Equipement;
+import com.safelogisitics.gestionentreprisesusers.data.model.FournitureEquipement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
