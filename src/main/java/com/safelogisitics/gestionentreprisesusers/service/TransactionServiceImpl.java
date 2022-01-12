@@ -27,6 +27,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
@@ -90,6 +91,9 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
   private SMSService smsService;
+
+  @Autowired
+  private CommissionService commissionService;
 
   @Autowired
 	PasswordEncoder encoder;
@@ -419,6 +423,11 @@ public class TransactionServiceImpl implements TransactionService {
       abonnement.debiterSolde(transactionRequest.getMontant());
       transaction.setMontant(transactionRequest.getMontant());
       transaction.setNouveauSolde(abonnement.getSolde());
+      if (abonnement.getResponsableId() != null && !abonnement.getResponsableId().isEmpty()) {
+        CommissionRequestDto commissionRequest = new CommissionRequestDto(transactionRequest);
+        commissionRequest.setResponsableId(abonnement.getResponsableId());
+        this.commissionService.createCommission(commissionRequest);
+      }
     }
 
     abonnementDao.save(abonnement);

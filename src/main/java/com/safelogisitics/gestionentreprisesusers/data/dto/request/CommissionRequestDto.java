@@ -26,6 +26,13 @@ public class CommissionRequestDto {
 
   public CommissionRequestDto() {}
 
+  public CommissionRequestDto(PaiementTransactionRequest paiementTransactionRequest) {
+    this.service = paiementTransactionRequest.getService();
+    this.commandeId = paiementTransactionRequest.getServiceId();
+    this.numero = paiementTransactionRequest.getNumeroCommande();
+    this.prix = paiementTransactionRequest.getMontant();
+  }
+
   public EServiceType getService() {
     return this.service;
   }
