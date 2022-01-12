@@ -2,18 +2,17 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.PaiementCommissionDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionSearchRequestDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.PayerCommissionsRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.enums.EPaiementMethode;
 import com.safelogisitics.gestionentreprisesusers.data.model.CommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementCommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.repository.CommissionRepository;
+import com.safelogisitics.gestionentreprisesusers.data.repository.PaiementCommissionRepository;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.data.domain.Page;
@@ -29,12 +28,12 @@ public class CommissionServiceImpl implements CommissionService {
 
   private CompteDao compteDao;
 
-  private PaiementCommissionDao paiementCommissionDao;
+  private PaiementCommissionRepository paiementCommissionRepository;
 
-  public CommissionServiceImpl(CommissionRepository commissionRepository, CompteDao compteDao, PaiementCommissionDao paiementCommissionDao) {
+  public CommissionServiceImpl(CommissionRepository commissionRepository, CompteDao compteDao, PaiementCommissionRepository paiementCommissionRepository) {
     this.commissionRepository = commissionRepository;
     this.compteDao = compteDao;
-    this.paiementCommissionDao = paiementCommissionDao;
+    this.paiementCommissionRepository = paiementCommissionRepository;
   }
 
   @Override
@@ -75,7 +74,7 @@ public class CommissionServiceImpl implements CommissionService {
     }
 
     CommissionModel commission = commissionExist.get();
-    
+
     commission.setData(commissionRequest);
     commission.calculCommission(commissionRequest.getPrix());
     this.commissionRepository.save(commission);
@@ -84,9 +83,10 @@ public class CommissionServiceImpl implements CommissionService {
   }
 
   @Override
-  public PaiementCommissionModel payerCommissions(Set<String> ids, EPaiementMethode paiementMethode) {
+  public PaiementCommissionModel payerCommissions(PayerCommissionsRequestDto payerCommissionsRequest) {
     CommissionSearchRequestDto commissionSearch = new CommissionSearchRequestDto();
-    commissionSearch.setIds(ids);
+    commissionSearch.setIds(payerCommissionsRequest.getIds());
+    commissionSearch.setResponsableId(payerCommissionsRequest.getResponsableId());
     commissionSearch.setPayer(false);
 
     Page<CommissionModel> commissions = commissionRepository.customSearch(commissionSearch, PageRequest.of(0, Integer.MAX_VALUE));
@@ -100,8 +100,10 @@ public class CommissionServiceImpl implements CommissionService {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteAuteur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
 
-    PaiementCommissionModel paiementCommission = new PaiementCommissionModel(montant, ids, compteAuteur.getId(), paiementMethode);
-    this.paiementCommissionDao.save(paiementCommission);
+    PaiementCommissionModel paiementCommission = new PaiementCommissionModel(montant, payerCommissionsRequest.getIds(),
+      payerCommissionsRequest.getResponsableId(), compteAuteur.getId(), payerCommissionsRequest.getPaiementMethode());
+
+    this.paiementCommissionRepository.save(paiementCommission);
 
     for (CommissionModel commission : commissions) {
       commission.payer(paiementCommission.getId());
@@ -115,22 +117,37 @@ public class CommissionServiceImpl implements CommissionService {
   public void deleteCommission(String id) {
     Optional<CommissionModel> commissionExist = commissionRepository.findById(id);
     if (!commissionExist.isPresent()) {
-      throw new IllegalArgumentException("Cette commission n'existe pas.");
+      return;
     }
 
     CommissionModel commission = commissionExist.get();
     
     if (commission.isPayer()) {
-      Optional<PaiementCommissionModel> paiementCommissionExist = this.paiementCommissionDao.findBycommmandeIds(id);
+      Optional<PaiementCommissionModel> paiementCommissionExist = this.paiementCommissionRepository.findBycommmandeIds(id);
 
       if (paiementCommissionExist.isPresent()) {
         PaiementCommissionModel paiementCommission = paiementCommissionExist.get();
         paiementCommission.getCommmandeIds().remove(id);
         paiementCommission.setMontant(paiementCommission.getMontant().subtract(commission.getMontant()));
-        this.paiementCommissionDao.save(paiementCommission);
+        this.paiementCommissionRepository.save(paiementCommission);
       }
     }
 
     commissionRepository.delete(commission);
   }
+
+  @Override
+  public void deleteCommissionByCommandeId(String id) {
+    Optional<CommissionModel> commissionExist = commissionRepository.findByCommandeId(id);
+    if (!commissionExist.isPresent()) {
+      return;
+    }
+    this.deleteCommission(commissionExist.get().getId());
+  }
+
+  @Override
+  public Page<PaiementCommissionModel> getListPaiementCommissions(CommissionSearchRequestDto commissionSearchRequest, Pageable pageable) {
+    return this.paiementCommissionRepository.customSearch(commissionSearchRequest, pageable);
+  }
+
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EPaiementMethode;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 
 public class CommissionSearchRequestDto {
@@ -20,13 +21,19 @@ public class CommissionSearchRequestDto {
 
   private String commandeId;
 
+  private Set<String> commandeIds;
+
   private BigDecimal montant;
 
   private String responsableId;
 
+  private String auteurId;
+
   private Boolean payer;
 
   private String paiementId;
+
+  private EPaiementMethode paiementMethode;
 
   @Min(value = 1000, message = "L'année est compris entre 1000 et 9999.")
   @Max(value = 9999, message = "L'année est compris entre 1000 et 9999.")
@@ -82,6 +89,14 @@ public class CommissionSearchRequestDto {
     this.commandeId = commandeId;
   }
 
+  public Set<String> getCommandeIds() {
+    return this.commandeIds;
+  }
+
+  public void setCommandeIds(Set<String> commandeIds) {
+    this.commandeIds = commandeIds;
+  }
+
   public BigDecimal getMontant() {
     return this.montant;
   }
@@ -98,6 +113,14 @@ public class CommissionSearchRequestDto {
     this.responsableId = responsableId;
   }
 
+  public String getAuteurId() {
+    return this.auteurId;
+  }
+
+  public void setAuteurId(String auteurId) {
+    this.auteurId = auteurId;
+  }
+
   public Boolean isPayer() {
     return this.payer;
   }
@@ -112,6 +135,14 @@ public class CommissionSearchRequestDto {
 
   public void setPaiementId(String paiementId) {
     this.paiementId = paiementId;
+  }
+
+  public EPaiementMethode getPaiementMethode() {
+    return this.paiementMethode;
+  }
+
+  public void setPaiementMethode(EPaiementMethode paiementMethode) {
+    this.paiementMethode = paiementMethode;
   }
 
   public Integer getAnnee() {

@@ -13,5 +13,7 @@ public interface CommissionDao extends PagingAndSortingRepository<CommissionMode
   
   public Optional<CommissionModel> findByNumeroAndService(String numero, EServiceType service);
 
+  public Optional<CommissionModel> findByCommandeId(String commandeId);
+
   public boolean existsByNumeroAndService(String numero, EServiceType service);
 }

@@ -478,6 +478,8 @@ public class TransactionServiceImpl implements TransactionService {
     rechargeTransaction.setApprobateur(compteAnnulateur);
     rechargeTransaction.setDateApprobation(LocalDateTime.now());
     transactionDao.save(rechargeTransaction);
+
+    this.commissionService.deleteCommissionByCommandeId(paiementServiceDto.getServiceId());
   }
 
   @Override

@@ -1,11 +1,10 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Optional;
-import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionSearchRequestDto;
-import com.safelogisitics.gestionentreprisesusers.data.enums.EPaiementMethode;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.PayerCommissionsRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.CommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementCommissionModel;
 
@@ -22,7 +21,11 @@ public interface CommissionService {
 
   public CommissionModel updateCommission(String id, CommissionRequestDto CommissionRequest);
 
-  public PaiementCommissionModel payerCommissions(Set<String> ids, EPaiementMethode paiementMethode);
+  public PaiementCommissionModel payerCommissions(PayerCommissionsRequestDto payerCommissionsRequest);
 
   public void deleteCommission(String id);
+
+  public void deleteCommissionByCommandeId(String id);
+
+  public Page<PaiementCommissionModel> getListPaiementCommissions(CommissionSearchRequestDto commissionSearchRequest, Pageable pageable);
 }

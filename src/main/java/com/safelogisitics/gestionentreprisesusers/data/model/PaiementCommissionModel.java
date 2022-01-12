@@ -21,6 +21,9 @@ public class PaiementCommissionModel extends AuditMetadata {
   @Field(name = "commmandeIds")
   private Set<String> commmandeIds;
 
+  @Field(name = "responsableId")
+  private String responsableId;
+
   @Field(name = "auteurId")
   private String auteurId;
 
@@ -29,9 +32,10 @@ public class PaiementCommissionModel extends AuditMetadata {
 
   public PaiementCommissionModel() {}
 
-  public PaiementCommissionModel(BigDecimal montant, Set<String> commmandeIds, String auteurId, EPaiementMethode paiementMethode) {
+  public PaiementCommissionModel(BigDecimal montant, Set<String> commmandeIds, String responsableId, String auteurId, EPaiementMethode paiementMethode) {
     this.montant = montant;
     this.commmandeIds = commmandeIds;
+    this.responsableId = responsableId;
     this.auteurId = auteurId;
     this.paiementMethode = paiementMethode;
   }
@@ -58,6 +62,14 @@ public class PaiementCommissionModel extends AuditMetadata {
 
   public void setCommmandeIds(Set<String> commmandeIds) {
     this.commmandeIds = commmandeIds;
+  }
+
+  public String getResponsableId() {
+    return this.responsableId;
+  }
+
+  public void setResponsableId(String responsableId) {
+    this.responsableId = responsableId;
   }
 
   public String getAuteurId() {
