@@ -188,7 +188,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new IllegalArgumentException("Cette carte n'existe pas!");
 
     if (numeroCarteExist.get().isActive() && (entreprise.getNumeroCarte() == null || !entreprise.getNumeroCarte().equals(numeroCarteExist.get().getNumero())))
-      throw new IllegalArgumentException("Cette carte est déjà activé!SA");
+      throw new IllegalArgumentException("Cette carte est déjà activé!");
 
     if (!numeroCarteExist.get().getNumero().startsWith("20210030"))
       throw new IllegalArgumentException("Cette carte ne correspond pas avec les cartes entreprises!");

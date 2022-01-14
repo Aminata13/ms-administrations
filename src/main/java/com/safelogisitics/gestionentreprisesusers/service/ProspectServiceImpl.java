@@ -294,7 +294,7 @@ public class ProspectServiceImpl implements ProspectService {
     updateProspect(id, prospectRequest, true);
     Prospect prospect = prospectDao.findById(id).get();
 
-    if (prospect.getNiveauAvancement() == 100) {
+    if (prospect.getNiveauAvancement() != 100) {
       throw new IllegalArgumentException("Le niveau d'avancement doit atteindre 100%.");
     }
 

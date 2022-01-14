@@ -175,10 +175,12 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     query.addCriteria(abonnementRequest.getInfosPersoId() != null ?
       Criteria.where("compteClient.infosPersoId").is(abonnementRequest.getInfosPersoId()) :
-      Criteria.where("entreprise.id").is(abonnementRequest.getInfosPersoId())
+      Criteria.where("entreprise.id").is(abonnementRequest.getEntrepriseId())
     );
 
     Abonnement abonnement = mongoTemplate.findOne(query, Abonnement.class);
+
+    System.out.println(abonnement);
 
     if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
