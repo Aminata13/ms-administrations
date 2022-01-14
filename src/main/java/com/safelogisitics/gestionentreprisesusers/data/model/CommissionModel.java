@@ -1,6 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.data.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
@@ -111,7 +112,7 @@ public class CommissionModel extends AuditMetadata {
   }
 
   public void calculCommission(BigDecimal prix) {
-    BigDecimal prixHt = prix.divide(BigDecimal.valueOf(1.18));
+    BigDecimal prixHt = prix.divide(BigDecimal.valueOf(1.18), 2, RoundingMode.HALF_UP);
     this.montant = prixHt.multiply(BigDecimal.valueOf(0.07));
   }
 
