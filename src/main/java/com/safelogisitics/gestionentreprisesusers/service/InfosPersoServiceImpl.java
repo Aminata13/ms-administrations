@@ -790,30 +790,31 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public UserInfosResponse updateUserInfos(UpdateInfosPersoRequest request, String id) {
-    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-      Optional<User> userExist = userDao.findByInfosPersoId(id);
-
-      if (!userExist.isPresent() || !encoder.matches(request.getOldPassword(), userExist.get().getPassword()))
-        throw new IllegalArgumentException("Ancien mot de passe invalide!");
-    }
-
-    Optional<User> accessExist = userDao.findByUsername(request.getUsername());
-
-    if (accessExist.isPresent() && !accessExist.get().getInfosPerso().getId().equals(id)) {
-      throw new IllegalArgumentException("Nom d'utilisateur déjà utilisé!");
-    }
-
     InfosPerso infosPerso = updateInfosPerso(id, request);
 
-    User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
+    Optional<User> _user = userDao.findByInfosPersoId(id);
 
-    if (request.getUsername() != null && !request.getUsername().isEmpty())
+    if (!_user.isPresent())
+      throw new IllegalArgumentException("Utilisateur non retrouvé!");
+
+    User user = _user.get();
+
+    if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+      Optional<User> _userWithUsername = userDao.findByUsername(request.getUsername().trim());
+
+      if (_userWithUsername.isPresent() && !_userWithUsername.get().getId().equals(user.getId()))
+        throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà!");
+      
       user.setUsername(request.getUsername());
+    }
 
     if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      if (!encoder.matches(request.getOldPassword(), user.getPassword()))
+        throw new IllegalArgumentException("Ancien mot de passe invalide!");
+
       user.setPassword(encoder.encode(request.getPassword())); 
     }
-    
+
     userDao.save(user);
 
     return new UserInfosResponse(infosPerso, null, user);
