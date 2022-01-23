@@ -42,7 +42,7 @@ public class CommissionController {
   @ApiOperation(value = "Liste des commissions")
   @GetMapping("/list")
   @PreAuthorize("hasPermission('GESTION_COMMISSIONS', 'READ')")
-	public ResponseEntity<Page<CommissionModel>> allCommissions(@Valid CommissionSearchRequestDto commissionSearchRequest,Pageable pageable) {
+	public ResponseEntity<Page<CommissionModel>> allCommissions(@Valid CommissionSearchRequestDto commissionSearchRequest, Pageable pageable) {
     Page<CommissionModel> commissions = commissionService.getListCommissions(commissionSearchRequest, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(commissions);
 	}
