@@ -159,7 +159,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public Object findInfosPersoByCompteId(String id) {
     Optional<Compte> compteExist = compteDao.findById(id);
-    if (!compteExist.isPresent() || compteExist.get().isDeleted()) {
+    if (!compteExist.isPresent()) {
       return null;
     }
 
@@ -167,7 +167,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     
     Optional<Abonnement> abonnement = abonnementDao.findByCompteClientId(id);
 
-    if (abonnement.isPresent() && !abonnement.get().isDeleted()) {
+    if (abonnement.isPresent() && !abonnement.get().isDeleted() && !compteExist.get().isDeleted()) {
       return infosPerso.getDefaultFields(abonnement.get().getTypeAbonnement().getLibelle());
     }
 
