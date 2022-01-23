@@ -19,6 +19,8 @@ public class UserInfosResponse {
 
   private String nom;
 
+  private String nomComplet;
+
   private String photoProfil;
 
   private String email;
@@ -43,6 +45,7 @@ public class UserInfosResponse {
     this.id = infosPerso.getId();
     this.prenom = infosPerso.getPrenom();
     this.nom = infosPerso.getNom();
+    this.nomComplet = infosPerso.getNomComplet();
     this.email = infosPerso.getEmail();
     this.telephone = infosPerso.getTelephone();
     this.adresse = infosPerso.getAdresse();
@@ -65,6 +68,10 @@ public class UserInfosResponse {
 
   public String getNom() {
     return this.nom;
+  }
+
+  public String getNomComplet() {
+    return this.nomComplet;
   }
 
   public String getEmail() {

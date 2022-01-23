@@ -71,7 +71,7 @@ public class AdministrateurFixture implements CommandLineRunner {
 
       infosPersoDao.save(infosPerso);
 
-      Optional<User> _user = userDao.findById(infosPerso.getId());
+      Optional<User> _user = userDao.findByInfosPersoId(infosPerso.getId());
 
       if (!_user.isPresent()) {
         String username = infosPerso.getEmail();
