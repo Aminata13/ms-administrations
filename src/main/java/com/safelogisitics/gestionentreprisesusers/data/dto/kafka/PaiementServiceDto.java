@@ -17,6 +17,7 @@ public class PaiementServiceDto {
 
   private String annulateurId;
 
+  private String typePaiementId;
 
   public PaiementServiceDto() {}
 
@@ -66,4 +67,11 @@ public class PaiementServiceDto {
     this.annulateurId = annulateurId;
   }
 
+  public String getTypePaiementId() {
+    return typePaiementId;
+  }
+
+  public void setTypePaiementId(String typePaiementId) {
+    this.typePaiementId = typePaiementId;
+  }
 }
