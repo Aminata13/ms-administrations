@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementResponsableRequest;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
@@ -35,6 +36,8 @@ public interface AbonnementService {
   public Abonnement createAbonnement(AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur);
 
   public Abonnement changerAbonnement(String id, AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur);
+
+  public Abonnement changerResponsable(String id, AbonnementResponsableRequest changementResponsableRequest);
 
   public void deleteAbonnement(String id);
 }

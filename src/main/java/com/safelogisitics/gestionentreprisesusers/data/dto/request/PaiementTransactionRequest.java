@@ -18,7 +18,7 @@ public class PaiementTransactionRequest {
   @NotBlank(message = "Le code de validation est obligatoire.")
   private String codeValidation;
 
-  @DecimalMin(value = "1000", message = "Montant doit être supérieur ou egal à 1 00")
+  @DecimalMin(value = "1000.0", message = "Montant doit être supérieur ou egal à 1000")
   private BigDecimal montant;
 
   @Min(value = 1, message = "le nombre de points doit être supérieur 0")

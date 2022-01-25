@@ -15,6 +15,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementResponsableRequest;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
@@ -263,6 +264,29 @@ public class AbonnementServiceImpl implements AbonnementService {
       compteClient.setServices(typeAbonnement.getServices());
       compteDao.save(compteClient);
     }
+
+    return abonnement;
+  }
+
+  @Override
+  public Abonnement changerResponsable(String id, AbonnementResponsableRequest changementResponsableRequest) {
+    Optional<Abonnement> abonnementExist = abonnementDao.findById(id);
+
+    if (!abonnementExist.isPresent() || abonnementExist.get().isDeleted() || abonnementExist.get().getCompteClient().isDeleted())
+      throw new IllegalArgumentException("Cette abonnement n'existe pas!");
+
+    Abonnement abonnement = abonnementExist.get();
+
+    Optional<Compte> _compteResponsable = compteDao.findById(changementResponsableRequest.getResponsableId());
+
+    if (!_compteResponsable.isPresent() || !_compteResponsable.get().getType().equals(changementResponsableRequest.getCompteType())) {
+      throw new IllegalArgumentException("Cette profil n'existe pas!");
+    }
+
+    Compte compteResponsable = _compteResponsable.get();
+
+    abonnement.setResponsableId(compteResponsable.getId());
+    abonnementDao.save(abonnement);
 
     return abonnement;
   }

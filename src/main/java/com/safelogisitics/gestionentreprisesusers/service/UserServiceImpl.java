@@ -111,13 +111,13 @@ public class UserServiceImpl implements UserService {
     for (Compte compte : user.getInfosPerso().getComptes()) {
       boolean enroleur = compte.getType().equals(ECompteType.COMPTE_ADMINISTRATEUR) && compte.getRole() != null && compte.getRole().hasPrivilegeAction("GESTION_ABONNEMENTS", "CREATE");
 
-      if (compte.isDeleted() || (numeroEmei != null && !compte.getType().equals(ECompteType.COMPTE_COURSIER) && !enroleur )) {
+      if (compte.isDeleted() || (numeroEmei != null && !numeroEmei.isEmpty() && !compte.getType().equals(ECompteType.COMPTE_COURSIER) && !enroleur )) {
         continue;
       }
 
       if (
         (numeroEmei == null && compte.getType().equals(ECompteType.COMPTE_COURSIER)) ||
-        (numeroEmei != null && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei)))
+        (numeroEmei != null && !numeroEmei.isEmpty() && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei() == null || compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei)))
       ) {
         break;
       }

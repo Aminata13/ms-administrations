@@ -61,10 +61,9 @@ public class InfosPerso extends AuditMetadata {
   private Set<Compte> comptes = new HashSet<>();
 
   @Field(value = "dateCreation")
-  private LocalDateTime dateCreation;
+  private LocalDateTime dateCreation = LocalDateTime.now();
 
   public InfosPerso() {
-    this.dateCreation = LocalDateTime.now();
   }
 
   public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance) {
@@ -74,7 +73,6 @@ public class InfosPerso extends AuditMetadata {
     this.telephone = telephone;
     this.adresse = adresse;
     this.dateNaissance = dateNaissance;
-    this.dateCreation = LocalDateTime.now();
   }
 
   public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece, String photoProfil) {
@@ -87,7 +85,6 @@ public class InfosPerso extends AuditMetadata {
     this.numeroPermis = numeroPermis;
     this.numeroPiece = numeroPiece;
     this.photoProfil = photoProfil;
-    this.dateCreation = LocalDateTime.now();
   }
 
   public String getId() {

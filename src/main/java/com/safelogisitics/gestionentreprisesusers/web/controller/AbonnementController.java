@@ -12,6 +12,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.CreatePaiementDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementResponsableRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
@@ -176,6 +177,13 @@ public class AbonnementController {
   @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'UPDATE')")
 	public ResponseEntity<?> updateAbonnement(@PathVariable(value = "id") String id, @Valid @RequestBody AbonnementRequest request) {
     Abonnement abonnement = abonnementService.changerAbonnement(id, request, ECompteType.COMPTE_ADMINISTRATEUR);
+		return ResponseEntity.status(HttpStatus.OK).body(abonnement);
+	}
+
+  @PutMapping("/responsable/changer/{id}")
+  @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'VALIDATE')")
+	public ResponseEntity<?> updateAbonnementResponsable(@PathVariable(value = "id") String id, @Valid @RequestBody AbonnementResponsableRequest request) {
+    Abonnement abonnement = abonnementService.changerResponsable(id, request);
 		return ResponseEntity.status(HttpStatus.OK).body(abonnement);
 	}
 

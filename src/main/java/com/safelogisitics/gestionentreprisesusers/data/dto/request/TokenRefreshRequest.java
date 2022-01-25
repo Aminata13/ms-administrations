@@ -14,6 +14,6 @@ public class TokenRefreshRequest {
   }
 
   public String getNumeroEmei() {
-    return this.numeroEmei.trim();
+    return this.numeroEmei != null ? this.numeroEmei.trim() : this.numeroEmei;
   }
 }
