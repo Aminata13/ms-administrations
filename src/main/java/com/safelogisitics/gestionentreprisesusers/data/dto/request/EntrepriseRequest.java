@@ -40,6 +40,8 @@ public class EntrepriseRequest {
   @NotBlank
   private String numeroCarte;
 
+  private String logo;
+
   public String getTypeEntreprise() {
     return this.typeEntreprise;
   }
@@ -84,4 +86,11 @@ public class EntrepriseRequest {
     return this.numeroCarte.replaceAll("\\D+","");
   }
 
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
+  }
 }

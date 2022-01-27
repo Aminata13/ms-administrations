@@ -107,14 +107,14 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new IllegalArgumentException("Cette carte n'existe pas!");
 
     if (numeroCarteExist.get().isActive())
-      throw new IllegalArgumentException("Cette carte est déjà activé!");
+      throw new IllegalArgumentException("Cette carte est déjà activée!");
 
     if (!numeroCarteExist.get().getNumero().startsWith("20210030"))
-      throw new IllegalArgumentException("Cette carte ne correspond pas avec les cartes entreprises!");
+      throw new IllegalArgumentException("Cette carte ne correspond pas aux cartes de type entreprise!");
 
     NumeroCarte carte = numeroCarteExist.get();
 
-    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse(), request.getLogo());
     entrepriseDao.save(entreprise);
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
@@ -143,7 +143,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 
-    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse(), request.getLogo());
     entreprise.setDomaineActivite(request.getDomaineActivite());
 
     entrepriseDao.save(entreprise);
@@ -169,6 +169,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     entreprise.setEmail(request.getEmail());
     entreprise.setTelephone(request.getTelephone());
     entreprise.setAdresse(request.getAdresse());
+    entreprise.setLogo(request.getLogo());
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
     infosAgentRequest.setEntrepriseId(entreprise.getId());

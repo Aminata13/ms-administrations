@@ -25,6 +25,8 @@ public class EntrepriseProspectRequest {
 
   private String adresse;
 
+  private String logo;
+
   public String getTypeEntreprise() {
     return this.typeEntreprise;
   }
@@ -55,5 +57,13 @@ public class EntrepriseProspectRequest {
 
   public String getAdresse() {
     return this.adresse;
+  }
+
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
   }
 }

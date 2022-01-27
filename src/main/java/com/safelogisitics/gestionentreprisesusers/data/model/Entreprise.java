@@ -57,12 +57,15 @@ public class Entreprise extends AuditMetadata {
   @Field(value = "dateCreation")
   private LocalDateTime dateCreation;
 
+  @Field(value = "logo")
+  private String logo;
+
   public Entreprise() {
     this.deleted = false;
     this.dateCreation = LocalDateTime.now();
   }
 
-  public Entreprise(String typeEntreprise, String domaineActivite, String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse) {
+  public Entreprise(String typeEntreprise, String domaineActivite, String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse, String logo) {
     this.typeEntreprise = typeEntreprise;
     this.domaineActivite = domaineActivite;
     this.denomination = denomination;
@@ -73,6 +76,7 @@ public class Entreprise extends AuditMetadata {
     this.adresse = adresse;
     this.deleted = false;
     this.dateCreation = LocalDateTime.now();
+    this.logo = logo;
   }
 
   public String getId() {
@@ -187,6 +191,14 @@ public class Entreprise extends AuditMetadata {
     this.dateCreation = dateCreation;
   }
 
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
+  }
+
   @JsonIgnore
   public Object getDefaultFields() {
     Object defaultFields = new Object() {
@@ -203,11 +215,12 @@ public class Entreprise extends AuditMetadata {
       public final String telephone = getTelephone();
       public final String adresse = getAdresse();
       public final String dateCreation = getDateCreation().toString();
+      public final String logo = getLogo();
 
       @Override
       public String toString() {
-        return String.format("%s %s %s %s %s %s %s %s %s %s %s %s %s", id, typeEntreprise, domaineActivite, typePartenariats, denomination, ninea,
-          raisonSociale, gerantId, numeroCarte, email, telephone, adresse, dateCreation); 
+        return String.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s", id, typeEntreprise, domaineActivite, typePartenariats, denomination, ninea,
+          raisonSociale, gerantId, numeroCarte, email, telephone, adresse, dateCreation, logo);
       }
     };
     return defaultFields;
