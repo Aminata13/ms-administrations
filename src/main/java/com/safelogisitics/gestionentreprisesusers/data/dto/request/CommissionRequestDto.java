@@ -24,6 +24,9 @@ public class CommissionRequestDto {
   @NotBlank(message = "L'id du responsable est obligatoire.")
   private String responsableId;
 
+  @NotBlank(message = "L'id du client est obligatoire.")
+  private String clientId;
+
   public CommissionRequestDto() {}
 
   public CommissionRequestDto(PaiementTransactionRequest paiementTransactionRequest) {
@@ -31,6 +34,7 @@ public class CommissionRequestDto {
     this.commandeId = paiementTransactionRequest.getServiceId();
     this.numero = paiementTransactionRequest.getNumeroCommande();
     this.prix = paiementTransactionRequest.getMontant();
+    this.clientId = paiementTransactionRequest.getClientId();
   }
 
   public EServiceType getService() {
@@ -73,4 +77,11 @@ public class CommissionRequestDto {
     this.responsableId = responsableId;
   }
 
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 }

@@ -280,7 +280,7 @@ public class AbonnementServiceImpl implements AbonnementService {
     Optional<Compte> _compteResponsable = compteDao.findById(changementResponsableRequest.getResponsableId());
 
     if (!_compteResponsable.isPresent() || !_compteResponsable.get().getType().equals(changementResponsableRequest.getCompteType())) {
-      throw new IllegalArgumentException("Cette profil n'existe pas!");
+      throw new IllegalArgumentException("Ce profil n'existe pas!");
     }
 
     Compte compteResponsable = _compteResponsable.get();

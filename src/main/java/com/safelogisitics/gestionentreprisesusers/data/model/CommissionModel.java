@@ -42,6 +42,9 @@ public class CommissionModel extends AuditMetadata {
   @Field(name = "paiementId")
   private String paiementId;
 
+  @Field(name = "clientId")
+  private String clientId;
+
   public CommissionModel() {}
 
   public CommissionModel(CommissionRequestDto commissionRequest) {
@@ -53,6 +56,7 @@ public class CommissionModel extends AuditMetadata {
     this.commandeId = commissionRequest.getCommandeId();
     this.numero = commissionRequest.getNumero();
     this.responsableId = commissionRequest.getResponsableId();
+    this.clientId = commissionRequest.getClientId();
   }
 
   public String getId() {
@@ -103,6 +107,14 @@ public class CommissionModel extends AuditMetadata {
     this.responsableId = responsableId;
   }
 
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
   public boolean isPayer() {
     return this.payer;
   }
@@ -113,7 +125,8 @@ public class CommissionModel extends AuditMetadata {
 
   public void calculCommission(BigDecimal prix) {
     BigDecimal prixHt = prix.divide(BigDecimal.valueOf(1.18), 2, RoundingMode.HALF_UP);
-    this.montant = prixHt.multiply(BigDecimal.valueOf(0.07));
+    BigDecimal valeurCommission = prixHt.multiply(BigDecimal.valueOf(0.07));
+    this.montant = valeurCommission.setScale(0, RoundingMode.HALF_UP);
   }
 
   public void payer(String paiementId) {
