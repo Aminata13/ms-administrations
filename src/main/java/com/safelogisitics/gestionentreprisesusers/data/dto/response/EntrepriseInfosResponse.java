@@ -37,6 +37,8 @@ public class EntrepriseInfosResponse {
 
   private Abonnement abonnement;
 
+  private String logo;
+
   public EntrepriseInfosResponse(Entreprise entreprise, InfosPerso gerant, Abonnement abonnement) {
     this.id = entreprise.getId();
     this.typeEntreprise = entreprise.getTypeEntreprise();
@@ -51,6 +53,7 @@ public class EntrepriseInfosResponse {
     this.numeroCarte = entreprise.getNumeroCarte();
     this.gerant = gerant;
     this.abonnement = abonnement;
+    this.logo = entreprise.getLogo();
   }
 
   public String getId() {
@@ -99,6 +102,14 @@ public class EntrepriseInfosResponse {
 
   public String getNumeroCarte() {
     return this.numeroCarte;
+  }
+
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
   }
 
   public Map<String, Object> getAbonnement() {

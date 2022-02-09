@@ -2,9 +2,12 @@ package com.safelogisitics.gestionentreprisesusers.data.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -217,6 +220,18 @@ public class Abonnement extends AuditMetadata {
 
   public void setDateCreation(LocalDate dateCreation) {
     this.dateCreation = dateCreation;
+  }
+
+  public Object getCustomFields() {
+    Map<String,Object> _customRoleField = new LinkedHashMap<>();
+
+    _customRoleField.put("id", getId());
+    _customRoleField.put("numeroCarte", getNumeroCarte());
+    _customRoleField.put("type", getTypeAbonnement().getLibelle());
+    _customRoleField.put("compteClientType", entreprise != null ? ECompteType.COMPTE_ENTREPRISE : ECompteType.COMPTE_PARTICULIER);
+    _customRoleField.put("dateAbonnement", getDateCreation().toString());
+
+    return _customRoleField;
   }
 
 }
