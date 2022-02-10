@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.SmsColisLivreDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.SmsCreateCommandeDto;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -21,45 +22,64 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 @Configuration
 public class KafkaConsumerConfig {
 
-  @Value(value = "${kafka.bootstrapAddress}")
-  private String bootstrapAddress;
+    @Value(value = "${kafka.bootstrapAddress}")
+    private String bootstrapAddress;
 
-  public ConsumerFactory<String, PaiementServiceDto> annulerPaiementConsumerFactory() {
-    JsonDeserializer<PaiementServiceDto> deserializer = new JsonDeserializer<>(PaiementServiceDto.class);
-    deserializer.setRemoveTypeHeaders(false);
-    deserializer.addTrustedPackages("*");
-    deserializer.setUseTypeMapperForKey(true);
+    public ConsumerFactory<String, PaiementServiceDto> annulerPaiementConsumerFactory() {
+        JsonDeserializer<PaiementServiceDto> deserializer = new JsonDeserializer<>(PaiementServiceDto.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
 
-    Map<String, Object> props = new HashMap<>();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "paiementServiceDto");
-    return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
-  }
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "paiementServiceDto");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+    }
 
-  @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> annulerPaiementKafkaListenerContainerFactory() {
-    ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
-    factory.setConsumerFactory(annulerPaiementConsumerFactory());
-    return factory;
-  }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> annulerPaiementKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaiementServiceDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(annulerPaiementConsumerFactory());
+        return factory;
+    }
 
-  public ConsumerFactory<String, SmsCreateCommandeDto> smsCreateCommandeConsumerFactory() {
-    JsonDeserializer<SmsCreateCommandeDto> deserializer = new JsonDeserializer<>(SmsCreateCommandeDto.class);
-    deserializer.setRemoveTypeHeaders(false);
-    deserializer.addTrustedPackages("*");
-    deserializer.setUseTypeMapperForKey(true);
+    public ConsumerFactory<String, SmsCreateCommandeDto> smsCreateCommandeConsumerFactory() {
+        JsonDeserializer<SmsCreateCommandeDto> deserializer = new JsonDeserializer<>(SmsCreateCommandeDto.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
 
-    Map<String, Object> props = new HashMap<>();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "smsCreateCommandeDto");
-    return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
-  }
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "smsCreateCommandeDto");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+    }
 
-  @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> smsCreateCommandeKafkaListenerContainerFactory() {
-    ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
-    factory.setConsumerFactory(smsCreateCommandeConsumerFactory());
-    return factory;
-  }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> smsCreateCommandeKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, SmsCreateCommandeDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(smsCreateCommandeConsumerFactory());
+        return factory;
+    }
+
+    public ConsumerFactory<String, SmsColisLivreDto> smsColisLivreConsumerFactory() {
+        JsonDeserializer<SmsColisLivreDto> deserializer = new JsonDeserializer<>(SmsColisLivreDto.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
+
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "smsColisLivreDto");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, SmsColisLivreDto> smsColisLivreKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, SmsColisLivreDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(smsColisLivreConsumerFactory());
+        return factory;
+    }
 
 }

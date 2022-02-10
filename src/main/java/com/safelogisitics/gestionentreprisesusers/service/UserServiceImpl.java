@@ -25,106 +25,106 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-  @Autowired
-	AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-	@Autowired
-	UserDao userDao;
+    @Autowired
+    UserDao userDao;
 
-	@Autowired
-	PasswordEncoder encoder;
+    @Autowired
+    PasswordEncoder encoder;
 
-  @Autowired
-	RefreshTokenService refreshTokenService;
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
-	@Autowired
-  JwtUtils jwtUtils;
+    @Autowired
+    JwtUtils jwtUtils;
 
-  @Override
-  public JwtResponse authenticate(LoginRequest loginRequest) {
-    Authentication authentication = authenticationManager.authenticate(
-			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    @Override
+    public JwtResponse authenticate(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		User userDetails = validateCompteUser(loginRequest.getUsername(), loginRequest.getNumeroEmei());
-    if(userDetails == null) {
-      return null;
-    }
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-
-    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-
-		return new JwtResponse(jwt, refreshToken.getToken());
-  }
-
-  @Override
-  public void logout() {
-    UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
-    if (!userExist.isPresent()) {
-      return;
-    }
-
-    User user = userExist.get();
-    // Blacklist old accessToken if exist
-    jwtUtils.blacklistAccesstoken(user.getCurrentAccessToken());
-    user.setAuthenticated(false);
-    user.setCurrentAccessToken(null);
-    userDao.save(user);
-
-    refreshTokenService.deleteByUserId(user.getId());
-  }
-
-  @Override
-  public JwtResponse refreshToken(TokenRefreshRequest request) {
-    String requestRefreshToken = request.getRefreshToken();
-
-    return refreshTokenService.findByToken(requestRefreshToken)
-      .map(refreshTokenService::verifyExpiration)
-      .map(RefreshToken::getUser)
-      .map(user -> {
-        User userDetails = validateCompteUser(user.getUsername(), request.getNumeroEmei());
-        if(userDetails == null) {
-          return null;
+        User userDetails = validateCompteUser(loginRequest.getUsername(), loginRequest.getNumeroEmei());
+        if (userDetails == null) {
+            return null;
         }
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+        return new JwtResponse(jwt, refreshToken.getToken());
+    }
+
+    @Override
+    public void logout() {
+        UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
+        if (!userExist.isPresent()) {
+            return;
+        }
+
+        User user = userExist.get();
+        // Blacklist old accessToken if exist
+        jwtUtils.blacklistAccesstoken(user.getCurrentAccessToken());
         user.setAuthenticated(false);
-        String token = jwtUtils.generateJwtTokenFromUser(user);
-        return new JwtResponse(token, requestRefreshToken);
-      })
-      .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-        "Refresh token is not not found!"));
-  }
+        user.setCurrentAccessToken(null);
+        userDao.save(user);
 
-  @Override
-  public User validateCompteUser(String username, String numeroEmei) {
-    Optional<User> userExist = userDao.findByUsername(username);
-
-    if(!userExist.isPresent() || userExist.get().getStatut() == -1) {
-      return null;
+        refreshTokenService.deleteByUserId(user.getId());
     }
 
-    User user = userExist.get();
+    @Override
+    public JwtResponse refreshToken(TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
 
-    for (Compte compte : user.getInfosPerso().getComptes()) {
-      boolean enroleur = compte.getType().equals(ECompteType.COMPTE_ADMINISTRATEUR) && compte.getRole() != null && compte.getRole().hasPrivilegeAction("GESTION_ABONNEMENTS", "CREATE");
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    User userDetails = validateCompteUser(user.getUsername(), request.getNumeroEmei());
+                    if (userDetails == null) {
+                        return null;
+                    }
 
-      if (compte.isDeleted() || (numeroEmei != null && !numeroEmei.isEmpty() && !compte.getType().equals(ECompteType.COMPTE_COURSIER) && !enroleur )) {
-        continue;
-      }
-
-      if (
-        (numeroEmei == null && compte.getType().equals(ECompteType.COMPTE_COURSIER)) ||
-        (numeroEmei != null && !numeroEmei.isEmpty() && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei() == null || compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei)))
-      ) {
-        break;
-      }
-
-      return user;
+                    user.setAuthenticated(false);
+                    String token = jwtUtils.generateJwtTokenFromUser(user);
+                    return new JwtResponse(token, requestRefreshToken);
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not not found!"));
     }
 
-    return null;
-  }
+    @Override
+    public User validateCompteUser(String username, String numeroEmei) {
+        Optional<User> userExist = userDao.findByUsername(username);
+
+        if (!userExist.isPresent() || userExist.get().getStatut() == -1) {
+            return null;
+        }
+
+        User user = userExist.get();
+
+        for (Compte compte : user.getInfosPerso().getComptes()) {
+            boolean enroleur = compte.getType().equals(ECompteType.COMPTE_ADMINISTRATEUR) && compte.getRole() != null && compte.getRole().hasPrivilegeAction("GESTION_ABONNEMENTS", "CREATE");
+
+            if (compte.isDeleted() || (numeroEmei != null && !numeroEmei.isEmpty() && !compte.getType().equals(ECompteType.COMPTE_COURSIER) && !enroleur)) {
+                continue;
+            }
+
+            if (
+                    (numeroEmei == null && compte.getType().equals(ECompteType.COMPTE_COURSIER)) ||
+                            (numeroEmei != null && !numeroEmei.isEmpty() && compte.getType().equals(ECompteType.COMPTE_COURSIER) && (compte.getNumeroEmei() == null || compte.getNumeroEmei().isEmpty() || !compte.getNumeroEmei().equals(numeroEmei)))
+            ) {
+                break;
+            }
+
+            return user;
+        }
+
+        return null;
+    }
 }
