@@ -6,12 +6,15 @@ public class SmsColisLivreDto {
 
     private String entrepriseId;
 
+    private String numeroCommande;
+
     public SmsColisLivreDto() {
     }
 
-    public SmsColisLivreDto(String particulierId, String entrepriseId) {
+    public SmsColisLivreDto(String particulierId, String entrepriseId, String numeroCommande) {
         this.particulierId = particulierId;
         this.entrepriseId = entrepriseId;
+        this.numeroCommande = numeroCommande;
     }
 
     public String getParticulierId() {
@@ -28,5 +31,13 @@ public class SmsColisLivreDto {
 
     public void setEntrepriseId(String entrepriseId) {
         this.entrepriseId = entrepriseId;
+    }
+
+    public String getNumeroCommande() {
+        return numeroCommande;
+    }
+
+    public void setNumeroCommande(String numeroCommande) {
+        this.numeroCommande = numeroCommande;
     }
 }

@@ -47,8 +47,8 @@ public class SmsColisLivreListener {
         Compte compte = mongoTemplate.aggregate(aggregation, Compte.class, Compte.class).getUniqueMappedResult();
 
         if (compte != null && compte.getId() != null) {
-            String smsText = String.format("Bonjour %s, votre colis vient d'être livré.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
-                    compte.getUserInfos().getNomComplet());
+            String smsText = String.format("Bonjour %s, votre colis n°%s vient d'être livré.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
+                    compte.getUserInfos().getNomComplet(), smsColisLivreDto.getNumeroCommande());
 
             SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Colis livre", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
 
