@@ -7,70 +7,64 @@ import javax.validation.constraints.NotNull;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 
 public class InfosPersoAvecCompteRequest extends InfosPersoRequest {
-  private String entrepriseId;
+    private String entrepriseId;
 
-  private String roleId;
+    private String roleId;
 
-  private String numeroEmei;
+    private String numeroEmei;
 
-  private String numeroReference;
+    @NotNull(message = "Le statut est obligatoire.")
+    private int statut;
 
-  @NotNull(message = "Le statut est obligatoire.")
-  private int statut;
+    private Set<EServiceConciergeType> serviceConciergeries;
 
-  private Set<EServiceConciergeType> serviceConciergeries;
+    public String getEntrepriseId() {
+        return this.entrepriseId;
+    }
 
-  public String getEntrepriseId() {
-    return this.entrepriseId;
-  }
+    public void setEntrepriseId(String entrepriseId) {
+        this.entrepriseId = entrepriseId;
+    }
 
-  public void setEntrepriseId(String entrepriseId) {
-    this.entrepriseId = entrepriseId;
-  }
+    public String getRoleId() {
+        return this.roleId;
+    }
 
-  public String getRoleId() {
-    return this.roleId;
-  }
+    public String getNumeroEmei() {
+        return this.numeroEmei;
+    }
 
-  public String getNumeroEmei() {
-    return this.numeroEmei;
-  }
+    public int getStatut() {
+        return this.statut;
+    }
 
-  public String getNumeroReference() {
-    return this.numeroReference;
-  }
+    public void setStatut(int statut) {
+        this.statut = statut;
+    }
 
-  public int getStatut() {
-    return this.statut;
-  }
+    public Set<EServiceConciergeType> getServiceConciergeries() {
+        return this.serviceConciergeries;
+    }
 
-  public void setStatut(int statut) {
-    this.statut = statut;
-  }
+    public void setServiceConciergeries(Set<EServiceConciergeType> serviceConciergeries) {
+        this.serviceConciergeries = serviceConciergeries;
+    }
 
-  public Set<EServiceConciergeType> getServiceConciergeries() {
-    return this.serviceConciergeries;
-  }
+    public boolean valideFieldsCompteAgent() {
+        if (
+                (this.getNumeroEmei() == null || this.getNumeroEmei().isEmpty()) ||
+                        (this.getNumeroPermis() == null || this.getNumeroPermis().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty())
+        ) return false;
 
-  public void setServiceConciergeries(Set<EServiceConciergeType> serviceConciergeries) {
-    this.serviceConciergeries = serviceConciergeries;
-  }
+        return true;
+    }
 
-  public boolean valideFieldsCompteAgent() {
-    if (
-      (this.getNumeroEmei() == null || this.getNumeroEmei().isEmpty()) || (this.getNumeroReference() == null || this.getNumeroReference().isEmpty()) ||
-      (this.getNumeroPermis() == null || this.getNumeroPermis().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty())
-    ) return false;
+    public boolean valideFieldsComptePrestataire() {
+        if (
+                (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty()) ||
+                        this.getServiceConciergeries() == null || this.getServiceConciergeries().isEmpty()
+        ) return false;
 
-    return true;
-  }
-  
-  public boolean valideFieldsComptePrestataire() {
-    if (
-      (this.getNumeroReference() == null || this.getNumeroReference().isEmpty()) || (this.getNumeroPiece() == null || this.getNumeroPiece().isEmpty()) ||
-      this.getServiceConciergeries() == null || this.getServiceConciergeries().isEmpty()
-    ) return false;
-
-    return true;
-  }
+        return true;
+    }
 }
