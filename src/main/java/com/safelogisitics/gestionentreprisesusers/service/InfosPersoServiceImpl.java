@@ -33,6 +33,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
+import com.safelogisitics.gestionentreprisesusers.util.ClientNumberGeneratorUtils;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.bson.Document;
@@ -697,6 +698,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
+    if (id == null) compte.setNumeroReference(ClientNumberGeneratorUtils.generateNumber("600", 4, entreprise.getNumeroCarte()));
+
     compte.setStatut(request.getStatut());
     compte.setEntreprise(entreprise);
     compte.setEntrepriseUser(true);
@@ -724,7 +727,9 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
 
     compte.setStatut(1);
+    compte.setNumeroReference(ClientNumberGeneratorUtils.generateNumber("300", 3, null));
     compteDao.save(compte);
+
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
 

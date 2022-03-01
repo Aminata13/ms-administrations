@@ -126,7 +126,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     private Query getQueryCarte(String typeAbonnement) {
         String typeAbonnementId = typeAbonnementDao.findByLibelle(typeAbonnement).get().getId();
 
-        Query query = new Query(Criteria.where("typeAbonnementId").is(typeAbonnementId));
+        Query query = new Query(Criteria.where("typeAbonnementId").is(typeAbonnementId).andOperator(Criteria.where("active").is(true)));
 
         return query;
     }
