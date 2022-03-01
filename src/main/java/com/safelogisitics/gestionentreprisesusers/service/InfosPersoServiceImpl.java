@@ -416,13 +416,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public InfosPerso createOrUpdateCompteAdministrateur(String id, InfosPersoAvecCompteRequest request) { // chnager
-    if (request.getNumeroReference() == null || request.getNumeroReference().isEmpty())
-      throw new IllegalArgumentException("Matricule est obligatoire!");
-
-    Optional<Compte> _compte = compteDao.findByNumeroReference(request.getNumeroReference());
-
-    if (_compte.isPresent() && (id == null || !_compte.get().getInfosPersoId().equals(id)))
-      throw new IllegalArgumentException("Ce matricule existe déjà!");
 
     if (request.getRoleId() == null || request.getRoleId().isEmpty())
       throw new IllegalArgumentException("Role est requis!");
@@ -447,7 +440,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     compte.setRole(role);
     compte.setStatut(request.getStatut());
-    compte.setNumeroReference(request.getNumeroReference());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
@@ -473,14 +465,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     final List<Criteria> listCriteria = new ArrayList<>();
 
     listCriteria.add(Criteria.where("numeroEmei").is(request.getNumeroEmei()));
-    listCriteria.add(Criteria.where("numeroReference").is(request.getNumeroReference()));
     query.addCriteria(new Criteria().orOperator(listCriteria.toArray(new Criteria[listCriteria.size()])));
     query.addCriteria(Criteria.where("deleted").is(false));
 
-    // Validation de l'unicité des infos de la compte agent
+    // Validation de l'unicité des infos du compte de l'agent
     Collection<Compte> _comptes = mongoTemplate.find(query, Compte.class);
     if (_comptes != null && _comptes.size() > 0 && (_comptes.size() > 1 || (id == null && _comptes.size() == 1) || (id != null && !_comptes.iterator().next().getInfosPersoId().equals(id))))
-      throw new IllegalArgumentException("Numéro emei ou référence déjà utilisé!");
+      throw new IllegalArgumentException("Numéro emei déjà utilisé!");
 
     InfosPerso infosPerso = null;
 
@@ -494,7 +485,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_COURSIER).get();
 
     compte.setNumeroEmei(request.getNumeroEmei());
-    compte.setNumeroReference(request.getNumeroReference());
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
@@ -624,7 +614,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     compte.setStatut(request.getStatut());
     compte.setServiceConciergeries(request.getServiceConciergeries());
-    compte.setNumeroReference(request.getNumeroReference());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
@@ -698,7 +687,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
-    if (id == null) compte.setNumeroReference(ClientNumberGeneratorUtils.generateNumber("600", 4, entreprise.getNumeroCarte()));
+    if (id == null) compte.setNumeroReference(ClientNumberGeneratorUtils.generateReference(entreprise.getNumeroCarte(), null));
 
     compte.setStatut(request.getStatut());
     compte.setEntreprise(entreprise);
@@ -727,7 +716,6 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     Compte compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), ECompteType.COMPTE_PARTICULIER).get();
 
     compte.setStatut(1);
-    compte.setNumeroReference(ClientNumberGeneratorUtils.generateNumber("300", 3, null));
     compteDao.save(compte);
 
     infosPerso.updateCompte(compte);
@@ -1025,6 +1013,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     }
 
     compte.setDeleted(false);
+    compte.setNumeroReference(ClientNumberGeneratorUtils.generateReference(null,  compteType));
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoDao.save(infosPerso);
