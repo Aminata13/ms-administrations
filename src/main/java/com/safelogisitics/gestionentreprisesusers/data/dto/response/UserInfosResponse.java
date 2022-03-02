@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
 
 public class UserInfosResponse {
@@ -41,7 +41,7 @@ public class UserInfosResponse {
 
   private Abonnement abonnement;
 
-  public UserInfosResponse(InfosPerso infosPerso, Abonnement abonnement, User user) {
+  public UserInfosResponse(InfosPersoModel infosPerso, Abonnement abonnement, User user) {
     this.id = infosPerso.getId();
     this.prenom = infosPerso.getPrenom();
     this.nom = infosPerso.getNom();

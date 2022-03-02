@@ -2,7 +2,7 @@ package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.util.Collection;
 
-import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.EvenementDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.EvenementDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;
 
 public interface EvenementService {

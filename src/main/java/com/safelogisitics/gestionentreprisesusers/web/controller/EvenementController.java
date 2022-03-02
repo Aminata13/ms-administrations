@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
-import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.EvenementDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.EvenementDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;
 import com.safelogisitics.gestionentreprisesusers.service.EvenementService;
 

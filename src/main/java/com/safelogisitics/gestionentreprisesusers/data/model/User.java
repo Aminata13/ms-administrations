@@ -16,7 +16,7 @@ public class User extends AuditMetadata {
 
   @DBRef
   @Field(value = "infosPerso")
-  private InfosPerso infosPerso;
+  private InfosPersoModel infosPerso;
 
   @Field(value = "username")
   private String username;
@@ -42,7 +42,7 @@ public class User extends AuditMetadata {
     this.dateCreation = new Date();
   }
 
-  public User(InfosPerso infosPerso, String username, String password, int statut) {
+  public User(InfosPersoModel infosPerso, String username, String password, int statut) {
     this.infosPerso = infosPerso;
     this.username = username;
     this.password = password;
@@ -59,11 +59,11 @@ public class User extends AuditMetadata {
     this.id = id;
   }
 
-  public InfosPerso getInfosPerso() {
+  public InfosPersoModel getInfosPerso() {
     return infosPerso;
   }
 
-  public void setInfosPerso(InfosPerso infosPerso) {
+  public void setInfosPerso(InfosPersoModel infosPerso) {
     this.infosPerso = infosPerso;
   }
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETypePartenariat;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 
 public class EntrepriseInfosResponse {
   
@@ -25,7 +25,7 @@ public class EntrepriseInfosResponse {
 
   private String raisonSociale;
 
-  private InfosPerso gerant;
+  private InfosPersoModel gerant;
 
   private String email;
 
@@ -39,7 +39,7 @@ public class EntrepriseInfosResponse {
 
   private String logo;
 
-  public EntrepriseInfosResponse(Entreprise entreprise, InfosPerso gerant, Abonnement abonnement) {
+  public EntrepriseInfosResponse(Entreprise entreprise, InfosPersoModel gerant, Abonnement abonnement) {
     this.id = entreprise.getId();
     this.typeEntreprise = entreprise.getTypeEntreprise();
     this.domaineActivite = entreprise.getDomaineActivite();

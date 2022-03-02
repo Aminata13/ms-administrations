@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.threeten.bp.LocalDateTime;
 
 /*
 Lister => READ, Créer => CREATE, Editer => UPDATE, Valider => VALIDATE, Affecter => ASSIGN, Tracker => TRACK
@@ -76,17 +77,17 @@ public class Compte extends AuditMetadata {
   @Field(value = "deleted")
   private boolean deleted;
 
-  private InfosPerso userInfos;
+  private InfosPersoModel userInfos;
 
   private Abonnement abonnement;
 
   @Field(value = "dateCreation")
-  private Date dateCreation;
+  private LocalDateTime dateCreation;
 
   public Compte() {
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
   }
 
   public Compte(ECompteType type, String infosPersoId) {
@@ -94,7 +95,7 @@ public class Compte extends AuditMetadata {
     this.infosPersoId = infosPersoId;
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
     if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
       this.services.add(EServiceType.PRESTATION);
     }
@@ -106,7 +107,7 @@ public class Compte extends AuditMetadata {
     this.statut = statut;
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
     if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
       this.services.add(EServiceType.PRESTATION);
     }
@@ -119,7 +120,7 @@ public class Compte extends AuditMetadata {
     this.statut = statut;
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
     if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
       this.services.add(EServiceType.PRESTATION);
     }
@@ -133,7 +134,7 @@ public class Compte extends AuditMetadata {
     this.statut = statut;
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
     if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
       this.services.add(EServiceType.PRESTATION);
     }
@@ -149,7 +150,7 @@ public class Compte extends AuditMetadata {
     this.statut = statut;
     this.deleted = false;
     this.entrepriseUser = false;
-    this.dateCreation = new Date();
+    this.dateCreation = LocalDateTime.now();
     if (type.equals(ECompteType.COMPTE_ENTREPRISE)) {
       this.services.add(EServiceType.PRESTATION);
     }
@@ -284,11 +285,11 @@ public class Compte extends AuditMetadata {
     this.deleted = deleted;
   }
 
-  public InfosPerso getUserInfos() {
+  public InfosPersoModel getUserInfos() {
     return this.userInfos;
   }
 
-  public void setUserInfos(InfosPerso userInfos) {
+  public void setUserInfos(InfosPersoModel userInfos) {
     this.userInfos = userInfos;
   }
 
@@ -300,11 +301,11 @@ public class Compte extends AuditMetadata {
     this.abonnement = abonnement;
   }
 
-  public Date getDateCreation() {
+  public LocalDateTime getDateCreation() {
     return this.dateCreation;
   }
 
-  public void setDateCreation(Date dateCreation) {
+  public void setDateCreation(LocalDateTime dateCreation) {
     this.dateCreation = dateCreation;
   }
 

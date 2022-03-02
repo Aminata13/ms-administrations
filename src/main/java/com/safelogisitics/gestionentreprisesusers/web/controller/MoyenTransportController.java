@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
-import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.MoyenTransportSearchDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.MoyenTransportSearchDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
 import com.safelogisitics.gestionentreprisesusers.service.MoyenTransportService;
 

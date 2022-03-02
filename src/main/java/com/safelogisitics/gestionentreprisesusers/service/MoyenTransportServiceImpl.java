@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.MoyenTransportDao;
-import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.MoyenTransportSearchDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.MoyenTransportSearchDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
 
 import org.springframework.beans.factory.annotation.Autowired;

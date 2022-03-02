@@ -4,6 +4,7 @@
     "reduction": 20,
     "prix": 2000,
     "statut": 1,
+    "type": "SILVER",
     "icon": "silver",
     "services": [
       "LIVRAISON"
@@ -14,6 +15,7 @@
     "reduction": 10,
     "prix": 5000,
     "statut": 1,
+    "type": "GOLD",
     "icon": "gold",
     "services": [
       "LIVRAISON",
@@ -25,6 +27,7 @@
     "reduction": 1,
     "prix": 10000,
     "statut": 1,
+    "type": "PLATINUM",
     "icon": "platinum",
     "services": [
       "LIVRAISON",

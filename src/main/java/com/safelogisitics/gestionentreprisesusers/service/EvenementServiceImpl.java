@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.EvenementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeEvenementDao;
-import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.EvenementDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.EvenementDto;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Evenement;

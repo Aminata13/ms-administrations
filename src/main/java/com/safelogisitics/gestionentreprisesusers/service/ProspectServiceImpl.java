@@ -20,7 +20,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.EProspecteurType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETypeProspect;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Prospect;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
@@ -172,7 +172,7 @@ public class ProspectServiceImpl implements ProspectService {
             if (prospectRequest.getInfosParticulier() == null)
                 throw new IllegalArgumentException("Veuillez remplir les informations du client");
 
-            prospect.setInfosParticulier(new InfosPerso(
+            prospect.setInfosParticulier(new InfosPersoModel(
                     prospectRequest.getInfosParticulier().getPrenom(),
                     prospectRequest.getInfosParticulier().getNom(),
                     prospectRequest.getInfosParticulier().getEmail(),
@@ -255,7 +255,7 @@ public class ProspectServiceImpl implements ProspectService {
         ) throw new IllegalArgumentException("Ce ninéa existe déjà");
 
         if (prospectRequest.getType().equals(ETypeProspect.PARTICULIER)) {
-            prospect.setInfosParticulier(new InfosPerso(
+            prospect.setInfosParticulier(new InfosPersoModel(
                     prospectRequest.getInfosParticulier().getPrenom(),
                     prospectRequest.getInfosParticulier().getNom(),
                     prospectRequest.getInfosParticulier().getEmail(),

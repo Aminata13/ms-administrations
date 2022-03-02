@@ -22,7 +22,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
@@ -146,7 +146,7 @@ public class AbonnementController {
   @PostMapping("/add-by-agent")
   @PostAuthorize("hasRole('COMPTE_ADMINISTRATEUR') or hasRole('COMPTE_COURSIER')")
 	public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody EnrollmentRequest request) {
-    InfosPerso infosPerso = infosPersoService.newEnrollment(request);
+    InfosPersoModel infosPerso = infosPersoService.newEnrollment(request);
     if (infosPerso == null)
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", "Informaions d'inscription incomplet"));
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);

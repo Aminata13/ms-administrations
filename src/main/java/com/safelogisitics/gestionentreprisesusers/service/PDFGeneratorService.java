@@ -27,7 +27,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
 
 @Service
@@ -58,7 +58,7 @@ public class PDFGeneratorService {
       String subtitle = "";
       String solde = "";
       if (idClient != null) {
-        InfosPerso client = infosPersoDao.findById(idClient).get();
+        InfosPersoModel client = infosPersoDao.findById(idClient).get();
         subtitle = String.format("Nom du client: %s \nTéléphone: %s", client.getNomComplet(), client.getTelephone());
         Optional<Abonnement> abonnement = abonnementDao.findByCompteClientInfosPersoIdAndDeletedIsFalse(idClient);
         if (abonnement.isPresent()) {

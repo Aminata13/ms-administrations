@@ -10,7 +10,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoAve
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
@@ -81,7 +81,7 @@ public class EntrepriseProfilController {
       ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     request.setEntrepriseId(compte.getEntreprise().getId());
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteEntreprise(null, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteEntreprise(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -94,7 +94,7 @@ public class EntrepriseProfilController {
       ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Accès refusé"));
 
     request.setEntrepriseId(compte.getEntreprise().getId());
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteEntreprise(id, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteEntreprise(id, request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(infosPerso);
 	}
 

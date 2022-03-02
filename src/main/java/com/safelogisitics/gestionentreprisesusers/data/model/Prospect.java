@@ -33,7 +33,7 @@ public class Prospect extends AuditMetadata {
   private Entreprise infosEntreprise;
 
   @Field(value = "infosParticulier")
-  private InfosPerso infosParticulier;
+  private InfosPersoModel infosParticulier;
 
   @Field(value = "personneRencontrer")
   private Map<String,String> personneRencontrer;
@@ -120,11 +120,11 @@ public class Prospect extends AuditMetadata {
     this.infosEntreprise = infosEntreprise;
   }
 
-  public InfosPerso getInfosParticulier() {
+  public InfosPersoModel getInfosParticulier() {
     return this.infosParticulier;
   }
 
-  public void setInfosParticulier(InfosPerso infosParticulier) {
+  public void setInfosParticulier(InfosPersoModel infosParticulier) {
     this.infosParticulier = infosParticulier;
   }
 

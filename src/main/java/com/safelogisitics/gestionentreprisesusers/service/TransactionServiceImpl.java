@@ -36,7 +36,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.data.model.PushNotification;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
@@ -251,7 +251,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     Abonnement abonnement = abonnementExist.get();
-    InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
     String reference = genererReferenceTransction(ETransactionAction.RECHARGEMENT);
 
@@ -346,7 +346,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     Abonnement abonnement = abonnementExist.get();
 
-    InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
     Optional<PaiementValidation> oldPaiementValidation = paiementValidationDao.findByNumeroCommande(paiementValidationRequest.getNumeroCommande());
 
@@ -391,7 +391,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     Abonnement abonnement = abonnementDao.findByNumeroCarte(paiementValidation.getNumeroCarte()).get();
 
-    InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

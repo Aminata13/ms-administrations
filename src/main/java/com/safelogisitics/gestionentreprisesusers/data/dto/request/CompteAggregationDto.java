@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
+package com.safelogisitics.gestionentreprisesusers.data.dto.request;
 
 import java.util.List;
 

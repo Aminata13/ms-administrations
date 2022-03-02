@@ -17,7 +17,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +120,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
     infosAgentRequest.setEntrepriseId(entreprise.getId());
     infosAgentRequest.setStatut(1);
-    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
+    InfosPersoModel gerant = infosPersoService.createOrUpdateCompteEntreprise(null, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
     entreprise.setGerantId(compte.getId());
@@ -177,7 +177,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     if (entreprise.getGerantId() != null  && compteDao.existsById(entreprise.getGerantId())) {
       id = compteDao.findById(entreprise.getGerantId()).get().getInfosPersoId();
     }
-    InfosPerso gerant = infosPersoService.createOrUpdateCompteEntreprise(id, infosAgentRequest);
+    InfosPersoModel gerant = infosPersoService.createOrUpdateCompteEntreprise(id, infosAgentRequest);
     Compte compte = compteDao.findByInfosPersoIdAndType(gerant.getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
     entreprise.setGerantId(compte.getId());

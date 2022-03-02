@@ -13,7 +13,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Role;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
 
@@ -54,16 +54,16 @@ public class AdministrateurFixture implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    InfosPerso[] newInfosPersos = objectMapper.readValue(getClass()
-      .getResourceAsStream("/data/infosPerso.json"), InfosPerso[].class);
+    InfosPersoModel[] newInfosPersos = objectMapper.readValue(getClass()
+      .getResourceAsStream("/data/infosPerso.json"), InfosPersoModel[].class);
     
     Collection<Map<String, Object>>  administrateurPrivileges = objectMapper.readValue(getClass()
       .getResourceAsStream("/data/administrateur-privileges.json"), new TypeReference<Collection<Map<String, Object>>>(){});
 
     Role role = this.handleRoleData(administrateurPrivileges);
     
-    for (InfosPerso newInfosPerso : newInfosPersos) {
-      InfosPerso infosPerso = this.getInfosPerso(newInfosPerso);
+    for (InfosPersoModel newInfosPerso : newInfosPersos) {
+      InfosPersoModel infosPerso = this.getInfosPerso(newInfosPerso);
 
       Compte compte = this.handleCompteData(infosPerso.getId(), role);
 
@@ -107,9 +107,9 @@ public class AdministrateurFixture implements CommandLineRunner {
     return compte;
   }
 
-  private InfosPerso getInfosPerso(InfosPerso newInfosPerso) {
-    InfosPerso infosPerso = null;
-    Optional<InfosPerso> _infosPerso = infosPersoDao.findByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone());
+  private InfosPersoModel getInfosPerso(InfosPersoModel newInfosPerso) {
+    InfosPersoModel infosPerso = null;
+    Optional<InfosPersoModel> _infosPerso = infosPersoDao.findByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone());
 
     if (!_infosPerso.isPresent()) {
       infosPersoDao.save(newInfosPerso);

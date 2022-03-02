@@ -20,7 +20,7 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
@@ -86,7 +86,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     if (!criteriaInfosPerso.isEmpty()) {
       queryInfosPerso.addCriteria(new Criteria().andOperator(criteriaInfosPerso.toArray(new Criteria[criteriaInfosPerso.size()])));
-      infosPersoIds = mongoTemplate.find(queryInfosPerso, InfosPerso.class).stream().map(infosPerso -> infosPerso.getId()).collect(Collectors.toList());
+      infosPersoIds = mongoTemplate.find(queryInfosPerso, InfosPersoModel.class).stream().map(infosPerso -> infosPerso.getId()).collect(Collectors.toList());
       if (infosPersoIds.size() <= 0)
         return PageableExecutionUtils.getPage(
           new ArrayList<Abonnement>(), 

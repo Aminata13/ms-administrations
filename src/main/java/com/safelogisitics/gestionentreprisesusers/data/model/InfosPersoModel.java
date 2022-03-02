@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "infosPersos")
-public class InfosPerso extends AuditMetadata {
+public class InfosPersoModel extends AuditMetadata {
 
   @Id
   private String id;
@@ -60,13 +60,18 @@ public class InfosPerso extends AuditMetadata {
   @Field(value = "comptes")
   private Set<Compte> comptes = new HashSet<>();
 
+  private Compte compte;
+
+  private Set<Compte> listComptes;
+
+  private Abonnement abonnement;
+
   @Field(value = "dateCreation")
   private LocalDateTime dateCreation = LocalDateTime.now();
 
-  public InfosPerso() {
-  }
+  public InfosPersoModel() {}
 
-  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance) {
+  public InfosPersoModel(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance) {
     this.prenom = prenom;
     this.nom = nom;
     this.email = email;
@@ -75,7 +80,7 @@ public class InfosPerso extends AuditMetadata {
     this.dateNaissance = dateNaissance;
   }
 
-  public InfosPerso(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece, String photoProfil) {
+  public InfosPersoModel(String prenom, String nom, String email, String telephone, String adresse, LocalDate dateNaissance, String numeroPermis, String numeroPiece, String photoProfil) {
     this.prenom = prenom;
     this.nom = nom;
     this.email = email;
@@ -194,6 +199,35 @@ public class InfosPerso extends AuditMetadata {
       this.comptes.remove(compte);
     }
     this.comptes.add(compte);
+  }
+
+  public Compte getCompte() {
+    return this.compte;
+  }
+
+  public void setCompte(Compte compte) {
+    this.compte = compte;
+  }
+
+  public void setComptes(Set<Compte> comptes) {
+    this.comptes = comptes;
+  }
+
+  public Set<Compte> getListComptes() {
+    return this.listComptes;
+  }
+
+  public void setListComptes(Set<Compte> listComptes) {
+    this.listComptes = listComptes;
+  }
+
+
+  public Abonnement getAbonnement() {
+    return this.abonnement;
+  }
+
+  public void setAbonnement(Abonnement abonnement) {
+    this.abonnement = abonnement;
   }
 
   public LocalDateTime getDateCreation() {

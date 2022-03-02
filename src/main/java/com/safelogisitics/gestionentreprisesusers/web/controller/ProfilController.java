@@ -12,7 +12,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosRes
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.data.model.AffectationEquipement;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPerso;
+import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class ProfilController {
   @PostMapping("/personnels/add")
   @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'CREATE')")
 	public ResponseEntity<?> addPersonnel(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(null, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -93,7 +93,7 @@ public class ProfilController {
   @PutMapping("/personnels/update/{id}")
   @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'UPDATE')")
 	public ResponseEntity<?> updatePersonnel(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(id, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteAdministrateur(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -120,7 +120,7 @@ public class ProfilController {
   @PostMapping("/agents/add")
   @PreAuthorize("hasPermission('GESTION_AGENTS', 'CREATE')")
 	public ResponseEntity<?> addAgent(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(null, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteAgent(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -128,7 +128,7 @@ public class ProfilController {
   @PutMapping("/agents/update/{id}")
   @PreAuthorize("hasPermission('GESTION_AGENTS', 'UPDATE')")
 	public ResponseEntity<?> updateAgent(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateCompteAgent(id, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateCompteAgent(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -136,7 +136,7 @@ public class ProfilController {
   @PutMapping("/agents/equiper/{id}")
   @PreAuthorize("hasPermission('GESTION_MATERIELS', 'ASSIGN')")
 	public ResponseEntity<?> equiperAgent(@PathVariable(value = "id") String id, @Valid @RequestBody Set<AffectationEquipement> request) {
-    InfosPerso infosPerso = infosPersoService.equiperAgent(id, request);
+    InfosPersoModel infosPerso = infosPersoService.equiperAgent(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -144,7 +144,7 @@ public class ProfilController {
   @PutMapping("/agents/affecter-moyen-transport/{id}")
   @PreAuthorize("hasPermission('GESTION_MATERIELS', 'ASSIGN')")
 	public ResponseEntity<?> affecterMoyenTransportAgent(@PathVariable(value = "id") String id, @Valid @RequestBody String moyenTransportId) {
-    InfosPerso infosPerso = infosPersoService.affecterMoyenTransportAgent(id, moyenTransportId);
+    InfosPersoModel infosPerso = infosPersoService.affecterMoyenTransportAgent(id, moyenTransportId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -171,7 +171,7 @@ public class ProfilController {
   @PostMapping("/prestataires/add")
   @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'CREATE')")
 	public ResponseEntity<?> addPrestataire(@Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(null, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateComptePrestataire(null, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
@@ -179,7 +179,7 @@ public class ProfilController {
   @PutMapping("/prestataires/update/{id}")
   @PreAuthorize("hasPermission('GESTION_PRESTATAIRES', 'UPDATE')")
 	public ResponseEntity<?> updatePrestataire(@PathVariable(value = "id") String id, @Valid @RequestBody InfosPersoAvecCompteRequest request) {
-    InfosPerso infosPerso = infosPersoService.createOrUpdateComptePrestataire(id, request);
+    InfosPersoModel infosPerso = infosPersoService.createOrUpdateComptePrestataire(id, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 
