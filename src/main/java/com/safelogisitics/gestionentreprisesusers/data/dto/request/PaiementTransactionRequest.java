@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EPaimentValidation;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 
@@ -17,6 +18,8 @@ public class PaiementTransactionRequest {
 
   @NotBlank(message = "Le code de validation est obligatoire.")
   private String codeValidation;
+
+  private EPaimentValidation paiementValidation = EPaimentValidation.SMS_VALIDATION;
 
   @DecimalMin(value = "1000.0", message = "Montant doit être supérieur ou egal à 1000")
   private BigDecimal montant;
@@ -45,6 +48,14 @@ public class PaiementTransactionRequest {
 
   public String getCodeValidation() {
     return this.codeValidation.replaceAll("\\D+","");
+  }
+
+  public EPaimentValidation getPaiementValidation() {
+    return this.paiementValidation;
+  }
+
+  public void setPaiementValidation(EPaimentValidation paiementValidation) {
+    this.paiementValidation = paiementValidation;
   }
 
   public BigDecimal getMontant() {

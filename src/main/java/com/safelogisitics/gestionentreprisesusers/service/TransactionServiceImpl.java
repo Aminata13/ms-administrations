@@ -32,6 +32,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTrans
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EPaimentValidation;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
@@ -373,28 +374,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Transaction createPaiementTransaction(PaiementTransactionRequest transactionRequest) {
-    Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
-      transactionRequest.getCodeValidation(), transactionRequest.getNumeroCommande());
-
-    if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true || !_paiementValidation.get().getNumeroCarte().equals(transactionRequest.getNumeroCarte())) {
-      throw new UsernameNotFoundException("Code de validation invalide.");
-    }
-
-    PaiementValidation paiementValidation = _paiementValidation.get();
-
-    LocalDateTime dateNow = LocalDateTime.now();
-    LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(5);
-
-    if (!dateNow.isBefore(previous)) {
-      throw new UsernameNotFoundException("Code de validation expirée.");
-    }
-
-    Abonnement abonnement = abonnementDao.findByNumeroCarte(paiementValidation.getNumeroCarte()).get();
-
-    InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
-
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     Optional<Compte> compteClientExist = null;
 
     if (transactionRequest.getClientId() != null) {
@@ -412,6 +392,51 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     Compte compteClient = compteClientExist.get();
+
+    Abonnement abonnement = null;
+
+    if (transactionRequest.getPaiementValidation().equals(EPaimentValidation.SMS_VALIDATION)) {
+      Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
+      transactionRequest.getCodeValidation(), transactionRequest.getNumeroCommande());
+
+      if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true || !_paiementValidation.get().getNumeroCarte().equals(transactionRequest.getNumeroCarte())) {
+        throw new UsernameNotFoundException("Code de validation invalide.");
+      }
+
+      PaiementValidation paiementValidation = _paiementValidation.get();
+
+      LocalDateTime dateNow = LocalDateTime.now();
+      LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(5);
+
+      if (!dateNow.isBefore(previous)) {
+        throw new UsernameNotFoundException("Code de validation expirée.");
+      }
+
+      Optional<Abonnement> _abonnement = abonnementDao.findByNumeroCarte(paiementValidation.getNumeroCarte());
+      if (!_abonnement.isPresent()) {
+        throw new UsernameNotFoundException("Cette carte n'a pas d'abonnement.");
+      }
+      paiementValidation.setApprobation(true);
+
+      paiementValidationDao.save(paiementValidation);
+
+      abonnement = _abonnement.get();
+    } else {
+      Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
+
+      if (transactionRequest.getCodeValidation() == null || !userExist.isPresent() || !encoder.matches(transactionRequest.getCodeValidation(), userExist.get().getPassword()))
+        throw new UsernameNotFoundException("Mot de passe invalide!");
+
+      Optional<Abonnement> _abonnement = abonnementDao.findByCompteClientIdAndDeletedIsFalse(compteClient.getId());
+
+      if (!_abonnement.isPresent()) {
+        throw new UsernameNotFoundException("Vous n'avez pas d'abonnement.");
+      }
+
+      abonnement = _abonnement.get();
+    }
+
+    InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
 
     String reference = genererReferenceTransction(ETransactionAction.PAIEMENT);
 
@@ -451,10 +476,6 @@ public class TransactionServiceImpl implements TransactionService {
     transaction.setNumeroCommande(transactionRequest.getNumeroCommande());
 
     transactionDao.save(transaction);
-
-    paiementValidation.setApprobation(true);
-
-    paiementValidationDao.save(paiementValidation);
 
     String smsText;
     if (abonnement.getSolde().compareTo(BigDecimal.valueOf(1500)) == -1) {
