@@ -52,7 +52,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -324,7 +323,7 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
 
     if (transactionRequest.getAgentPassword() == null || !userExist.isPresent() || !encoder.matches(transactionRequest.getAgentPassword(), userExist.get().getPassword()))
-      throw new UsernameNotFoundException("Mot de passe invalide!");
+      throw new IllegalArgumentException("Mot de passe invalide!");
 
     ECompteType type = compteDao.existsByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_COURSIER) ? ECompteType.COMPTE_COURSIER : ECompteType.COMPTE_ADMINISTRATEUR;
 
@@ -388,7 +387,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     if (transactionDao.existsByNumeroCommande(transactionRequest.getNumeroCommande())) {
-      throw new UsernameNotFoundException("Cette commande est déjà payée.");
+      throw new IllegalArgumentException("Cette commande est déjà payée.");
     }
 
     Compte compteClient = compteClientExist.get();
@@ -397,10 +396,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     if (transactionRequest.getPaiementValidation().equals(EPaimentValidation.SMS_VALIDATION)) {
       Optional<PaiementValidation> _paiementValidation = paiementValidationDao.findByCodeValidationAndNumeroCommande(
-      transactionRequest.getCodeValidation(), transactionRequest.getNumeroCommande());
+      transactionRequest.getCodeValidation().replaceAll("\\D+",""), transactionRequest.getNumeroCommande());
 
       if (!_paiementValidation.isPresent() || _paiementValidation.get().getApprobation() == true || !_paiementValidation.get().getNumeroCarte().equals(transactionRequest.getNumeroCarte())) {
-        throw new UsernameNotFoundException("Code de validation invalide.");
+        throw new IllegalArgumentException("Code de validation invalide.");
       }
 
       PaiementValidation paiementValidation = _paiementValidation.get();
@@ -409,28 +408,29 @@ public class TransactionServiceImpl implements TransactionService {
       LocalDateTime previous = paiementValidation.getDateCreation().plusMinutes(5);
 
       if (!dateNow.isBefore(previous)) {
-        throw new UsernameNotFoundException("Code de validation expirée.");
+        throw new IllegalArgumentException("Code de validation expirée.");
       }
 
       Optional<Abonnement> _abonnement = abonnementDao.findByNumeroCarte(paiementValidation.getNumeroCarte());
       if (!_abonnement.isPresent()) {
-        throw new UsernameNotFoundException("Cette carte n'a pas d'abonnement.");
+        throw new IllegalArgumentException("Cette carte n'a pas d'abonnement.");
       }
+
+      abonnement = _abonnement.get();
+
       paiementValidation.setApprobation(true);
 
       paiementValidationDao.save(paiementValidation);
-
-      abonnement = _abonnement.get();
     } else {
       Optional<User> userExist = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId());
 
       if (transactionRequest.getCodeValidation() == null || !userExist.isPresent() || !encoder.matches(transactionRequest.getCodeValidation(), userExist.get().getPassword()))
-        throw new UsernameNotFoundException("Mot de passe invalide!");
+        throw new IllegalArgumentException("Mot de passe invalide!");
 
       Optional<Abonnement> _abonnement = abonnementDao.findByCompteClientIdAndDeletedIsFalse(compteClient.getId());
 
       if (!_abonnement.isPresent()) {
-        throw new UsernameNotFoundException("Vous n'avez pas d'abonnement.");
+        throw new IllegalArgumentException("Vous n'avez pas d'abonnement.");
       }
 
       abonnement = _abonnement.get();
@@ -454,7 +454,7 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setTotalPoints(abonnement.getPointGratuites());
     } else {
       if (transactionRequest.getMontant() == null) {
-        throw new UsernameNotFoundException("Montant invalide");
+        throw new IllegalArgumentException("Montant invalide");
       }
       if (abonnement.getSolde().compareTo(transactionRequest.getMontant()) == -1) {
         throw new IllegalArgumentException(String.format("Solde insuffisant, solde actuel:", abonnement.getSolde()));

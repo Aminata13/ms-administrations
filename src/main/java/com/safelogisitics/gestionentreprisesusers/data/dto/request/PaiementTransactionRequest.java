@@ -47,7 +47,7 @@ public class PaiementTransactionRequest {
   }
 
   public String getCodeValidation() {
-    return this.codeValidation.replaceAll("\\D+","");
+    return this.codeValidation;
   }
 
   public EPaimentValidation getPaiementValidation() {
