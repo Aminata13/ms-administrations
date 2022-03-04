@@ -114,7 +114,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     NumeroCarte carte = numeroCarteExist.get();
 
-    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse(), request.getLogo());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getMobile(), request.getAdresse(), request.getLogo());
     entrepriseDao.save(entreprise);
 
     InfosPersoAvecCompteRequest infosAgentRequest = objectMapper.convertValue(request.getGerant(), InfosPersoAvecCompteRequest.class);
@@ -143,7 +143,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette entreprise existe déjà!");
     }
 
-    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getAdresse(), request.getLogo());
+    Entreprise entreprise = new Entreprise(request.getTypeEntreprise(), request.getDomaineActivite(), request.getDenomination(), request.getNinea(), request.getRaisonSociale(), request.getEmail(), request.getTelephone(), request.getMobile(), request.getAdresse(), request.getLogo());
     entreprise.setDomaineActivite(request.getDomaineActivite());
 
     entrepriseDao.save(entreprise);

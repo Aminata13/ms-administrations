@@ -35,6 +35,9 @@ public class EntrepriseRequest {
   @NotBlank
   private String telephone;
 
+  @NotBlank
+  private String mobile;
+
   private String adresse;
 
   @NotBlank
@@ -76,6 +79,10 @@ public class EntrepriseRequest {
 
   public String getTelephone() {
     return this.telephone.replaceAll("\\s+","");
+  }
+
+  public String getMobile() {
+    return mobile.replaceAll("\\s+","");
   }
 
   public String getAdresse() {

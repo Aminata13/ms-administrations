@@ -194,6 +194,7 @@ public class ProspectServiceImpl implements ProspectService {
                     prospectRequest.getInfosEntreprise().getRaisonSociale(),
                     prospectRequest.getInfosEntreprise().getEmail(),
                     prospectRequest.getInfosEntreprise().getTelephone(),
+                    prospectRequest.getInfosEntreprise().getMobile(),
                     prospectRequest.getInfosEntreprise().getAdresse(),
                     prospectRequest.getInfosEntreprise().getLogo()
             ));
@@ -272,6 +273,7 @@ public class ProspectServiceImpl implements ProspectService {
                     prospectRequest.getInfosEntreprise().getRaisonSociale(),
                     prospectRequest.getInfosEntreprise().getEmail(),
                     prospectRequest.getInfosEntreprise().getTelephone(),
+                    prospectRequest.getInfosEntreprise().getMobile(),
                     prospectRequest.getInfosEntreprise().getAdresse(),
                     prospectRequest.getInfosEntreprise().getLogo()
             ));
