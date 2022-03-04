@@ -202,7 +202,10 @@ public class ProspectServiceImpl implements ProspectService {
 
         prospect.setPersonneRencontrer(prospectRequest.getPersonneRencontrer());
 
-        prospectDao.save(prospect);
+        Prospect newProspect = prospectDao.save(prospect);
+        if (newProspect.getNiveauAvancement() == 100) {
+            enroleProspect(newProspect.getId(), prospectRequest);
+        }
 
         return getDefaultFields(prospect);
     }
