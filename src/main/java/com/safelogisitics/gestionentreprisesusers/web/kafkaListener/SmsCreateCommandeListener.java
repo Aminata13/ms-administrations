@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,13 +50,18 @@ public class SmsCreateCommandeListener {
             SendSmsRequest sms = null;
 
             if (smsCreateCommandeDto.getService().equals(EServiceType.LIVRAISON)) {
-                String formatedDuree = String.format("%sheures%s", smsCreateCommandeDto.getDuree().split(":")[0], smsCreateCommandeDto.getDuree().split(":")[1]);
-                String smsText = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-                        compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), formatedDuree, smsCreateCommandeDto.getCodeRetrait());
+                Long hours = Long.valueOf(smsCreateCommandeDto.getDuree().substring(0, 2));
+                Long minutes = Long.valueOf(smsCreateCommandeDto.getDuree().substring(3));
+
+                String debut = LocalTime.now().toString().substring(0, 5);
+                String fin = LocalTime.now().plusHours(hours).plusMinutes(minutes).toString().substring(0, 5);
+
+                String smsText = String.format("Bonjour M/Mme %s,\nVotre commande n° %s expédiée par %s à destination de %s a bien été enregistrée.\nVotre livraison sera effectuée entre %s et %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                        compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), smsCreateCommandeDto.getExpediteur(), smsCreateCommandeDto.getDestinataire(), debut, fin, smsCreateCommandeDto.getCodeRetrait());
 
                 sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
             } else {
-                String smsText = String.format("Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                String smsText = String.format("Bonjour M/Mme %s,\nVotre commande n° %s a bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                         compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande());
                 sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
             }

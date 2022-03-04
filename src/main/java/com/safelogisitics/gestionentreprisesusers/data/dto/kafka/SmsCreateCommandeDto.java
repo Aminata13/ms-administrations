@@ -23,9 +23,13 @@ public class SmsCreateCommandeDto {
 
   private String duree;
 
+  private String expediteur;
+
+  private String destinataire;
+
   public SmsCreateCommandeDto() { }
 
-  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree) {
+  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree, String expediteur, String destinataire) {
     this.service = EServiceType.LIVRAISON;
     this.serviceConciergerie = serviceConciergerie;
     this.serviceId = serviceId;
@@ -34,6 +38,8 @@ public class SmsCreateCommandeDto {
     this.codeRetrait = codeRetrait;
     this.montant = montant;
     this.duree = duree;
+    this.expediteur = expediteur;
+    this.destinataire = destinataire;
   }
 
   public EServiceType getService() {
@@ -100,4 +106,19 @@ public class SmsCreateCommandeDto {
     this.duree = duree;
   }
 
+  public String getExpediteur() {
+    return expediteur;
+  }
+
+  public void setExpediteur(String expediteur) {
+    this.expediteur = expediteur;
+  }
+
+  public String getDestinataire() {
+    return destinataire;
+  }
+
+  public void setDestinataire(String destinataire) {
+    this.destinataire = destinataire;
+  }
 }
