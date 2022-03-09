@@ -1,15 +1,16 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import java.util.Optional;
-
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionSearchRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PayerCommissionsRequestDto;
+import com.safelogisitics.gestionentreprisesusers.data.dto.response.BeneficiaireCommissionResponseDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.CommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementCommissionModel;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface CommissionService {
   
@@ -28,4 +29,6 @@ public interface CommissionService {
   public void deleteCommissionByCommandeId(String id);
 
   public Page<PaiementCommissionModel> getListPaiementCommissions(CommissionSearchRequestDto commissionSearchRequest, Pageable pageable);
+
+  public List<BeneficiaireCommissionResponseDto> getListBeneficiaires();
 }
