@@ -23,6 +23,9 @@ public class EntrepriseProspectRequest {
   @NotBlank
   private String telephone;
 
+  @NotBlank
+  private String mobile;
+
   private String adresse;
 
   private String logo;
@@ -53,6 +56,10 @@ public class EntrepriseProspectRequest {
 
   public String getTelephone() {
     return this.telephone.replaceAll("\\s+","");
+  }
+
+  public String getMobile() {
+    return this.mobile.replaceAll("\\s+","");
   }
 
   public String getAdresse() {

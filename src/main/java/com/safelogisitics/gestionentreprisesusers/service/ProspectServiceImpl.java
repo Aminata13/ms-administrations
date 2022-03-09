@@ -194,6 +194,7 @@ public class ProspectServiceImpl implements ProspectService {
                     prospectRequest.getInfosEntreprise().getRaisonSociale(),
                     prospectRequest.getInfosEntreprise().getEmail(),
                     prospectRequest.getInfosEntreprise().getTelephone(),
+                    prospectRequest.getInfosEntreprise().getMobile(),
                     prospectRequest.getInfosEntreprise().getAdresse(),
                     prospectRequest.getInfosEntreprise().getLogo()
             ));
@@ -201,7 +202,10 @@ public class ProspectServiceImpl implements ProspectService {
 
         prospect.setPersonneRencontrer(prospectRequest.getPersonneRencontrer());
 
-        prospectDao.save(prospect);
+        Prospect newProspect = prospectDao.save(prospect);
+        if (newProspect.getNiveauAvancement() == 100) {
+            enroleProspect(newProspect.getId(), prospectRequest);
+        }
 
         return getDefaultFields(prospect);
     }
@@ -272,6 +276,7 @@ public class ProspectServiceImpl implements ProspectService {
                     prospectRequest.getInfosEntreprise().getRaisonSociale(),
                     prospectRequest.getInfosEntreprise().getEmail(),
                     prospectRequest.getInfosEntreprise().getTelephone(),
+                    prospectRequest.getInfosEntreprise().getMobile(),
                     prospectRequest.getInfosEntreprise().getAdresse(),
                     prospectRequest.getInfosEntreprise().getLogo()
             ));
