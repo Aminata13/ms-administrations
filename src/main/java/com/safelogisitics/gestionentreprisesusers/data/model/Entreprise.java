@@ -44,6 +44,9 @@ public class Entreprise extends AuditMetadata {
   @Field(value = "telephone")
   private String telephone;
 
+  @Field(value = "mobile")
+  private String mobile;
+
   @Field(value = "adresse")
   private String adresse;
 
@@ -65,7 +68,7 @@ public class Entreprise extends AuditMetadata {
     this.dateCreation = LocalDateTime.now();
   }
 
-  public Entreprise(String typeEntreprise, String domaineActivite, String denomination, String ninea, String raisonSociale, String email, String telephone, String adresse, String logo) {
+  public Entreprise(String typeEntreprise, String domaineActivite, String denomination, String ninea, String raisonSociale, String email, String telephone, String mobile, String adresse, String logo) {
     this.typeEntreprise = typeEntreprise;
     this.domaineActivite = domaineActivite;
     this.denomination = denomination;
@@ -73,6 +76,7 @@ public class Entreprise extends AuditMetadata {
     this.raisonSociale = raisonSociale;
     this.email = email;
     this.telephone = telephone;
+    this.mobile = mobile;
     this.adresse = adresse;
     this.deleted = false;
     this.dateCreation = LocalDateTime.now();
@@ -159,6 +163,14 @@ public class Entreprise extends AuditMetadata {
     this.telephone = telephone;
   }
 
+  public String getMobile() {
+    return mobile;
+  }
+
+  public void setMobile(String mobile) {
+    this.mobile = mobile;
+  }
+
   public String getAdresse() {
     return this.adresse;
   }
@@ -213,14 +225,15 @@ public class Entreprise extends AuditMetadata {
       public final String numeroCarte = getNumeroCarte();
       public final String email = getEmail();
       public final String telephone = getTelephone();
+      public final String mobile = getMobile();
       public final String adresse = getAdresse();
       public final String dateCreation = getDateCreation().toString();
       public final String logo = getLogo();
 
       @Override
       public String toString() {
-        return String.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s", id, typeEntreprise, domaineActivite, typePartenariats, denomination, ninea,
-          raisonSociale, gerantId, numeroCarte, email, telephone, adresse, dateCreation, logo);
+        return String.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s", id, typeEntreprise, domaineActivite, typePartenariats, denomination, ninea,
+          raisonSociale, gerantId, numeroCarte, email, telephone, mobile, adresse, dateCreation, logo);
       }
     };
     return defaultFields;

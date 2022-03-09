@@ -9,7 +9,7 @@ public class ClientNumberGeneratorUtils {
 
   private static final String S_S = "%s%s%s";
   
-  public static String generateReference(String numeroCarte, ECompteType compteType) {
+  public static String generateReference(String numeroCarte, ECompteType compteType){
 
     String registrationNumber = "";
     String initial = "";

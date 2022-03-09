@@ -15,6 +15,8 @@ public class SmsCreateCommandeDto {
 
   private String clientId;
 
+  private String entrepriseId;
+
   private String numeroCommande;
 
   private String codeRetrait;
@@ -23,17 +25,24 @@ public class SmsCreateCommandeDto {
 
   private String duree;
 
+  private String expediteur;
+
+  private String destinataire;
+
   public SmsCreateCommandeDto() { }
 
-  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree) {
+  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String entrepriseId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree, String expediteur, String destinataire) {
     this.service = EServiceType.LIVRAISON;
     this.serviceConciergerie = serviceConciergerie;
     this.serviceId = serviceId;
     this.clientId = clientId;
+    this.entrepriseId = entrepriseId;
     this.numeroCommande = numeroCommande;
     this.codeRetrait = codeRetrait;
     this.montant = montant;
     this.duree = duree;
+    this.expediteur = expediteur;
+    this.destinataire = destinataire;
   }
 
   public EServiceType getService() {
@@ -68,6 +77,14 @@ public class SmsCreateCommandeDto {
     this.clientId = clientId;
   }
 
+  public String getEntrepriseId() {
+    return entrepriseId;
+  }
+
+  public void setEntrepriseId(String entrepriseId) {
+    this.entrepriseId = entrepriseId;
+  }
+
   public String getNumeroCommande() {
     return this.numeroCommande;
   }
@@ -100,4 +117,19 @@ public class SmsCreateCommandeDto {
     this.duree = duree;
   }
 
+  public String getExpediteur() {
+    return expediteur;
+  }
+
+  public void setExpediteur(String expediteur) {
+    this.expediteur = expediteur;
+  }
+
+  public String getDestinataire() {
+    return destinataire;
+  }
+
+  public void setDestinataire(String destinataire) {
+    this.destinataire = destinataire;
+  }
 }
