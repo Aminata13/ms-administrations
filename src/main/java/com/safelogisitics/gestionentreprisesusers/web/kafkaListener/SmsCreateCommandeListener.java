@@ -65,8 +65,15 @@ public class SmsCreateCommandeListener {
             if (compte != null && compte.getId() != null) {
 
                 if (smsCreateCommandeDto.getService().equals(EServiceType.LIVRAISON)) {
-                    String smsText = String.format("Bonjour M/Mme %s,\nVotre commande n° %s expédiée par %s à destination de %s a bien été enregistrée.\nVotre livraison sera effectuée entre %s et %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-                            compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), smsCreateCommandeDto.getExpediteur(), smsCreateCommandeDto.getDestinataire(), debut, fin, smsCreateCommandeDto.getCodeRetrait());
+                    String smsText = "";
+                    if (compte.getUserInfos().getNomComplet() == smsCreateCommandeDto.getDestinataire()) {
+                        smsText = String.format("Bonjour M/Mme %s,\nVotre commande n° %s a bien été enregistrée.\nVotre livraison sera effectuée entre %s et %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                                compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), debut, fin, smsCreateCommandeDto.getCodeRetrait());
+                    }
+                    else {
+                        smsText = String.format("Bonjour M/Mme %s,\nVotre commande n° %s à destination de %s a bien été enregistrée.\nVotre livraison sera effectuée entre %s et %s.\n Le code de retrait est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                                compte.getUserInfos().getNomComplet(), smsCreateCommandeDto.getNumeroCommande(), smsCreateCommandeDto.getDestinataire(), debut, fin, smsCreateCommandeDto.getCodeRetrait());
+                    }
 
                     sms = new SendSmsRequest("RAK IN TAK", "Confirmation commande", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
                 } else {

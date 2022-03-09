@@ -9,7 +9,6 @@ import com.safelogisitics.gestionentreprisesusers.data.model.PaiementCommissionM
 import com.safelogisitics.gestionentreprisesusers.service.CommissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

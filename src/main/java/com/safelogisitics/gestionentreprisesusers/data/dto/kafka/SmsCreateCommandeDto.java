@@ -1,9 +1,9 @@
 package com.safelogisitics.gestionentreprisesusers.data.dto.kafka;
 
-import java.math.BigDecimal;
-
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
+
+import java.math.BigDecimal;
 
 public class SmsCreateCommandeDto {
   
@@ -25,13 +25,11 @@ public class SmsCreateCommandeDto {
 
   private String duree;
 
-  private String expediteur;
-
   private String destinataire;
 
   public SmsCreateCommandeDto() { }
 
-  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String entrepriseId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree, String expediteur, String destinataire) {
+  public SmsCreateCommandeDto(EServiceConciergeType serviceConciergerie, String serviceId, String clientId, String entrepriseId, String numeroCommande, String codeRetrait, BigDecimal montant, String duree, String destinataire) {
     this.service = EServiceType.LIVRAISON;
     this.serviceConciergerie = serviceConciergerie;
     this.serviceId = serviceId;
@@ -41,7 +39,6 @@ public class SmsCreateCommandeDto {
     this.codeRetrait = codeRetrait;
     this.montant = montant;
     this.duree = duree;
-    this.expediteur = expediteur;
     this.destinataire = destinataire;
   }
 
@@ -115,14 +112,6 @@ public class SmsCreateCommandeDto {
 
   public void setDuree(String duree) {
     this.duree = duree;
-  }
-
-  public String getExpediteur() {
-    return expediteur;
-  }
-
-  public void setExpediteur(String expediteur) {
-    this.expediteur = expediteur;
   }
 
   public String getDestinataire() {

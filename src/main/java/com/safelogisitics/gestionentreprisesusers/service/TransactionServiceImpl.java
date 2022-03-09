@@ -1,49 +1,15 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import java.io.ByteArrayInputStream;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Function;
-
-import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.PaiementValidationDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.TransactionDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
+import com.safelogisitics.gestionentreprisesusers.data.dao.*;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.CommissionRequestDto;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.*;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EPaimentValidation;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
-import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
-import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
-import com.safelogisitics.gestionentreprisesusers.data.model.PushNotification;
-import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
-import com.safelogisitics.gestionentreprisesusers.data.model.User;
+import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +20,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -215,7 +190,7 @@ public class TransactionServiceImpl implements TransactionService {
         abonnementDao.save(abonnement);
         transaction.setNouveauSolde(abonnement.getSolde());
 
-        InfosPerso infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
+        InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
         String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                 infosPerso.getNomComplet(), abonnement.getSolde(), abonnement.getPointGratuites());
         SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
