@@ -186,6 +186,9 @@ public class AbonnementServiceImpl implements AbonnementService {
     if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
 
+    if (abonnementRequest.getInfosPersoId() != null & typeAbonnement.getLibelle() == "Platinum")
+      throw new IllegalArgumentException("Un client particulier ne peut pas avoir de carte platinum!");
+
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
 
@@ -234,7 +237,7 @@ public class AbonnementServiceImpl implements AbonnementService {
       throw new IllegalArgumentException("Cette abonnement n'existe pas!");
 
     if (abonnementExist.get().getEntreprise() != null)
-      throw new IllegalArgumentException("Cette abonnement ne peut être changer!");
+      throw new IllegalArgumentException("Cette abonnement ne peut être changé!");
 
     NumeroCarte newNumeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
@@ -260,7 +263,7 @@ public class AbonnementServiceImpl implements AbonnementService {
     numeroCarteDao.saveAll(Arrays.asList(newNumeroCarte, oldNumeroCarte));
 
     if (abonnement.getCompteClient() != null) {
-      Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnement.getCompteClient().getId(), ECompteType.COMPTE_PARTICULIER).get();
+      Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnement.getCompteClient().getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
       compteClient.setServices(typeAbonnement.getServices());
       compteDao.save(compteClient);
     }
