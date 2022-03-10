@@ -746,7 +746,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
 
-    String smsText  = String.format("Cher(e) client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’informations, rendez-vous sur notre site :xxxxxxx\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
+    String smsText  = String.format("Cher(e) client(e) %s\nBienvenue chez Safelogistics.\nVotre inscription est maintenant validée.\nVotre login est: %s.\nVotre mot de passe par défaut est: %s\nPour plus d’informations, rendez-vous sur notre site :safelogistics-senegal.com/\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     infosPerso.getNomComplet(), request.getUsername(), request.getPassword());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Message d'inscription", smsText, Arrays.asList(infosPerso.getTelephone()));

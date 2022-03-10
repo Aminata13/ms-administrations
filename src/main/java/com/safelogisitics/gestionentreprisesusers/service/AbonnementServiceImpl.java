@@ -1,12 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
@@ -186,7 +181,7 @@ public class AbonnementServiceImpl implements AbonnementService {
     if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
 
-    if (abonnementRequest.getInfosPersoId() != null & typeAbonnement.getLibelle() == "Platinum")
+    if (abonnementRequest.getInfosPersoId() != null & Objects.equals(typeAbonnement.getLibelle(), "Platinum"))
       throw new IllegalArgumentException("Un client particulier ne peut pas avoir de carte platinum!");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -319,7 +314,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   private NumeroCarte validateNewCarteAbonnement(AbonnementRequest abonnementRequest) {
     if (abonnementRequest.getInfosPersoId() != null && !compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER))
-        throw new IllegalArgumentException("Cette compte client n'existe pas!");
+        throw new IllegalArgumentException("Ce compte client n'existe pas!");
         
     if (abonnementRequest.getEntrepriseId() != null && !entrepriseDao.existsByIdAndDeletedIsFalse(abonnementRequest.getEntrepriseId()))
         throw new IllegalArgumentException("Cette entreprise n'existe pas!"); 
