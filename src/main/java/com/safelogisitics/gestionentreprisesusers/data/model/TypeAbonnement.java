@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.data.model;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 
 import org.springframework.data.annotation.Id;
@@ -29,6 +30,9 @@ public class TypeAbonnement extends AuditMetadata {
 
   @Field
   private Set<EServiceType> services;
+
+  @Field
+  private Set<EClientType> compteEligibles;
 
   @Field(value = "statut")
   private int statut;
@@ -87,6 +91,14 @@ public class TypeAbonnement extends AuditMetadata {
 
   public void setServices(Set<EServiceType> services) {
     this.services = services;
+  }
+
+  public Set<EClientType> getCompteEligibles() {
+    return compteEligibles;
+  }
+
+  public void setCompteEligibles(Set<EClientType> compteEligibles) {
+    this.compteEligibles = compteEligibles;
   }
 
   public int getStatut() {

@@ -11,6 +11,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementResponsableRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
@@ -160,12 +161,14 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Abonnement createAbonnement(AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur) {
+    if (abonnementRequest.getInfosPersoId() == null && abonnementRequest.getEntrepriseId() == null)
+      throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
+
     NumeroCarte numeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
     TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    if (abonnementRequest.getInfosPersoId() == null && abonnementRequest.getEntrepriseId() == null)
-      throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
+    validateTypeAbonnementByClient(abonnementRequest, typeAbonnement);
 
     final Query query = new Query();
 
@@ -176,13 +179,8 @@ public class AbonnementServiceImpl implements AbonnementService {
 
     Abonnement abonnement = mongoTemplate.findOne(query, Abonnement.class);
 
-    System.out.println(abonnement);
-
     if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
-
-    if (abonnementRequest.getInfosPersoId() != null & Objects.equals(typeAbonnement.getLibelle(), "Platinum"))
-      throw new IllegalArgumentException("Un client particulier ne peut pas avoir de carte platinum!");
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
@@ -334,5 +332,12 @@ public class AbonnementServiceImpl implements AbonnementService {
       throw new IllegalArgumentException("Cette carte est déjà activé!");
 
     return numeroCarteExist.get();
+  }
+
+  private void validateTypeAbonnementByClient(AbonnementRequest abonnementRequest, TypeAbonnement typeAbonnement) {
+    EClientType compte = abonnementRequest.getInfosPersoId() != null ? EClientType.COMPTE_PARTICULIER : EClientType.COMPTE_ENTREPRISE;
+    if (!typeAbonnement.getCompteEligibles().contains(compte)) {
+      throw new IllegalArgumentException("Client non eligible pour ce type d'abonnement!");
+    }
   }
 }
