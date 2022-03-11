@@ -31,11 +31,13 @@ public class TypeAbonnementFixture implements CommandLineRunner {
         typeAbonnement.setPrix(_typeAbonnement.getPrix());
         typeAbonnement.setStatut(_typeAbonnement.getStatut());
         typeAbonnement.setServices(_typeAbonnement.getServices());
+        typeAbonnement.setCompteEligibles(_typeAbonnement.getCompteEligibles());
         typeAbonnementDao.save(typeAbonnement);
       }, () -> {
         TypeAbonnement typeAbonnement = new TypeAbonnement(_typeAbonnement.getLibelle(), _typeAbonnement.getReduction(), _typeAbonnement.getStatut());
         typeAbonnement.setPrix(_typeAbonnement.getPrix());
         typeAbonnement.setServices(_typeAbonnement.getServices());
+        typeAbonnement.setCompteEligibles(_typeAbonnement.getCompteEligibles());
         typeAbonnementDao.save(typeAbonnement);
       });
     }
