@@ -1,15 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.EnrollmentRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoAvecCompteRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.RegisterRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.UpdateInfosPersoRequest;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.*;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.EntrepriseInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
@@ -18,9 +9,13 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeTy
 import com.safelogisitics.gestionentreprisesusers.data.model.AffectationEquipement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public interface InfosPersoService {
 
@@ -41,7 +36,7 @@ public interface InfosPersoService {
 
   public Optional<InfosPersoModel> findByCompteId(String id);
 
-  public Optional<InfosPersoModel> findByEmailOrTelephone(String emailOrTelephone);
+  public Optional<InfosPersoModel> findByEmailOrTelephone(String emailOrTelephone, Boolean prestation);
 
   public Collection<UserInfosResponse> findByCustomSearch(String prenom, String nom, String email, String telephone, String numeroCarte, ECompteType compteType, EServiceConciergeType serviceConciergeType);
 

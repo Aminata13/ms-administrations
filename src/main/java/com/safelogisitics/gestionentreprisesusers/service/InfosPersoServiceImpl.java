@@ -18,11 +18,9 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.CompteAggregationDto;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.CompteSearchRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoAvecCompteRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoRequest;
-import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoSearchRequestDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.LoginRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RegisterRequest;
@@ -33,18 +31,19 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.response.JwtResponse;
 import com.safelogisitics.gestionentreprisesusers.data.dto.response.UserInfosResponse;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceConciergeType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.data.repository.InfosPersoRepository;
 import com.safelogisitics.gestionentreprisesusers.util.ClientNumberGeneratorUtils;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
+import org.apache.xpath.operations.Bool;
 import org.bson.Document;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -234,25 +233,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   @Override
-  public Optional<InfosPersoModel> findByEmailOrTelephone(String emailOrTelephone) {
-
-    // CompteSearchRequestDto compteSearch = new CompteSearchRequestDto();
-    // compteSearch.setTypes(new HashSet<>(Arrays.asList(ECompteType.COMPTE_PARTICULIER)));
-
-    // InfosPersoSearchRequestDto infosPersoSearch = new InfosPersoSearchRequestDto();
-    // infosPersoSearch.setPrenom("ous");
-    // infosPersoSearch.setCompteSearch(compteSearch);
-
-    // Page<InfosPersoModel> infosPersos = infosPersoRepository.customSearch(infosPersoSearch, PageRequest.of(0, Integer.MAX_VALUE));
-
-    // System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    // for (InfosPersoModel infosPersoModel : infosPersos) {
-    //   System.out.println(infosPersoModel.getDefaultFields());
-    //   for (Compte compte : infosPersoModel.getComptes()) {
-    //     System.out.println(compte.getCustomFields());
-    //   }
-    // }
-
+  public Optional<InfosPersoModel> findByEmailOrTelephone(String emailOrTelephone, Boolean prestation) {
     final Query query = new Query();
     final List<Criteria> listCritarias = new ArrayList<Criteria>();
     emailOrTelephone = emailOrTelephone.replaceAll(" ", "");
@@ -266,6 +247,18 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     if (results == null || results.size() <= 0)
       return Optional.ofNullable(null);
+
+    if (prestation != null) {
+      InfosPersoModel infosPersoModel = results.stream().findFirst().get();
+      Optional<Compte> compteExist = infosPersoModel.getComptes().stream().filter(c -> c.getType().equals(ECompteType.COMPTE_PARTICULIER)).findFirst();
+
+      if (compteExist.isPresent()) {
+        Compte compte = compteExist.get();
+        if(!compte.getServices().contains(EServiceType.PRESTATION)) {
+          throw new IllegalArgumentException("Ce client n'a pas accès à ce service.");
+        }
+      }
+    }
 
     return Optional.ofNullable(results.iterator().next());
   }
