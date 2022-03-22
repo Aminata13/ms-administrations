@@ -148,7 +148,7 @@ public class AbonnementController {
 	public ResponseEntity<?> addAbonnementByAgent(@Valid @RequestBody EnrollmentRequest request) {
     InfosPersoModel infosPerso = infosPersoService.newEnrollment(request);
     if (infosPerso == null)
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", "Informaions d'inscription incomplet"));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", "Informations d'inscription incomplet"));
 		return ResponseEntity.status(HttpStatus.CREATED).body(infosPerso);
 	}
 

@@ -1,15 +1,14 @@
 package com.safelogisitics.gestionentreprisesusers.web.security.jwt;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
+import com.safelogisitics.gestionentreprisesusers.data.dto.request.SendSmsRequest;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
+import com.safelogisitics.gestionentreprisesusers.service.SMSService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,15 +32,17 @@ public class JwtUtils {
     private UserDao userDao;
     private AbonnementDao abonnementDao;
     private KafkaTemplate<String, String> blacklistTemplate;
+    private SMSService smsService;
 
     @Value(value = "${kafka.topics.blacklistAccesstoken.name}")
     private String blacklistAccesstokenName;
 
-    public JwtUtils(JwtConfig jwtConfig, UserDao userDao, AbonnementDao abonnementDao, KafkaTemplate<String, String> blacklistTemplate) {
+    public JwtUtils(JwtConfig jwtConfig, UserDao userDao, AbonnementDao abonnementDao, KafkaTemplate<String, String> blacklistTemplate, SMSService smsService) {
         this.jwtConfig = jwtConfig;
         this.userDao = userDao;
         this.abonnementDao = abonnementDao;
         this.blacklistTemplate = blacklistTemplate;
+        this.smsService = smsService;
     }
 
     public String generateJwtToken(Authentication authentication) {
@@ -68,6 +69,8 @@ public class JwtUtils {
             Optional<Abonnement> abonnement = abonnementDao.findByCompteClientIdAndDeletedIsFalse(compteParticulier.get().getId());
             if (abonnement.isPresent()) {
                 abonnements.add(abonnement.get());
+            } else {
+                checkIfFirstConnection(user);
             }
         }
 
@@ -138,5 +141,16 @@ public class JwtUtils {
             return;
         }
         blacklistTemplate.send(blacklistAccesstokenName, accessToken);
+    }
+
+    private void checkIfFirstConnection(User user) {
+        if(user.getCurrentAccessToken() == null) {
+            String smsText = String.format("Bonjour M/Mme %s, nous vous informons que vous n'avez pas encore de carte SafeLogistics.\nMerci de contacter notre service client pour vous en procurer.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
+                    user.getInfosPerso().getNomComplet());
+
+            SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Abonnement", smsText, Arrays.asList(user.getInfosPerso().getTelephone()));
+
+            smsService.sendSms(sms);
+        }
     }
 }

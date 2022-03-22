@@ -49,7 +49,7 @@ public class ProfilController {
   @GetMapping("/search/{emailOrTelephone}")
   @PreAuthorize("hasPermission('GESTION_PERSONNELS', 'READ')")
 	public ResponseEntity<?> getByEmailOrTelephone(@PathVariable(value = "emailOrTelephone") String emailOrTelephone) {
-    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone));
+    return ResponseEntity.status(HttpStatus.OK).body(infosPersoService.findByEmailOrTelephone(emailOrTelephone, null));
 	}
 
   @GetMapping("/custom-search")

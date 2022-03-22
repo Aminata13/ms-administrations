@@ -1,12 +1,7 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
@@ -16,6 +11,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.AbonnementResponsableRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
@@ -165,12 +161,14 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   @Override
   public Abonnement createAbonnement(AbonnementRequest abonnementRequest, ECompteType typeCompteCreateur) {
+    if (abonnementRequest.getInfosPersoId() == null && abonnementRequest.getEntrepriseId() == null)
+      throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
+
     NumeroCarte numeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
     TypeAbonnement typeAbonnement = typeAbonnementDao.findById(abonnementRequest.getTypeAbonnementId()).get();
 
-    if (abonnementRequest.getInfosPersoId() == null && abonnementRequest.getEntrepriseId() == null)
-      throw new IllegalArgumentException("Client ou entreprise est obligatoire!");
+    validateTypeAbonnementByClient(abonnementRequest, typeAbonnement);
 
     final Query query = new Query();
 
@@ -180,8 +178,6 @@ public class AbonnementServiceImpl implements AbonnementService {
     );
 
     Abonnement abonnement = mongoTemplate.findOne(query, Abonnement.class);
-
-    System.out.println(abonnement);
 
     if (abonnement != null && !abonnement.isDeleted())
       throw new IllegalArgumentException("Client ou entreprise déjà abonné!");
@@ -234,7 +230,7 @@ public class AbonnementServiceImpl implements AbonnementService {
       throw new IllegalArgumentException("Cette abonnement n'existe pas!");
 
     if (abonnementExist.get().getEntreprise() != null)
-      throw new IllegalArgumentException("Cette abonnement ne peut être changer!");
+      throw new IllegalArgumentException("Cette abonnement ne peut être changé!");
 
     NumeroCarte newNumeroCarte = validateNewCarteAbonnement(abonnementRequest);
 
@@ -260,7 +256,7 @@ public class AbonnementServiceImpl implements AbonnementService {
     numeroCarteDao.saveAll(Arrays.asList(newNumeroCarte, oldNumeroCarte));
 
     if (abonnement.getCompteClient() != null) {
-      Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnement.getCompteClient().getId(), ECompteType.COMPTE_PARTICULIER).get();
+      Compte compteClient = compteDao.findByInfosPersoIdAndType(abonnement.getCompteClient().getInfosPersoId(), ECompteType.COMPTE_PARTICULIER).get();
       compteClient.setServices(typeAbonnement.getServices());
       compteDao.save(compteClient);
     }
@@ -316,7 +312,7 @@ public class AbonnementServiceImpl implements AbonnementService {
 
   private NumeroCarte validateNewCarteAbonnement(AbonnementRequest abonnementRequest) {
     if (abonnementRequest.getInfosPersoId() != null && !compteDao.existsByInfosPersoIdAndTypeAndDeletedIsFalse(abonnementRequest.getInfosPersoId(), ECompteType.COMPTE_PARTICULIER))
-        throw new IllegalArgumentException("Cette compte client n'existe pas!");
+        throw new IllegalArgumentException("Ce compte client n'existe pas!");
         
     if (abonnementRequest.getEntrepriseId() != null && !entrepriseDao.existsByIdAndDeletedIsFalse(abonnementRequest.getEntrepriseId()))
         throw new IllegalArgumentException("Cette entreprise n'existe pas!"); 
@@ -336,5 +332,12 @@ public class AbonnementServiceImpl implements AbonnementService {
       throw new IllegalArgumentException("Cette carte est déjà activé!");
 
     return numeroCarteExist.get();
+  }
+
+  private void validateTypeAbonnementByClient(AbonnementRequest abonnementRequest, TypeAbonnement typeAbonnement) {
+    EClientType compte = abonnementRequest.getInfosPersoId() != null ? EClientType.COMPTE_PARTICULIER : EClientType.COMPTE_ENTREPRISE;
+    if (!typeAbonnement.getCompteEligibles().contains(compte)) {
+      throw new IllegalArgumentException("Client non eligible pour ce type d'abonnement!");
+    }
   }
 }
