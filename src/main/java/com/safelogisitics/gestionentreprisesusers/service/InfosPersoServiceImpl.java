@@ -512,6 +512,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public InfosPersoModel equiperAgent(String id, Set<AffectationEquipement> affectationEquipements) {
     Optional<Compte> _compte = compteDao.findByIdAndType(id, ECompteType.COMPTE_COURSIER);
+    String errors = "";
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
       throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
@@ -522,8 +523,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     for (AffectationEquipement affectationEquipement : affectationEquipements) {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
-      if (!_equipement.isPresent() || _equipement.get().getStock() <= 0)
+      if (!_equipement.isPresent() || _equipement.get().getStock() <= 0) {
+        if (_equipement.get().getStock() == 0) errors = "Le stock de " + _equipement.get().getLibelle() + "s est insuffisant.";
         continue;
+      }
 
       Equipement equipement = _equipement.get();
       Double quantiteAffecter = equipement.getQuantiteAffecter();
@@ -544,7 +547,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
       if (affectationEquipement.getQuantite() > 0) {
         if (affectationEquipement.getQuantite() > stock) {
-          throw new IllegalArgumentException("Le stock est insuffisant.");
+          errors = errors + "Le stock de " + _equipement.get().getLibelle() + "s est insuffisant.";
+          continue;
         }
         compte.addEquipement(affectationEquipement);
         quantiteAffecter = quantiteAffecter + affectationEquipement.getQuantite();
@@ -554,6 +558,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       equipement.setQuantiteAffecter(quantiteAffecter);
       equipement.setStock(stock);
 
+
       equipementDao.save(equipement);
 
       compteDao.save(compte);
@@ -562,6 +567,10 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.updateCompte(compte);
 
     infosPersoDao.save(infosPerso);
+
+    if (errors != "") {
+      throw new IllegalArgumentException(errors);
+    }
 
     return infosPerso;
   }
