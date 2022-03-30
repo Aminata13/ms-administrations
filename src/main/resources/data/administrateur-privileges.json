@@ -106,7 +106,8 @@
       "DELETE",
       "VALIDATE",
       "ACTIVATE",
-      "POINT_GRATUITE"
+      "POINT_GRATUITE",
+      "SWITCH"
     ]
   },
   {

@@ -40,8 +40,8 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         Long numberClientsEntreprises = mongoTemplate.estimatedCount(Entreprise.class);
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre de clients particuliers", numberClientsParticuliers);
-        results.put("Nombre de clients entreprises", numberClientsEntreprises);
+        results.put("particuliers", numberClientsParticuliers);
+        results.put("entreprises", numberClientsEntreprises);
 
         return results;
     }
@@ -69,8 +69,8 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         long percentage = yesterdayCount != 0 ? (todayCount - yesterdayCount) * 100 / yesterdayCount : 100;
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre d'abonnements", todayCount);
-        results.put("Pourcentage", percentage);
+        results.put("abonnements", todayCount);
+        results.put("pourcentage", percentage);
 
         return results;
     }
@@ -116,9 +116,9 @@ public class StatistiquesServiceImpl implements StatistiquesService {
 
 
         Map<String, Long> results = new HashMap<String, Long>();
-        results.put("Nombre de cartes Silver", silver);
-        results.put("Nombre de cartes Gold", gold);
-        results.put("Nombre de cartes Platinum", platinum);
+        results.put("silver", silver);
+        results.put("gold", gold);
+        results.put("platinum", platinum);
 
         return results;
     }
