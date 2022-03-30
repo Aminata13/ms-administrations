@@ -244,10 +244,17 @@ public class AbonnementServiceImpl implements AbonnementService {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Compte compteCreateur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), typeCompteCreateur).get();
 
+    if (Objects.equals(abonnement.getTypeAbonnement().getLibelle(), "Gold") && Objects.equals(typeAbonnement.getLibelle(), "Silver")) {
+      if(!compteCreateur.getRole().getPrivilegesActions().get("GESTION_ABONNEMENTS").contains("SWITCH")) {
+        throw new IllegalArgumentException("Vous n'avez pas le droit de changer cet abonnement!");
+      }
+    }
+
     NumeroCarte oldNumeroCarte = numeroCarteDao.findByNumero(abonnement.getNumeroCarte()).get();
 
     abonnement.setTypeAbonnement(typeAbonnement);
     abonnement.setNumeroCarte(abonnementRequest.getNumeroCarte());
+    abonnement.setPrixCarte(typeAbonnement.getPrix());
     abonnement.setCompteCreateur(compteCreateur);
     abonnementDao.save(abonnement);
 
