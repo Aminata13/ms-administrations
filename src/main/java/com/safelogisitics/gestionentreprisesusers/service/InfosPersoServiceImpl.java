@@ -524,7 +524,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
       if (!_equipement.isPresent() || _equipement.get().getStock() <= 0) {
-        if (_equipement.get().getStock() == 0) errors = new StringBuilder("Le stock de " + _equipement.get().getLibelle() + "s est insuffisant.");
+        if (_equipement.get().getStock() == 0) errors = new StringBuilder("Le stock de " + _equipement.get().getLibelle().toLowerCase() + " est insuffisant.");
         continue;
       }
 
@@ -547,7 +547,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
       if (affectationEquipement.getQuantite() > 0) {
         if (affectationEquipement.getQuantite() > stock) {
-          errors.append("Le stock de ").append(_equipement.get().getLibelle()).append("s est insuffisant.");
+          errors.append("Le stock de ").append(_equipement.get().getLibelle().toLowerCase()).append(" est insuffisant.");
           continue;
         }
         compte.addEquipement(affectationEquipement);
