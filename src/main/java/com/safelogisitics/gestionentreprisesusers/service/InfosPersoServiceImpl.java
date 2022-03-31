@@ -547,7 +547,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
       if (affectationEquipement.getQuantite() > 0) {
         if (affectationEquipement.getQuantite() > stock) {
-          errors.append(" Le stock de ").append(_equipement.get().getLibelle().toLowerCase()).append(" est insuffisant.");
+          errors.append("Le stock de ").append(_equipement.get().getLibelle().toLowerCase()).append(" est insuffisant.");
           continue;
         }
         compte.addEquipement(affectationEquipement);
