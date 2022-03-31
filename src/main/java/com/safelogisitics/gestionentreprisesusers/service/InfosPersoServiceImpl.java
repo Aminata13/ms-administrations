@@ -512,7 +512,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   @Override
   public InfosPersoModel equiperAgent(String id, Set<AffectationEquipement> affectationEquipements) {
     Optional<Compte> _compte = compteDao.findByIdAndType(id, ECompteType.COMPTE_COURSIER);
-    String errors = "";
+    StringBuilder errors = new StringBuilder();
 
     if (!_compte.isPresent() || _compte.get().isDeleted())
       throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
@@ -524,7 +524,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
       if (!_equipement.isPresent() || _equipement.get().getStock() <= 0) {
-        if (_equipement.get().getStock() == 0) errors = "Le stock de " + _equipement.get().getLibelle() + "s est insuffisant.";
+        if (_equipement.get().getStock() == 0) errors = new StringBuilder("Le stock de " + _equipement.get().getLibelle().toLowerCase() + " est insuffisant.");
         continue;
       }
 
@@ -547,7 +547,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
       if (affectationEquipement.getQuantite() > 0) {
         if (affectationEquipement.getQuantite() > stock) {
-          errors = errors + "Le stock de " + _equipement.get().getLibelle() + "s est insuffisant.";
+          errors.append("Le stock de ").append(_equipement.get().getLibelle().toLowerCase()).append(" est insuffisant.");
           continue;
         }
         compte.addEquipement(affectationEquipement);
@@ -568,8 +568,8 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     infosPersoDao.save(infosPerso);
 
-    if (errors != "") {
-      throw new IllegalArgumentException(errors);
+    if (!errors.toString().equals("")) {
+      throw new IllegalArgumentException(errors.toString());
     }
 
     return infosPerso;
