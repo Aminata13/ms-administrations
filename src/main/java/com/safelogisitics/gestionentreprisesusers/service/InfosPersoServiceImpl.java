@@ -524,7 +524,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
 
       if (!_equipement.isPresent() || _equipement.get().getStock() <= 0) {
-        if (_equipement.get().getStock() == 0) errors = new StringBuilder("Le stock de " + _equipement.get().getLibelle().toLowerCase() + " est insuffisant.");
+        if (_equipement.get().getStock() == 0) errors.append("Le stock de ").append(_equipement.get().getLibelle().toLowerCase()).append(" est insuffisant.");
         continue;
       }
 

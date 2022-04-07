@@ -191,8 +191,8 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setNouveauSolde(abonnement.getSolde());
 
         InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
-        String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-                infosPerso.getNomComplet(), abonnement.getSolde(), abonnement.getPointGratuites());
+        String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+                infosPerso.getNomComplet(), transaction.getMontant(), abonnement.getSolde(), abonnement.getPointGratuites());
         SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
         smsService.sendSms(sms);
       }
@@ -263,8 +263,8 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setApprobation(0);
     }
 
-    String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement est en cours de traitement, vous revecrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-            infosPerso.getNomComplet(), abonnement.getSolde(), abonnement.getPointGratuites());
+    String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+            infosPerso.getNomComplet(), transactionRequest.getMontant());
 
     SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
     smsService.sendSms(sms);

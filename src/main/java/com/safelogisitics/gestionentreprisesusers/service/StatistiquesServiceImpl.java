@@ -3,21 +3,29 @@ package com.safelogisitics.gestionentreprisesusers.service;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EPeriode;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
-
+import org.bson.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class StatistiquesServiceImpl implements StatistiquesService {
@@ -47,30 +55,20 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     }
 
     @Override
-    public Map<String, Long> getNumberAbonnement() {
-        final Query query1 = new Query();
-        final Query query2 = new Query();
-        final List<Criteria> criterias1 = new ArrayList<>();
-        final List<Criteria> criterias2 = new ArrayList<>();
+    public Map<String, Long> getNumberAbonnement(EPeriode periode) {
+       Map<String, Long> results = new HashMap<String, Long>();
+        if(periode == null) periode = EPeriode.JOUR;
 
-        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), 23, 59, 59);
-        criterias1.add(Criteria.where("dateCreation").gte(startDate));
-        criterias1.add(Criteria.where("dateCreation").lte(endDate));
-        query1.addCriteria(new Criteria().andOperator(criterias1.toArray(new Criteria[criterias1.size()])));
-
-
-        criterias2.add(Criteria.where("dateCreation").gte(startDate.minusDays(1)));
-        criterias2.add(Criteria.where("dateCreation").lte(endDate.minusDays(1)));
-        query2.addCriteria(new Criteria().andOperator(criterias2.toArray(new Criteria[criterias2.size()])));
-
-        Long yesterdayCount = mongoTemplate.count(query2, Abonnement.class);
-        Long todayCount = mongoTemplate.count(query1, Abonnement.class);
-        long percentage = yesterdayCount != 0 ? (todayCount - yesterdayCount) * 100 / yesterdayCount : 100;
-
-        Map<String, Long> results = new HashMap<String, Long>();
-        results.put("abonnements", todayCount);
-        results.put("pourcentage", percentage);
+        switch(periode) {
+            case SEMAINE:
+                results = this.numberAbonnements("semaine", results, LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                break;
+            case MOIS:
+                results = this.numberAbonnements("mois", results, LocalDate.now().withDayOfMonth(1).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                break;
+            default:
+                results = this.numberAbonnements("jour", results, LocalDate.now().atStartOfDay(), LocalDate.now().atTime(23, 59));
+        }
 
         return results;
     }
@@ -123,11 +121,61 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         return results;
     }
 
+    @Override
+    public Map<String, Long> getNumberClientsEnroles(EPeriode periode) {
+        Map<String, Long> results = new HashMap<String, Long>();
+        if(periode == null) periode = EPeriode.JOUR;
+
+        switch(periode) {
+            case SEMAINE:
+                results = this.numberClients("semaine", results, LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                break;
+            case MOIS:
+                results = this.numberClients("mois", results, LocalDate.now().withDayOfMonth(1).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                break;
+            default:
+                results = this.numberClients("jour", results, LocalDate.now().atStartOfDay(), LocalDate.now().atTime(23, 59));
+        }
+
+        return results;
+    }
+
     private Query getQueryCarte(String typeAbonnement) {
         String typeAbonnementId = typeAbonnementDao.findByLibelle(typeAbonnement).get().getId();
 
         Query query = new Query(Criteria.where("typeAbonnementId").is(typeAbonnementId).andOperator(Criteria.where("active").is(true)));
 
         return query;
+    }
+
+    private Map<String, Long> numberClients(String periode, Map<String, Long> results, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        Long nombreCommandes = countNombreResults(1, dateDebut, dateFin, Compte.class, "COMPTE_PARTICULIER", false);
+        results.put(periode, nombreCommandes);
+
+        return results;
+    }
+
+    private Map<String, Long> numberAbonnements(String periode, Map<String, Long> results, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        Long nombreCommandes = countNombreResults(1, dateDebut, dateFin, Abonnement.class, null, false);
+        results.put(periode, nombreCommandes);
+
+        return results;
+    }
+
+    private Long countNombreResults(Integer statut, LocalDateTime dateDebut, LocalDateTime dateFin, Class<?> cls, String type, Boolean deleted) {
+        final Query query = new Query();
+        final List<Criteria> criterias = new ArrayList<>();
+
+        if (statut != null) criterias.add(Criteria.where("statut").is(statut));
+        if (dateDebut != null) criterias.add(Criteria.where("dateCreation").gte(dateDebut));
+        if (dateFin != null) criterias.add(Criteria.where("dateCreation").lte(dateFin));
+        if (type != null) criterias.add(Criteria.where("type").lte(type));
+        if (deleted != null) criterias.add(Criteria.where("deleted").is(deleted));
+
+        query.addCriteria(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()])));
+
+        Long nombreCommandes = mongoTemplate.count(query, cls);
+
+        return nombreCommandes;
     }
 }
