@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -22,10 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class StatistiquesServiceImpl implements StatistiquesService {
@@ -55,20 +50,41 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     }
 
     @Override
-    public Map<String, Long> getNumberAbonnement(EPeriode periode) {
-       Map<String, Long> results = new HashMap<String, Long>();
+    public Map<String, String> getMontantAbonnement(EPeriode periode) {
+        Map<String, String> results = new HashMap<String, String>();
         if(periode == null) periode = EPeriode.JOUR;
+        LocalDateTime dateDebut;
+        LocalDateTime dateFin;
 
         switch(periode) {
             case SEMAINE:
-                results = this.numberAbonnements("semaine", results, LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                dateDebut = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
+                dateFin = LocalDate.now().atTime(23, 59);
                 break;
             case MOIS:
-                results = this.numberAbonnements("mois", results, LocalDate.now().withDayOfMonth(1).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                dateDebut = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+                dateFin = LocalDate.now().atTime(23, 59);
                 break;
             default:
-                results = this.numberAbonnements("jour", results, LocalDate.now().atStartOfDay(), LocalDate.now().atTime(23, 59));
+                dateDebut = LocalDate.now().atStartOfDay();
+                dateFin = LocalDate.now().atTime(23, 59);
         }
+
+        final Query query = new Query();
+        final List<Criteria> criterias = new ArrayList<>();
+
+        criterias.add(Criteria.where("createdDate").gte(dateDebut));
+        criterias.add(Criteria.where("createdDate").lte(dateFin));
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))),
+                l -> new Document("$group", new Document("_id", Arrays.asList())
+                        .append("montantTotal", new Document("$sum", new Document("$toDouble", "$prixCarte")))
+                )
+        );
+
+        Document montantDoc = mongoTemplate.aggregate(aggregation, Abonnement.class, Document.class).getUniqueMappedResult();
+        results.put("montant", montantDoc.get("montantTotal").toString());
 
         return results;
     }
@@ -128,13 +144,13 @@ public class StatistiquesServiceImpl implements StatistiquesService {
 
         switch(periode) {
             case SEMAINE:
-                results = this.numberClients("semaine", results, LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                results = this.numberClients(results, LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay(), LocalDate.now().atTime(23, 59));
                 break;
             case MOIS:
-                results = this.numberClients("mois", results, LocalDate.now().withDayOfMonth(1).atStartOfDay(), LocalDate.now().atTime(23, 59));
+                results = this.numberClients(results, LocalDate.now().withDayOfMonth(1).atStartOfDay(), LocalDate.now().atTime(23, 59));
                 break;
             default:
-                results = this.numberClients("jour", results, LocalDate.now().atStartOfDay(), LocalDate.now().atTime(23, 59));
+                results = this.numberClients(results, LocalDate.now().atStartOfDay(), LocalDate.now().atTime(23, 59));
         }
 
         return results;
@@ -148,16 +164,9 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         return query;
     }
 
-    private Map<String, Long> numberClients(String periode, Map<String, Long> results, LocalDateTime dateDebut, LocalDateTime dateFin) {
+    private Map<String, Long> numberClients(Map<String, Long> results, LocalDateTime dateDebut, LocalDateTime dateFin) {
         Long nombreCommandes = countNombreResults(1, dateDebut, dateFin, Compte.class, "COMPTE_PARTICULIER", false);
-        results.put(periode, nombreCommandes);
-
-        return results;
-    }
-
-    private Map<String, Long> numberAbonnements(String periode, Map<String, Long> results, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        Long nombreCommandes = countNombreResults(1, dateDebut, dateFin, Abonnement.class, null, false);
-        results.put(periode, nombreCommandes);
+        results.put("clients", nombreCommandes);
 
         return results;
     }
