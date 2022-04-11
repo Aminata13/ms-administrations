@@ -36,9 +36,9 @@ public class StatistiquesController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @ApiOperation(value = "Nombre d'abonnements")
+    @ApiOperation(value = "Montant des abonnements par jour, semaine et mois")
     @GetMapping("/abonnements")
-    public ResponseEntity<?> getNombreAbonnement(@RequestParam(required = false) EPeriode periode) {
+    public ResponseEntity<?> getMontantAbonnement(@RequestParam(required = false) EPeriode periode) {
         Map<String, String> result = this.service.getMontantAbonnement(periode);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
