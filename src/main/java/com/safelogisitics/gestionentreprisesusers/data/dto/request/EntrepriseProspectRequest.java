@@ -23,7 +23,6 @@ public class EntrepriseProspectRequest {
   @NotBlank
   private String telephone;
 
-  @NotBlank
   private String mobile;
 
   private String adresse;
@@ -59,7 +58,8 @@ public class EntrepriseProspectRequest {
   }
 
   public String getMobile() {
-    return this.mobile.replaceAll("\\s+","");
+    if (this.mobile != null) return this.mobile.replaceAll("\\s+","");
+    return null;
   }
 
   public String getAdresse() {

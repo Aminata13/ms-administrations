@@ -168,6 +168,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     entreprise.setRaisonSociale(request.getRaisonSociale());
     entreprise.setEmail(request.getEmail());
     entreprise.setTelephone(request.getTelephone());
+    entreprise.setMobile(request.getMobile());
     entreprise.setAdresse(request.getAdresse());
     entreprise.setLogo(request.getLogo());
 
