@@ -85,7 +85,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
 
         Document montantDoc = mongoTemplate.aggregate(aggregation, Abonnement.class, Document.class).getUniqueMappedResult();
         if (montantDoc != null) results.put("montant", montantDoc.get("montantTotal").toString());
-        else results.put("montant", null);
+        else results.put("montant", "0");
 
         return results;
     }
