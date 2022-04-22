@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeEvenementDao;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeEvenement;
+import com.safelogisitics.gestionentreprisesusers.service.TypeEvenementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.*;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
@@ -9,8 +9,14 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.EPaimentValidation;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
+import com.safelogisitics.gestionentreprisesusers.service.CommissionService;
+import com.safelogisitics.gestionentreprisesusers.service.FirebaseMessagingService;
+import com.safelogisitics.gestionentreprisesusers.service.PDFGeneratorService;
+import com.safelogisitics.gestionentreprisesusers.service.SMSService;
+import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,6 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
   private PaiementValidationDao paiementValidationDao;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   MongoTemplate mongoTemplate;
 
   @Autowired

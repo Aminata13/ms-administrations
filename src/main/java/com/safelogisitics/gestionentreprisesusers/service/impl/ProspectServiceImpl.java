@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,9 +22,13 @@ import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Prospect;
+import com.safelogisitics.gestionentreprisesusers.service.EntrepriseService;
+import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
+import com.safelogisitics.gestionentreprisesusers.service.ProspectService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -57,6 +61,7 @@ public class ProspectServiceImpl implements ProspectService {
     private InfosPersoService infosPersoService;
 
     @Autowired
+    @Qualifier(value = "mongoTemplate")
     private MongoTemplate mongoTemplate;
 
     @Override

@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,10 @@ import java.util.Optional;
 import com.safelogisitics.gestionentreprisesusers.data.dao.EquipementDao;
 import com.safelogisitics.gestionentreprisesusers.data.model.Equipement;
 import com.safelogisitics.gestionentreprisesusers.data.model.FournitureEquipement;
+import com.safelogisitics.gestionentreprisesusers.service.EquipementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -23,6 +25,7 @@ public class EquipementServiceImpl implements EquipementService {
   private EquipementDao equipementDao;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Override

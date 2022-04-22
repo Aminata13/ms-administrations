@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,9 +19,11 @@ import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
 import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
+import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -51,6 +53,7 @@ public class AbonnementServiceImpl implements AbonnementService {
   private EntrepriseDao entrepriseDao;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Override

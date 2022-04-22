@@ -10,6 +10,7 @@ import com.safelogisitics.gestionentreprisesusers.data.model.CommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.repository.custom.CommissionRepositoryCustom;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Repository;
 public class CommissionRepositoryCustomImpl implements CommissionRepositoryCustom {
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Override

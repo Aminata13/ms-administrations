@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,11 +40,13 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.ESMSData;
 import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
 import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.SMSModel;
+import com.safelogisitics.gestionentreprisesusers.service.SMSService;
 
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -89,6 +91,7 @@ public class SMSServiceImpl implements SMSService {
   private ObjectMapper objectMapper;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Override

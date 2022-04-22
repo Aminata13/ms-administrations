@@ -1,11 +1,11 @@
-package com.safelogisitics.gestionentreprisesusers.data.repository.custom.impl;
+package com.safelogisitics.gestionentreprisesusers.data.shared.repository.custom.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.InfosPersoSearchRequestDto;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
-import com.safelogisitics.gestionentreprisesusers.data.repository.custom.InfosPersoRepositoryCustom;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedInfosPersoModel;
+import com.safelogisitics.gestionentreprisesusers.data.shared.repository.custom.SharedInfosPersoRepositoryCustom;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +22,18 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class InfosPersoRepositoryCustomImpl implements InfosPersoRepositoryCustom {
+public class SharedInfosPersoRepositoryCustomImpl implements SharedInfosPersoRepositoryCustom {
 
   @Autowired
-  @Qualifier(value = "mongoTemplate")
-  private MongoTemplate mongoTemplate;
+  @Qualifier(value = "sharedMongoTemplate")
+  private MongoTemplate sharedMongoTemplate;
+
+  public SharedInfosPersoRepositoryCustomImpl(MongoTemplate sharedMongoTemplate) {
+    this.sharedMongoTemplate = sharedMongoTemplate;
+  }
 
   @Override
-  public Page<InfosPersoModel> customSearch(InfosPersoSearchRequestDto infosPersoSearch, Pageable pageable) {
+  public Page<SharedInfosPersoModel> customSearch(InfosPersoSearchRequestDto infosPersoSearch, Pageable pageable) {
     final List<AggregationOperation> listAggregations = new ArrayList<AggregationOperation>();
     final List<Criteria> listCritarias = new ArrayList<>();
 
@@ -60,14 +64,14 @@ public class InfosPersoRepositoryCustomImpl implements InfosPersoRepositoryCusto
 
     Aggregation aggregation = Aggregation.newAggregation(listAggregations);
 
-    Document aggregationResult = mongoTemplate.aggregate(aggregation, InfosPersoModel.class, Document.class)
+    Document aggregationResult = sharedMongoTemplate.aggregate(aggregation, SharedInfosPersoModel.class, Document.class)
       .getUniqueMappedResult();
     
     if (aggregationResult == null)
       return new PageImpl<>(new ArrayList<>(), pageable, 0);
 
     return new PageImpl<>(
-      aggregationResult.getList("infosPersos", InfosPersoModel.class),
+      aggregationResult.getList("infosPersos", SharedInfosPersoModel.class),
       pageable,
       aggregationResult.getInteger("count")
     );

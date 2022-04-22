@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -35,13 +35,20 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.data.repository.InfosPersoRepository;
+import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
+import com.safelogisitics.gestionentreprisesusers.service.EmailService;
+import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
+import com.safelogisitics.gestionentreprisesusers.service.RoleService;
+import com.safelogisitics.gestionentreprisesusers.service.SMSService;
+import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
+import com.safelogisitics.gestionentreprisesusers.service.UserService;
 import com.safelogisitics.gestionentreprisesusers.util.ClientNumberGeneratorUtils;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
-import org.apache.xpath.operations.Bool;
 import org.bson.Document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -105,6 +112,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   private EntrepriseDao entrepriseDao;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Autowired

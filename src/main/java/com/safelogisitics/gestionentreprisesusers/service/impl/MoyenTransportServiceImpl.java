@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,8 +9,10 @@ import java.util.Optional;
 import com.safelogisitics.gestionentreprisesusers.data.dao.MoyenTransportDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.MoyenTransportSearchDto;
 import com.safelogisitics.gestionentreprisesusers.data.model.MoyenTransport;
+import com.safelogisitics.gestionentreprisesusers.service.MoyenTransportService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,7 @@ public class MoyenTransportServiceImpl implements MoyenTransportService {
   MoyenTransportDao moyenTransportDao;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   MongoTemplate mongoTemplate;
 
   @Override

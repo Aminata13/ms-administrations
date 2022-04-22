@@ -1,12 +1,14 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EPeriode;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
+import com.safelogisitics.gestionentreprisesusers.service.StatistiquesService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,6 +27,7 @@ import java.util.*;
 @Service
 public class StatistiquesServiceImpl implements StatistiquesService {
 
+    @Qualifier(value = "mongoTemplate")
     private MongoTemplate mongoTemplate;
     private CompteDao compteDao;
     private TypeAbonnementDao typeAbonnementDao;

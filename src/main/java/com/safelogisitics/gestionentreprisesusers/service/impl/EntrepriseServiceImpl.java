@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,12 @@ import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.NumeroCarte;
+import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
+import com.safelogisitics.gestionentreprisesusers.service.EntrepriseService;
+import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,6 +58,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
   private AbonnementService abonnementService;
 
   @Autowired
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   @Autowired

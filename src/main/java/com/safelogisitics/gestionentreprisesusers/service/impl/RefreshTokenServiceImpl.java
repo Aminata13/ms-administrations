@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.RefreshTokenDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.data.model.RefreshToken;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
+import com.safelogisitics.gestionentreprisesusers.service.RefreshTokenService;
 import com.safelogisitics.gestionentreprisesusers.web.exception.TokenRefreshException;
 import com.safelogisitics.gestionentreprisesusers.web.security.jwt.JwtConfig;
 

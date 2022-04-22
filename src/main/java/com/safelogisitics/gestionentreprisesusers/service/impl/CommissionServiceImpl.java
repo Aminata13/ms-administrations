@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
@@ -13,8 +13,10 @@ import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementCommissionModel;
 import com.safelogisitics.gestionentreprisesusers.data.repository.CommissionRepository;
 import com.safelogisitics.gestionentreprisesusers.data.repository.PaiementCommissionRepository;
+import com.safelogisitics.gestionentreprisesusers.service.CommissionService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,7 @@ public class CommissionServiceImpl implements CommissionService {
 
   private PaiementCommissionRepository paiementCommissionRepository;
 
+  @Qualifier(value = "mongoTemplate")
   private MongoTemplate mongoTemplate;
 
   private ObjectMapper objectMapper;

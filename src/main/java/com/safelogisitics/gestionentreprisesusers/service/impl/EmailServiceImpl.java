@@ -1,4 +1,4 @@
-package com.safelogisitics.gestionentreprisesusers.service;
+package com.safelogisitics.gestionentreprisesusers.service.impl;
 
 import java.io.File;
 import java.util.concurrent.Executors;
@@ -6,6 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import com.safelogisitics.gestionentreprisesusers.service.EmailService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
