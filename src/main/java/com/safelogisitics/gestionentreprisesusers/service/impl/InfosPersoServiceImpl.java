@@ -11,7 +11,6 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.EntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.EquipementDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.MoyenTransportDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.NumeroCarteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
@@ -65,9 +64,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class InfosPersoServiceImpl implements InfosPersoService {
-
-  @Autowired
-  private InfosPersoDao infosPersoDao;
 
   @Autowired
   private InfosPersoRepository infosPersoRepository; 
@@ -125,7 +121,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public UserInfosResponse getUserInfos() {
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    InfosPersoModel infosPerso = infosPersoDao.findById(currentUser.getInfosPerso().getId()).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(currentUser.getInfosPerso().getId()).get();
     User user = userDao.findByInfosPersoId(currentUser.getInfosPerso().getId()).get();
     Abonnement abonnement = null;
     Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(currentUser.getInfosPerso().getId());
@@ -149,7 +145,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     Optional<Compte> _gerant = compteDao.findById(entreprise.getGerantId());
     if (_gerant.isPresent()) {
-      gerant = infosPersoDao.findById(_gerant.get().getInfosPersoId()).get();
+      gerant = infosPersoRepository.findById(_gerant.get().getInfosPersoId()).get();
     }
     Optional<Abonnement> _abonnement = abonnementDao.findByEntrepriseId(entreprise.getId());
     if (_abonnement.isPresent()) {
@@ -161,7 +157,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public UserInfosResponse getUserInfos(String id) {
-    InfosPersoModel infosPerso = infosPersoDao.findById(id).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(id).get();
     User user = userDao.findByInfosPersoId(id).get();
     Abonnement abonnement = null;
     Optional<Abonnement> _abonnement = abonnementService.getByCompteClientInfosPersoId(id);
@@ -178,7 +174,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       return null;
     }
 
-    InfosPersoModel infosPerso = infosPersoDao.findById(compteExist.get().getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(compteExist.get().getInfosPersoId()).get();
     
     Optional<Abonnement> abonnement = abonnementDao.findByCompteClientId(id);
 
@@ -226,7 +222,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   public Collection<Object> findAllInfosPersoByCompteIds(Set<String> ids) {
     return StreamSupport.stream(compteDao.findAllById(ids).spliterator(), false)
       .filter(compte -> !compte.isDeleted())
-      .map(compte -> infosPersoDao.findById(compte.getInfosPersoId()).get())
+      .map(compte -> infosPersoRepository.findById(compte.getInfosPersoId()).get())
       .collect(Collectors.toList());
   }
 
@@ -237,7 +233,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       return null;
     }
 
-    return infosPersoDao.findById(compteExist.get().getInfosPersoId());
+    return infosPersoRepository.findById(compteExist.get().getInfosPersoId());
   }
 
   @Override
@@ -324,12 +320,12 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public Optional<InfosPersoModel> findInfosPersoById(String id) {
-    return infosPersoDao.findById(id);
+    return infosPersoRepository.findById(id);
   }
 
   @Override
   public Page<InfosPersoModel> getInfosPersos(Pageable pageable) {
-    return infosPersoDao.findByComptesIsNull(pageable);
+    return infosPersoRepository.findByComptesIsNull(pageable);
   }
 
   @Override
@@ -340,7 +336,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
-    return infosPersoDao.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPersoModel, UserInfosResponse>() {
+    return infosPersoRepository.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPersoModel, UserInfosResponse>() {
       @Override
       public UserInfosResponse apply(InfosPersoModel infosPerso) {
         User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
@@ -367,7 +363,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       .map(compte -> compte.getInfosPersoId())
       .collect(Collectors.toList());
 
-    return infosPersoDao.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPersoModel, UserInfosResponse>() {
+    return infosPersoRepository.findByIdInOrderByDateCreationDesc(ids, pageable).map(new Function<InfosPersoModel, UserInfosResponse>() {
       @Override
       public UserInfosResponse apply(InfosPersoModel infosPerso) {
         User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
@@ -402,14 +398,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     infosPerso.setAnneeNaissance(infosPersoRequest.getAnneeNaissance());
 
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public InfosPersoModel updateInfosPerso(String id, InfosPersoRequest infosPersoRequest) {
-    Optional<InfosPersoModel> _infosPerso = infosPersoDao.findById(id);
+    Optional<InfosPersoModel> _infosPerso = infosPersoRepository.findById(id);
     InfosPersoModel _infosPersoExist = findInfosPerso(infosPersoRequest.getEmail(), infosPersoRequest.getTelephone(), infosPersoRequest.getNumeroPermis(), infosPersoRequest.getNumeroPiece());
 
     if (!_infosPerso.isPresent()) {
@@ -433,7 +429,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     infosPerso.setNumeroPermis(infosPersoRequest.getNumeroPermis());
     infosPerso.setNumeroPiece(infosPersoRequest.getNumeroPiece());
 
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
@@ -466,14 +462,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteCompteAdministrateur(String infosPersoId) {
-    Optional<InfosPersoModel> infosPerso = infosPersoDao.findById(infosPersoId);
+    Optional<InfosPersoModel> infosPerso = infosPersoRepository.findById(infosPersoId);
 
     if (infosPerso.isPresent()) {
       deleteCompte(infosPersoId, ECompteType.COMPTE_ADMINISTRATEUR);
@@ -512,7 +508,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
@@ -526,7 +522,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
 
     Compte compte = _compte.get();
-    InfosPersoModel infosPerso = infosPersoDao.findById(compte.getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(compte.getInfosPersoId()).get();
 
     for (AffectationEquipement affectationEquipement : affectationEquipements) {
       Optional<Equipement> _equipement = equipementDao.findById(affectationEquipement.getIdEquipement());
@@ -574,7 +570,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     infosPerso.updateCompte(compte);
 
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     if (!errors.toString().equals("")) {
       throw new IllegalArgumentException(errors.toString());
@@ -591,7 +587,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       throw new IllegalArgumentException("Cet utilisateur n'a pas de compte agent.");
 
     Compte compte = _compte.get();
-    InfosPersoModel infosPerso = infosPersoDao.findById(compte.getInfosPersoId()).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(compte.getInfosPersoId()).get();
 
     Optional<MoyenTransport> _moyenTransport = moyenTransportDao.findById(moyenTransportId);
 
@@ -614,14 +610,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
     infosPerso.updateCompte(compte);
 
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteCompteAgent(String infosPersoId) {
-    Optional<InfosPersoModel> infosPerso = infosPersoDao.findById(infosPersoId);
+    Optional<InfosPersoModel> infosPerso = infosPersoRepository.findById(infosPersoId);
 
     if (infosPerso.isPresent()) {
       deleteCompte(infosPersoId, ECompteType.COMPTE_COURSIER);
@@ -649,14 +645,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setServiceConciergeries(request.getServiceConciergeries());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteComptePrestataire(String infosPersoId) {
-    Optional<InfosPersoModel> infosPerso = infosPersoDao.findById(infosPersoId);
+    Optional<InfosPersoModel> infosPerso = infosPersoRepository.findById(infosPersoId);
 
     if (infosPerso.isPresent()) {
       deleteCompte(infosPersoId, ECompteType.COMPTE_PRESTATAIRE);
@@ -728,14 +724,14 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compteDao.save(compte);
 
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   @Override
   public void deleteCompteEntreprise(String infosPersoId) {
-    Optional<InfosPersoModel> infosPerso = infosPersoDao.findById(infosPersoId);
+    Optional<InfosPersoModel> infosPerso = infosPersoRepository.findById(infosPersoId);
 
     if (infosPerso.isPresent()) {
       deleteCompte(infosPersoId, ECompteType.COMPTE_ENTREPRISE);
@@ -752,7 +748,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compteDao.save(compte);
 
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     User user = userDao.findByInfosPersoId(infosPerso.getId()).get();
 
@@ -773,7 +769,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     if (!compteExist.isPresent() && !compteExist.get().isDeleted())
       throw new IllegalArgumentException("Ce client n'existe pas!");
 
-    InfosPersoModel infosPerso = infosPersoDao.findById(id).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(id).get();
     User user = userDao.findByInfosPersoId(id).get();
 
     return new UserInfosResponse(infosPerso, null, user);
@@ -791,7 +787,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
 
   @Override
   public void deleteCompteClient(String infosPersoId) {
-    Optional<InfosPersoModel> infosPerso = infosPersoDao.findById(infosPersoId);
+    Optional<InfosPersoModel> infosPerso = infosPersoRepository.findById(infosPersoId);
 
     if (infosPerso.isPresent()) {
       abonnementService.deleteAbonnement(infosPersoId);
@@ -892,7 +888,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
         null);
 
         UserInfosResponse _infosPerso = createCompteClient(registerRequest);
-        infosPerso = infosPersoDao.findById(_infosPerso.getId()).get();
+        infosPerso = infosPersoRepository.findById(_infosPerso.getId()).get();
     }
 
     UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -953,7 +949,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
       public UserInfosResponse apply(Abonnement abonnement) {
         String infosPersoId = abonnement.getCompteClient().getInfosPersoId();
 
-        InfosPersoModel infosPerso = infosPersoDao.findById(infosPersoId).get();
+        InfosPersoModel infosPerso = infosPersoRepository.findById(infosPersoId).get();
         User user = userDao.findByInfosPersoId(infosPersoId).get();
 
         return new UserInfosResponse(infosPerso, abonnement, user);
@@ -1049,7 +1045,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setNumeroReference(ClientNumberGeneratorUtils.generateReference(null,  compteType));
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     if (!userDao.existsByInfosPersoId(infosPerso.getId())) {
       String password = _password != null ? _password : alphaNumericString(1, 8);
@@ -1065,7 +1061,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
   }
 
   private InfosPersoModel updateCompte(String id, InfosPersoAvecCompteRequest request, ECompteType compteType) {
-    Optional<InfosPersoModel> infosPersoExist = infosPersoDao.findById(id);
+    Optional<InfosPersoModel> infosPersoExist = infosPersoRepository.findById(id);
     if (!infosPersoExist.isPresent())
       throw new IllegalArgumentException("Cet utilisateur n'existe pas!");
 
@@ -1087,13 +1083,13 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setStatut(request.getStatut());
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     return infosPerso;
   }
 
   private void deleteCompte(String infosPersoId, ECompteType compteType) {
-    InfosPersoModel infosPerso = infosPersoDao.findById(infosPersoId).get();
+    InfosPersoModel infosPerso = infosPersoRepository.findById(infosPersoId).get();
 
     Optional<Compte> _compte = compteDao.findByInfosPersoIdAndType(infosPerso.getId(), compteType);
 
@@ -1106,7 +1102,7 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setNumeroReference(null);
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
-    infosPersoDao.save(infosPerso);
+    infosPersoRepository.save(infosPerso);
 
     if (compteDao.countByInfosPersoIdAndDeletedIsFalse(infosPersoId) == 0) {
       userDao.deleteByInfosPersoId(infosPersoId);

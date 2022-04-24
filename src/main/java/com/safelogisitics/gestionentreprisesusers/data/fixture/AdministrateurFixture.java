@@ -4,11 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
-import com.safelogisitics.gestionentreprisesusers.data.dao.InfosPersoDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.RoleDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.UserDao;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
@@ -16,6 +17,8 @@ import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
 import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.Role;
 import com.safelogisitics.gestionentreprisesusers.data.model.User;
+import com.safelogisitics.gestionentreprisesusers.data.repository.InfosPersoRepository;
+import com.safelogisitics.gestionentreprisesusers.service.SharedInfosPersoService;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +27,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdministrateurFixture implements CommandLineRunner {
 
-  private InfosPersoDao infosPersoDao;
+  public static int noOfQuickServiceThreads = 20;
+	
+	private ScheduledExecutorService quickService = Executors.newScheduledThreadPool(noOfQuickServiceThreads); 
+
+  private InfosPersoRepository infosPersoRepository;
+
+  private SharedInfosPersoService sharedInfosPersoService;
 
   private CompteDao compteDao;
 
@@ -37,19 +46,21 @@ public class AdministrateurFixture implements CommandLineRunner {
   private ObjectMapper objectMapper;
 
   public AdministrateurFixture(
-    InfosPersoDao infosPersoDao,
     CompteDao compteDao,
     RoleDao roleDao,
     UserDao userDao,
     PasswordEncoder encoder,
-    ObjectMapper objectMapper
+    ObjectMapper objectMapper,
+    InfosPersoRepository infosPersoRepository,
+    SharedInfosPersoService sharedInfosPersoService
   ) {
-    this.infosPersoDao = infosPersoDao;
     this.compteDao = compteDao;
     this.roleDao = roleDao;
     this.userDao = userDao;
     this.encoder = encoder;
     this.objectMapper = objectMapper;
+    this.infosPersoRepository = infosPersoRepository;
+    this.sharedInfosPersoService = sharedInfosPersoService;
   }
 
   @Override
@@ -69,7 +80,7 @@ public class AdministrateurFixture implements CommandLineRunner {
 
       infosPerso.addCompte(compte);
 
-      infosPersoDao.save(infosPerso);
+      infosPersoRepository.save(infosPerso);
 
       Optional<User> _user = userDao.findByInfosPersoId(infosPerso.getId());
 
@@ -86,6 +97,25 @@ public class AdministrateurFixture implements CommandLineRunner {
         userDao.save(user);
       }
     }
+
+    quickService.submit(new Runnable() {
+			@Override
+			public void run() {
+        Iterable<Compte> comptes = compteDao.findAll();
+          for (Compte compte : comptes) {
+            try{
+              if (compte.getInfosPersoId() != null) {
+                sharedInfosPersoService.convertToSharedInfosPersoRequestAndSave(
+                  compte.getInfosPersoId()
+                );
+              }
+            }catch(Exception e){
+              System.out.println("Exception occur while send a mail : ");
+            }
+          }
+			}
+		});
+    
   }
 
   private Compte handleCompteData(String infosPersoId, Role role) {
@@ -109,10 +139,10 @@ public class AdministrateurFixture implements CommandLineRunner {
 
   private InfosPersoModel getInfosPerso(InfosPersoModel newInfosPerso) {
     InfosPersoModel infosPerso = null;
-    Optional<InfosPersoModel> _infosPerso = infosPersoDao.findByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone());
+    Optional<InfosPersoModel> _infosPerso = infosPersoRepository.findByEmailOrTelephone(newInfosPerso.getEmail(), newInfosPerso.getTelephone());
 
     if (!_infosPerso.isPresent()) {
-      infosPersoDao.save(newInfosPerso);
+      infosPersoRepository.save(newInfosPerso);
       infosPerso = newInfosPerso;
     } else {
       infosPerso = _infosPerso.get();

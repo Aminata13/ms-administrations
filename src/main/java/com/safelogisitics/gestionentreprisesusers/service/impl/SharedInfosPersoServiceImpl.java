@@ -50,14 +50,11 @@ public class SharedInfosPersoServiceImpl implements SharedInfosPersoService {
 
   @Override
   public SharedInfosPersoModel createOrUpdateInfosPerso(SharedInfosPersoRequestDto infosPersoRequest) {
-    SharedInfosPersoModel infosPerso = null;
-
-    if (this.infosPersoRepository.existsById(infosPersoRequest.getInfosPerso().getId())) {
-      infosPerso = this.infosPersoRepository.findById(infosPersoRequest.getInfosPerso().getId()).get();
-    } else {
-      infosPerso = this.objectMapper.convertValue(infosPersoRequest.getInfosPerso(), SharedInfosPersoModel.class);
-    }
-    
+    SharedInfosPersoModel infosPerso = this.objectMapper.convertValue(
+      infosPersoRequest.getInfosPerso(), 
+      SharedInfosPersoModel.class
+    );
+  
     if (infosPersoRequest.getAbonnement() != null && infosPersoRequest.getAbonnement().getId() != null) {
       infosPerso.setAbonnement(objectMapper, infosPersoRequest.getAbonnement());
     }
