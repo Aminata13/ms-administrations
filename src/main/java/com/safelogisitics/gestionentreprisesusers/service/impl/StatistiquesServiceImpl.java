@@ -8,7 +8,6 @@ import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.service.StatistiquesService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,7 +26,6 @@ import java.util.*;
 @Service
 public class StatistiquesServiceImpl implements StatistiquesService {
 
-    @Qualifier(value = "mongoTemplate")
     private MongoTemplate mongoTemplate;
     private CompteDao compteDao;
     private TypeAbonnementDao typeAbonnementDao;
@@ -124,6 +122,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     public Map<String, Long> getNumberCartes() {
 
         Query query = this.getQueryCarte("Silver");
+
         Long silver = mongoTemplate.count(query, NumeroCarte.class);
 
         Query query1 = this.getQueryCarte("Gold");
@@ -137,6 +136,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         results.put("silver", silver);
         results.put("gold", gold);
         results.put("platinum", platinum);
+
 
         return results;
     }

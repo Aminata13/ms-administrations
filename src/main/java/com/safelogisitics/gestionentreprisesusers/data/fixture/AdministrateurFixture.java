@@ -110,7 +110,7 @@ public class AdministrateurFixture implements CommandLineRunner {
                 );
               }
             }catch(Exception e){
-              System.out.println("Exception occur while send a mail : ");
+              System.out.println(e.getMessage());
             }
           }
 			}

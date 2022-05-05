@@ -50,6 +50,25 @@ public class SharedEntrepriseModel extends AuditMetadata {
 
   public SharedEntrepriseModel() {}
 
+  public SharedEntrepriseModel(String id, String typeEntreprise, String domaineActivite, Set<String> typePartenariats, String denomination, String ninea, String raisonSociale, String gerantId, String email, String telephone, String mobile, String adresse, String numeroCarte, boolean deleted, LocalDateTime dateCreation, String logo) {
+    this.id = id;
+    this.typeEntreprise = typeEntreprise;
+    this.domaineActivite = domaineActivite;
+    this.typePartenariats = typePartenariats;
+    this.denomination = denomination;
+    this.ninea = ninea;
+    this.raisonSociale = raisonSociale;
+    this.gerantId = gerantId;
+    this.email = email;
+    this.telephone = telephone;
+    this.mobile = mobile;
+    this.adresse = adresse;
+    this.numeroCarte = numeroCarte;
+    this.deleted = deleted;
+    this.dateCreation = dateCreation;
+    this.logo = logo;
+  }
+
   public String getId() {
     return id;
   }

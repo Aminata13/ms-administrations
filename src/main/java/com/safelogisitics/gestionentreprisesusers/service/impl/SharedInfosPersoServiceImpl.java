@@ -1,7 +1,5 @@
 package com.safelogisitics.gestionentreprisesusers.service.impl;
 
-import java.util.HashSet;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safelogisitics.gestionentreprisesusers.data.dao.AbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
@@ -11,10 +9,11 @@ import com.safelogisitics.gestionentreprisesusers.data.shared.dto.SharedInfosPer
 import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedInfosPersoModel;
 import com.safelogisitics.gestionentreprisesusers.data.shared.repository.SharedInfosPersoRepository;
 import com.safelogisitics.gestionentreprisesusers.service.SharedInfosPersoService;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 
 @Service
 public class SharedInfosPersoServiceImpl implements SharedInfosPersoService {
