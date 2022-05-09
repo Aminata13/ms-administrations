@@ -182,7 +182,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         if (statut != null) criterias.add(Criteria.where("statut").is(statut));
         if (dateDebut != null) criterias.add(Criteria.where("dateCreation").gte(dateDebut));
         if (dateFin != null) criterias.add(Criteria.where("dateCreation").lte(dateFin));
-        if (type != null) criterias.add(Criteria.where("type").lte(type));
+        if (type != null) criterias.add(Criteria.where("type").is(type));
         if (deleted != null) criterias.add(Criteria.where("deleted").is(deleted));
 
         query.addCriteria(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()])));
