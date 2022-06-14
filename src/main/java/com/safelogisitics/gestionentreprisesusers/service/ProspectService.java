@@ -18,7 +18,7 @@ public interface ProspectService {
 
   public Map<String, Object> updateProspect(String id, ProspectRequest prospectRequest, boolean force);
 
-  public Map<String, Object> enroleProspect(String id, ProspectRequest prospectRequest);
+  public Map<String, Object> enroleProspect(String id, ProspectRequest prospectRequest, EProspecteurType prospecteurType);
 
   public void deleteProspect(String id);
 }

@@ -73,7 +73,7 @@ public class ProspectController {
   @PutMapping("/enrole/{id}")
   @PreAuthorize("hasPermission('GESTION_PROSPECTS', 'ACTIVATE')")
 	public ResponseEntity<Map<String, Object>> enroleProspect(@PathVariable(value = "id") String id, @Valid @RequestBody ProspectRequest request) {
-    Map<String, Object> prospect = prospectService.enroleProspect(id, request);
+    Map<String, Object> prospect = prospectService.enroleProspect(id, request, EProspecteurType.COMPTE_ADMINISTRATEUR);
 
 		return ResponseEntity.status(HttpStatus.OK).body(prospect);
 	}

@@ -209,7 +209,7 @@ public class ProspectServiceImpl implements ProspectService {
 
         Prospect newProspect = prospectDao.save(prospect);
         if (newProspect.getNiveauAvancement() == 100) {
-            enroleProspect(newProspect.getId(), prospectRequest);
+            enroleProspect(newProspect.getId(), prospectRequest, EProspecteurType.COMPTE_ENTREPRISE);
         }
 
         return getDefaultFields(prospect);
@@ -302,7 +302,7 @@ public class ProspectServiceImpl implements ProspectService {
     }
 
     @Override
-    public Map<String, Object> enroleProspect(String id, ProspectRequest prospectRequest) {
+    public Map<String, Object> enroleProspect(String id, ProspectRequest prospectRequest, EProspecteurType prospecteurType) {
         updateProspect(id, prospectRequest, true);
         Prospect prospect = prospectDao.findById(id).get();
 
@@ -311,7 +311,9 @@ public class ProspectServiceImpl implements ProspectService {
         }
 
         UserDetailsImpl currentUser = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Compte enroleur = compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get();
+        Compte enroleur = prospecteurType.equals(EProspecteurType.COMPTE_ADMINISTRATEUR) ?
+                compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ADMINISTRATEUR).get() :
+                compteDao.findByInfosPersoIdAndType(currentUser.getInfosPerso().getId(), ECompteType.COMPTE_ENTREPRISE).get();
 
         if (!prospect.getProspecteurId().equals(enroleur.getId()) && prospect.getProspecteurType().equals(EProspecteurType.COMPTE_ADMINISTRATEUR)) {
             throw new IllegalArgumentException("Vous ne pouvez pas.");
