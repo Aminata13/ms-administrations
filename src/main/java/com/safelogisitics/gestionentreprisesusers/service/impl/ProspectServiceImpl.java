@@ -209,7 +209,7 @@ public class ProspectServiceImpl implements ProspectService {
 
         Prospect newProspect = prospectDao.save(prospect);
         if (newProspect.getNiveauAvancement() == 100) {
-            enroleProspect(newProspect.getId(), prospectRequest, EProspecteurType.COMPTE_ENTREPRISE);
+            enroleProspect(newProspect.getId(), prospectRequest, prospecteurType);
         }
 
         return getDefaultFields(prospect);
