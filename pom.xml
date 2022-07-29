@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.safelogisitics</groupId>
 	<artifactId>gestion-entreprises-users</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>gestion-entreprises-users</name>
 	<description>Gateway safe logisitics</description>
 	<properties>
