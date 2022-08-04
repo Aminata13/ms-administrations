@@ -256,7 +256,7 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setTotalPoints(abonnement.getPointGratuites());
       transaction.setApprobation(1);
 
-      String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement, nous vous informons que %s points gratuits vous ont été offerts.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      String smsText  = String.format("Bonjour M/Mme %s,\nPour vous remercier de votre fidélité, SafeLogistics vous offre %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), abonnement.getPointGratuites());
 
       SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement points gratuits", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -268,13 +268,13 @@ public class TransactionServiceImpl implements TransactionService {
       }
       transaction.setMontant(transactionRequest.getMontant());
       transaction.setApprobation(0);
+
+      String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+              infosPerso.getNomComplet(), transactionRequest.getMontant());
+
+      SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
+      smsService.sendSms(sms);
     }
-
-    String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-            infosPerso.getNomComplet(), transactionRequest.getMontant());
-
-    SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
-    smsService.sendSms(sms);
 
     transaction.setType(transactionType);
 
