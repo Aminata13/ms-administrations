@@ -1,6 +1,6 @@
 [
   {
-    "signature": "RAK IN TAK",
+    "signature": "SFLOGISTICS",
     "subject": "Commande livraison effectuée",
     "content": "Bonjour %s,\nVotre commande n° %s à bien été enregistrée.\nVotre livraison sera effectuée dans les 02 heures qui suivent.\nLe code de retrait est %s.\nPour le retrait de votre colis si vous disposez d’une carte merci de la remettre à l’agent pour scan.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     "data": ["CLIENT_NOM_COMPLET", "COMMANDE_NUMERO", "COMMANDE_CODE_RETRAIT"],
@@ -9,7 +9,7 @@
     "motCle": "commande-livraison-effectuer"
   },
   {
-    "signature": "ALL IN ONE",
+    "signature": "SFLOGISTICS",
     "subject": "Commande prestation effectuée",
     "content": "Bonjour %s,\nVotre demande n° %s à bien été enregistrée.\nNous vous contacterons ultérieurement par téléphone pour discuter des détails.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     "data": ["CLIENT_NOM_COMPLET", "COMMANDE_NUMERO"],

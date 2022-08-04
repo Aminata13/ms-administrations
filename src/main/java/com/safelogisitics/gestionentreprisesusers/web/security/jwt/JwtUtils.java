@@ -148,7 +148,7 @@ public class JwtUtils {
             String smsText = String.format("Bonjour M/Mme %s, nous vous informons que vous n'avez pas encore de carte SafeLogistics.\nMerci de contacter notre service client pour vous en procurer.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
                     user.getInfosPerso().getNomComplet());
 
-            SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Abonnement", smsText, Arrays.asList(user.getInfosPerso().getTelephone()));
+            SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Abonnement", smsText, Arrays.asList(user.getInfosPerso().getTelephone()));
 
             smsService.sendSms(sms);
         }

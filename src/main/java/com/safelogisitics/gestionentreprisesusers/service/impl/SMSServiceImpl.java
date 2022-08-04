@@ -101,7 +101,7 @@ public class SMSServiceImpl implements SMSService {
 			public void run() {
         System.setProperty("javax.net.ssl.trustStore", new ClassPathResource("externals/clienttrust").getPath());
         String documentJSON = handleSmsRequestsToJson(messages);
-        // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+        // String documentJSON="{\"messages\":[{\"signature\": \"SFLOGISTICS\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
         String inputString = null;
         int responseCode = 0;
         String password = token;
@@ -159,7 +159,7 @@ public class SMSServiceImpl implements SMSService {
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-    // String documentJSON="{\"messages\":[{\"signature\": \"RAK IN TAK\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
+    // String documentJSON="{\"messages\":[{\"signature\": \"SFLOGISTICS\",\"subject\": \"Validation paiement\",\"content\": \"TEST SMS: Bonjour votre paiement est validé\",\"recipients\": [{\"id\": \"1\",\"value\": \"221775919686\"}]}]}";
     String inputString = null;
     int responseCode = 0;
     String password = token;

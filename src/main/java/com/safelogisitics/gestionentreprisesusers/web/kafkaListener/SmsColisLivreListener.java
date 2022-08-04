@@ -50,7 +50,7 @@ public class SmsColisLivreListener {
             String smsText = String.format("Bonjour M/Mme %s, votre colis n°%s vient d'être livré.\nPour des réclamations, veuillez saisir le service commercial.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
                     compte.getUserInfos().getNomComplet(), smsColisLivreDto.getNumeroCommande());
 
-            SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Colis livre", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
+            SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Colis livre", smsText, Arrays.asList(compte.getUserInfos().getTelephone()));
 
             smsService.sendSms(sms);
         }

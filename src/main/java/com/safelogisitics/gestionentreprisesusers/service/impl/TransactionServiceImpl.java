@@ -200,7 +200,7 @@ public class TransactionServiceImpl implements TransactionService {
         InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
         String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                 infosPerso.getNomComplet(), transaction.getMontant(), abonnement.getSolde(), abonnement.getPointGratuites());
-        SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
+        SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
         smsService.sendSms(sms);
       }
       transaction.setApprobation(approbation);
@@ -259,7 +259,7 @@ public class TransactionServiceImpl implements TransactionService {
       String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement, nous vous informons que %s points gratuits vous ont été offerts.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), abonnement.getPointGratuites());
 
-      SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement points gratuits", smsText, Arrays.asList(infosPerso.getTelephone()));
+      SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement points gratuits", smsText, Arrays.asList(infosPerso.getTelephone()));
       smsService.sendSms(sms);
 
     } else {
@@ -273,7 +273,7 @@ public class TransactionServiceImpl implements TransactionService {
     String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
             infosPerso.getNomComplet(), transactionRequest.getMontant());
 
-    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
+    SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
     smsService.sendSms(sms);
 
     transaction.setType(transactionType);
@@ -352,7 +352,7 @@ public class TransactionServiceImpl implements TransactionService {
     String smsText  = String.format("Bonjour M/Mme %s. Le code de validation de votre commande est: %s. Le code expire dans 5 minutes.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     infosPerso.getNomComplet(), paiementValidation.getCodeValidation());
 
-    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));
+    SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));
 
     smsService.sendSms(sms);
 
@@ -475,7 +475,7 @@ public class TransactionServiceImpl implements TransactionService {
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde(), abonnement.getPointGratuites());
     }
 
-    SendSmsRequest sms = new SendSmsRequest("RAK IN TAK", "Paiement commande", smsText, Arrays.asList(infosPerso.getTelephone()));
+    SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Paiement commande", smsText, Arrays.asList(infosPerso.getTelephone()));
 
     smsService.sendSms(sms);
 
