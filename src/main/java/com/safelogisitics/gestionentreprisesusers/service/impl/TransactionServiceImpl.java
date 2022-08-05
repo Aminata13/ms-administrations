@@ -471,7 +471,7 @@ public class TransactionServiceImpl implements TransactionService {
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
     }
     else {
-      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que le solde de votre compte principal est de %sFCFA et celui de votre compte point gratuit est de %s.\n• Safelogistics vous remercie\nService commercial : 78 306 45 45",
+      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que le solde de votre compte principal est de %sFCFA et celui de votre compte points gratuits est de %s.\n• Safelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde(), abonnement.getPointGratuites());
     }
 
