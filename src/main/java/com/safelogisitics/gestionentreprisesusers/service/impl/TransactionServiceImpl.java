@@ -198,7 +198,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setNouveauSolde(abonnement.getSolde());
 
         InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
-        String smsText  = String.format("Bonjour M/Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+        String smsText  = String.format("Bonjour M./Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                 infosPerso.getNomComplet(), transaction.getMontant(), abonnement.getSolde(), abonnement.getPointGratuites());
         SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
         smsService.sendSms(sms);
@@ -256,7 +256,7 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setTotalPoints(abonnement.getPointGratuites());
       transaction.setApprobation(1);
 
-      String smsText  = String.format("Bonjour M/Mme %s,\nPour vous remercier de votre fidélité, SafeLogistics vous offre %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      String smsText  = String.format("Bonjour M./Mme %s,\nPour vous remercier de votre fidélité, SafeLogistics vous offre %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), abonnement.getPointGratuites());
 
       SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement points gratuits", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -269,7 +269,7 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setMontant(transactionRequest.getMontant());
       transaction.setApprobation(0);
 
-      String smsText  = String.format("Bonjour M/Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      String smsText  = String.format("Bonjour M./Mme %s,\nVotre demande de rechargement de %s FCFA est en cours de traitement, vous recevrez un message dès que la demande sera traitée.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), transactionRequest.getMontant());
 
       SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -349,7 +349,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     paiementValidationDao.save(paiementValidation);
 
-    String smsText  = String.format("Bonjour M/Mme %s. Le code de validation de votre commande est: %s. Le code expire dans 5 minutes.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
+    String smsText  = String.format("Bonjour M./Mme %s. Le code de validation de votre commande est: %s. Le code expire dans 5 minutes.\nSafelogistics vous remercie.\nService commercial : 78 306 45 45",
     infosPerso.getNomComplet(), paiementValidation.getCodeValidation());
 
     SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Code de validation paiement", smsText, Arrays.asList(infosPerso.getTelephone()));
@@ -435,7 +435,7 @@ public class TransactionServiceImpl implements TransactionService {
         throw new IllegalArgumentException("Nombre de points à débiter invalide.");
       }
       if (abonnement.getPointGratuites() < transactionRequest.getPoints().longValue()) {
-        throw new IllegalArgumentException(String.format("Nombre de points gratuite insuffisant, total points gratuites actuel:", abonnement.getPointGratuites()));
+        throw new IllegalArgumentException(String.format("Nombre de points gratuits insuffisant, total points gratuites actuel:", abonnement.getPointGratuites()));
       }
       abonnement.debiterPointGratuites(transactionRequest.getPoints().longValue());
       transaction.setPoints(transactionRequest.getPoints().longValue());
@@ -467,11 +467,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     String smsText;
     if (abonnement.getSolde().compareTo(BigDecimal.valueOf(1500)) == -1) {
-      smsText  = String.format("Bonjour M/Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
     }
     else {
-      smsText  = String.format("Bonjour M/Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\n Vous disposez également de %s points gratuits.\n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que le solde de votre compte principal est de %sFCFA et celui de votre compte point gratuit est de %s.\n• Safelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde(), abonnement.getPointGratuites());
     }
 
