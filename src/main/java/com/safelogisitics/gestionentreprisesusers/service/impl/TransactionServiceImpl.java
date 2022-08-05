@@ -467,7 +467,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     String smsText;
     if (abonnement.getSolde().compareTo(BigDecimal.valueOf(1500)) == -1) {
-      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\nPour recharger votre compte vous pouvez le faire via \n• WAVE : xxxxxx\n• OM : xxxxxxxxx\n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+      smsText  = String.format("Bonjour M./Mme %s,\nSuite au paiement de votre commande n° %s, nous vous informons que votre solde actuel est de %sFCFA.\nPour recharger votre compte vous pouvez le faire via \n• Espèces (dans nos locaux ou points relais)\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
               infosPerso.getNomComplet(), transaction.getNumeroCommande(), abonnement.getSolde());
     }
     else {
