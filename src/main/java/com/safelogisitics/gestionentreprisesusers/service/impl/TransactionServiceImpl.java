@@ -256,8 +256,8 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.setTotalPoints(abonnement.getPointGratuites());
       transaction.setApprobation(1);
 
-      String smsText  = String.format("Bonjour M./Mme %s,\nPour vous remercier de votre fidélité, SafeLogistics vous offre %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
-              infosPerso.getNomComplet(), abonnement.getPointGratuites());
+      String smsText  = String.format("Bonjour M./Mme %s,\nPour vous remercier de votre fidélité, SafeLogistics vous offre %s points gratuits et le solde actuel de votre compte points gratuits est %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+              infosPerso.getNomComplet(), transactionRequest.getPoints(), abonnement.getPointGratuites());
 
       SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement points gratuits", smsText, Arrays.asList(infosPerso.getTelephone()));
       smsService.sendSms(sms);
