@@ -198,7 +198,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setNouveauSolde(abonnement.getSolde());
 
         InfosPersoModel infosPerso = infosPersoDao.findById(abonnement.getCompteClient().getInfosPersoId()).get();
-        String smsText  = String.format("Bonjour M./Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que votre solde actuel est de %sFCFA.\nVous disposez également de %s points gratuits.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
+        String smsText  = String.format("Bonjour M./Mme %s,\nSuite à votre rechargement de %s FCFA, nous vous informons que le solde actuel de votre compte principal est de %sFCFA et celui de votre compte points gratuits est de %s.\nSafelogistics vous remercie\nService commercial : 78 306 45 45",
                 infosPerso.getNomComplet(), transaction.getMontant(), abonnement.getSolde(), abonnement.getPointGratuites());
         SendSmsRequest sms = new SendSmsRequest("SFLOGISTICS", "Rechargement", smsText, Arrays.asList(infosPerso.getTelephone()));
         smsService.sendSms(sms);

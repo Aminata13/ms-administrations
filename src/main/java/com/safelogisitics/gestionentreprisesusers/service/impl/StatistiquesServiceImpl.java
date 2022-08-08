@@ -4,6 +4,7 @@ import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EPeriode;
+import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.service.StatistiquesService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -22,6 +24,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 @Service
 public class StatistiquesServiceImpl implements StatistiquesService {
@@ -51,7 +55,7 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     }
 
     @Override
-    public Map<String, String> getMontantAbonnement(EPeriode periode) {
+    public Map<String, String> getMontantAbonnementEtRechargement(EPeriode periode) {
         Map<String, String> results = new HashMap<String, String>();
         if(periode == null) periode = EPeriode.JOUR;
         LocalDateTime dateDebut;
@@ -71,22 +75,8 @@ public class StatistiquesServiceImpl implements StatistiquesService {
                 dateFin = LocalDate.now().atTime(23, 59);
         }
 
-        final Query query = new Query();
-        final List<Criteria> criterias = new ArrayList<>();
-
-        criterias.add(Criteria.where("createdDate").gte(dateDebut));
-        criterias.add(Criteria.where("createdDate").lte(dateFin));
-
-        Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))),
-                l -> new Document("$group", new Document("_id", Arrays.asList())
-                        .append("montantTotal", new Document("$sum", new Document("$toDouble", "$prixCarte")))
-                )
-        );
-
-        Document montantDoc = mongoTemplate.aggregate(aggregation, Abonnement.class, Document.class).getUniqueMappedResult();
-        if (montantDoc != null) results.put("montant", montantDoc.get("montantTotal").toString());
-        else results.put("montant", "0");
+        int total = this.getMontantAbonnement(dateDebut, dateFin) + this.getMontantRechargement(dateDebut, dateFin);
+        results.put("montant", String.valueOf(total));
 
         return results;
     }
@@ -158,6 +148,50 @@ public class StatistiquesServiceImpl implements StatistiquesService {
         }
 
         return results;
+    }
+
+    private int getMontantAbonnement(LocalDateTime dateDebut, LocalDateTime dateFin) {
+        final Query query = new Query();
+        final List<Criteria> criterias = new ArrayList<>();
+
+        criterias.add(Criteria.where("createdDate").gte(dateDebut));
+        criterias.add(Criteria.where("createdDate").lte(dateFin));
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))),
+                l -> new Document("$group", new Document("_id", Arrays.asList())
+                        .append("montantTotal", new Document("$sum", new Document("$toInt", "$prixCarte")))
+                )
+        );
+
+        Document montantDoc = mongoTemplate.aggregate(aggregation, Abonnement.class, Document.class).getUniqueMappedResult();
+        int montantAbonnement = 0;
+
+        if (montantDoc != null) montantAbonnement = Integer.parseInt(montantDoc.get("montantTotal").toString());
+
+        return montantAbonnement;
+    }
+
+    private int getMontantRechargement(LocalDateTime dateDebut, LocalDateTime dateFin) {
+        final Query query = new Query();
+        final List<Criteria> criterias = new ArrayList<>();
+
+        criterias.add(Criteria.where("createdDate").gte(dateDebut));
+        criterias.add(Criteria.where("createdDate").lte(dateFin));
+        criterias.add(Criteria.where("action").is(ETransactionAction.RECHARGEMENT));
+        criterias.add(Criteria.where("approbation").is(1));
+
+        Aggregation aggregation = newAggregation(
+                Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))),
+                Aggregation.group().sum(ConvertOperators.ToInt.toInt("$montant")).as("montantTotal")
+        );
+
+        Document montantDoc = mongoTemplate.aggregate(aggregation, Transaction.class, Document.class).getUniqueMappedResult();
+        int montantRechargement = 0;
+
+        if (montantDoc != null) montantRechargement = Integer.parseInt(montantDoc.get("montantTotal").toString());
+
+        return montantRechargement;
     }
 
     private Query getQueryCarte(String typeAbonnement) {

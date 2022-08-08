@@ -11,7 +11,7 @@ public interface StatistiquesService {
 
     public Map<String, Long> getNumberClients();
 
-    public Map<String, String> getMontantAbonnement(EPeriode periode);
+    public Map<String, String> getMontantAbonnementEtRechargement(EPeriode periode);
 
     public Page<Evenement> getFutureEvents(Pageable pageable);
 
