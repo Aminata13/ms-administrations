@@ -151,7 +151,6 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     }
 
     private int getMontantAbonnement(LocalDateTime dateDebut, LocalDateTime dateFin) {
-        final Query query = new Query();
         final List<Criteria> criterias = new ArrayList<>();
 
         criterias.add(Criteria.where("createdDate").gte(dateDebut));
@@ -173,7 +172,6 @@ public class StatistiquesServiceImpl implements StatistiquesService {
     }
 
     private int getMontantRechargement(LocalDateTime dateDebut, LocalDateTime dateFin) {
-        final Query query = new Query();
         final List<Criteria> criterias = new ArrayList<>();
 
         criterias.add(Criteria.where("createdDate").gte(dateDebut));
