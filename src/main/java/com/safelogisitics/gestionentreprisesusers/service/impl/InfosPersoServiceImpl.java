@@ -1100,6 +1100,11 @@ public class InfosPersoServiceImpl implements InfosPersoService {
     compte.setDeleted(true);
     compte.setNumeroEmei(null);
     compte.setNumeroReference(null);
+    compte.setEntreprise(null);
+    compte.setEntrepriseId(null);
+    compte.setEntrepriseUser(false);
+    compte.setMoyenTransportId(null);
+    compte.setAbonnement(null);
     compteDao.save(compte);
     infosPerso.updateCompte(compte);
     infosPersoRepository.save(infosPerso);

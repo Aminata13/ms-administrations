@@ -17,3 +17,6 @@ The following was discovered as part of building this project:
   "username": "admin@safelogistics.com",
   "password": "azerty"
 }
+
+pour builder en production
+mvn clean package -Dspring.profiles.active=prod

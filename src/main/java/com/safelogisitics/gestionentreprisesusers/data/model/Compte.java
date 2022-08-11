@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.data.model;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,7 +12,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.threeten.bp.LocalDateTime;
 
 /*
 Lister => READ, Créer => CREATE, Editer => UPDATE, Valider => VALIDATE, Affecter => ASSIGN, Tracker => TRACK
@@ -186,7 +186,7 @@ public class Compte extends AuditMetadata {
 
   public void setEntreprise(Entreprise entreprise) {
     this.entreprise = entreprise;
-    this.entrepriseId = entreprise.getId();
+    this.entrepriseId = entreprise != null ? entreprise.getId() : null;
   }
 
   public String getEntrepriseId() {
