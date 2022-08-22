@@ -65,6 +65,8 @@ public interface TransactionService {
 
   public void annulerPaiementTransaction(PaiementServiceDto paiementServiceDto);
 
+  public String getFactureCommandeNumber(String numeroCommande);
+
   public ByteArrayInputStream getRapportByAbonnement(String id, String rapportType, String dateDebut, String dateFin);
 
   public File getExtraitCompteClientPdf(String clientId, EClientType clientType, String dateDebut, String dateFin) throws DocumentException, IOException;

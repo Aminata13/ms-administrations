@@ -322,4 +322,11 @@ public class AbonnementController {
 	public ResponseEntity<?> historiqueTransactionsApprobations(@PageableDefault(size = 20) Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findMyHistoriqueTransactionsApprobations(pageable));
 	}
+
+    @ApiOperation(value = "Numéro de facture d'une commande d'un client particulier", tags = "Gestion des abonnements")
+    @GetMapping("/transactions/numero_factures/{numeroCommande}")
+    @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
+    public ResponseEntity<?> getNumeroFactureParticulier(@PathVariable(required = true) String numeroCommande) {
+        return ResponseEntity.status(HttpStatus.OK).body(transactionService.getFactureCommandeNumber(numeroCommande));
+    }
 }

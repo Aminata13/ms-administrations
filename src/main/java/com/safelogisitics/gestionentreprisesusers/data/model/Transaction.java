@@ -62,6 +62,12 @@ public class Transaction extends AuditMetadata {
   @Field(value = "dateApprobation")
   private LocalDateTime dateApprobation;
 
+  @Field(value = "initialFacture")
+  private int initialFacture;
+
+  @Field(value = "ordreFacture")
+  private int ordreFacture;
+
   public Transaction() {
     this.dateCreation = LocalDateTime.now();
   }
@@ -209,5 +215,22 @@ public class Transaction extends AuditMetadata {
 
   public void setDateApprobation(LocalDateTime dateApprobation) {
     this.dateApprobation = dateApprobation;
+  }
+
+  public int getInitialFacture() {
+    return initialFacture;
+  }
+
+  public void setInitialFacture(int initialFacture) {
+    this.initialFacture = initialFacture;
+  }
+
+
+  public int getOrdreFacture() {
+    return ordreFacture;
+  }
+
+  public void setOrdreFacture(int ordreFacture) {
+    this.ordreFacture = ordreFacture;
   }
 }
