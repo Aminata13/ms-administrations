@@ -1,26 +1,28 @@
 package com.safelogisitics.gestionentreprisesusers.service.impl;
 
+import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dao.*;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.*;
-import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
-import com.safelogisitics.gestionentreprisesusers.data.enums.EPaimentValidation;
-import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
-import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.enums.*;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
-import com.safelogisitics.gestionentreprisesusers.service.CommissionService;
-import com.safelogisitics.gestionentreprisesusers.service.FirebaseMessagingService;
-import com.safelogisitics.gestionentreprisesusers.service.PDFGeneratorService;
-import com.safelogisitics.gestionentreprisesusers.service.SMSService;
-import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
+import com.safelogisitics.gestionentreprisesusers.data.shared.dao.SharedEntrepriseDao;
+import com.safelogisitics.gestionentreprisesusers.data.shared.dao.SharedInfosPersoDao;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedEntrepriseModel;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedInfosPersoModel;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedTransactionModel;
+import com.safelogisitics.gestionentreprisesusers.service.*;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,6 +70,10 @@ public class TransactionServiceImpl implements TransactionService {
   MongoTemplate mongoTemplate;
 
   @Autowired
+  @Qualifier(value = "sharedMongoTemplate")
+  MongoTemplate sharedMongoTemplate;
+
+  @Autowired
   PDFGeneratorService PDFGeneratorService;
 
   @Autowired
@@ -79,6 +87,14 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Autowired
 	PasswordEncoder encoder;
+  @Autowired
+  private ExtraitComptePdfService extraitComptePdfService;
+
+  @Autowired
+  private SharedInfosPersoDao sharedInfosPersoDao;
+
+  @Autowired
+  private SharedEntrepriseDao sharedEntrepriseDao;
 
   @Override
   public Page<Transaction> findByDateCreation(LocalDate _dateCreation, Pageable pageable) {
@@ -540,6 +556,65 @@ public class TransactionServiceImpl implements TransactionService {
       return null;
 
     return PDFGeneratorService.exportToPdf(transactions, idClient, dateDebut, dateFin);
+  }
+
+  @Override
+  public File getExtraitCompteClientPdf(String clientId, EClientType clientType, String dateDebut, String dateFin) throws DocumentException, IOException {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    LocalDateTime debut = LocalDate.parse(dateDebut, formatter).atTime(0,0);
+    LocalDateTime fin = LocalDate.parse(dateFin, formatter).atTime(23, 59);
+    String prenom;
+    String nom;
+    String adresse;
+
+    if (clientType.equals(EClientType.COMPTE_PARTICULIER)) {
+      Optional<SharedInfosPersoModel> _infosPerso = sharedInfosPersoDao.findByComptesId(clientId);
+
+      if (!_infosPerso.isPresent()) {
+        throw new IllegalArgumentException("Ce client n'existe pas.");
+      }
+
+      SharedInfosPersoModel infosPerso = _infosPerso.get();
+      prenom = infosPerso.getPrenom();
+      nom = infosPerso.getNom();
+      adresse = infosPerso.getAdresse();
+    }
+    else {
+      Optional<SharedEntrepriseModel> _entreprise = sharedEntrepriseDao.findByIdAndDeletedIsFalse(clientId);
+      if (!_entreprise.isPresent()) {
+        throw new IllegalArgumentException("Cette entreprise n'existe pas.");
+      }
+
+      SharedEntrepriseModel entreprise = _entreprise.get();
+      prenom = entreprise.getDenomination();
+      nom = "";
+      adresse = entreprise.getAdresse();
+    }
+    
+    List<ExtraitCompteDataModel> extraitCompteData = this.extraitCompteQuery(clientId, null, debut, fin);
+
+    return extraitComptePdfService.exportToPdf(debut, fin, extraitCompteData, prenom, nom, adresse);
+  }
+
+  private List<ExtraitCompteDataModel> extraitCompteQuery(String clientId, String entrepriseId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+    List<Criteria> criterias = new ArrayList<>();
+    if (clientId != null) criterias.add(Criteria.where("abonnement.compteClient.id").is(clientId));
+    if (entrepriseId != null) criterias.add(Criteria.where("abonnement.entreprise.id").is(entrepriseId));
+    criterias.add(Criteria.where("dateApprobation").gte(dateDebut));
+    criterias.add(Criteria.where("dateApprobation").lte(dateFin));
+    criterias.add(Criteria.where("approbation").is(1));
+
+    Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))),
+            Aggregation.lookup("commandes", "numeroCommande", "numero", "commande"),
+            Aggregation.unwind("commande", true),
+            Aggregation.addFields().addFieldWithValue("commande", "$commande").build(),
+            Aggregation.sort(Sort.Direction.ASC, "dateApprobation")
+            );
+
+    List<ExtraitCompteDataModel> result = sharedMongoTemplate.aggregate(aggregation, SharedTransactionModel.class, ExtraitCompteDataModel.class).getMappedResults();
+
+    return result;
   }
 
   private Abonnement getAbonnementByInfosPerso(String infosPersoId) {

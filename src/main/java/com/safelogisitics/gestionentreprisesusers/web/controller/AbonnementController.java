@@ -1,13 +1,20 @@
 package com.safelogisitics.gestionentreprisesusers.web.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dao.CompteDao;
 import com.safelogisitics.gestionentreprisesusers.data.dao.TypeAbonnementDao;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.CreatePaiementDto;
@@ -17,20 +24,17 @@ import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTrans
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.EnrollmentRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
-import com.safelogisitics.gestionentreprisesusers.data.model.Abonnement;
-import com.safelogisitics.gestionentreprisesusers.data.model.Compte;
-import com.safelogisitics.gestionentreprisesusers.data.model.InfosPersoModel;
-import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
-import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
-import com.safelogisitics.gestionentreprisesusers.data.model.TypeAbonnement;
+import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.service.AbonnementService;
 import com.safelogisitics.gestionentreprisesusers.service.InfosPersoService;
 import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -274,6 +278,30 @@ public class AbonnementController {
       .body(new InputStreamResource(file));
 	}
 
+    @ApiOperation(value = "Extrait de compte d'un client", tags = "Gestion des abonnements")
+    @GetMapping("/transactions/extrait_compte/pdf")
+    @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
+    public void extraitCompteClient(
+            HttpServletResponse response,
+            @RequestParam String idClient,
+            @RequestParam EClientType clientType,
+            @RequestParam String dateDebut,
+            @RequestParam String dateFin
+    ) {
+        try {
+            Path file = Paths.get(transactionService.getExtraitCompteClientPdf(idClient, clientType, dateDebut, dateFin).getAbsolutePath());
+            if (Files.exists(file)) {
+                response.setContentType("application/pdf");
+                response.addHeader("Content-Disposition",
+                        "attachment; filename=" + file.getFileName());
+                Files.copy(file, response.getOutputStream());
+                response.getOutputStream().flush();
+            }
+        } catch (DocumentException | IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
   @ApiOperation(value = "Liste des transactions à approuver", tags = "Gestion des abonnements")
   @GetMapping("/transactions/approbations")
   @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
@@ -281,7 +309,7 @@ public class AbonnementController {
     return ResponseEntity.status(HttpStatus.OK).body(transactionService.findTransactionsEnApprobations(pageable));
 	}
 
-  @ApiOperation(value = "Liste des transactions d'un abonnement, NB: on passe en paramètre l'id des transaction", tags = "Gestion des abonnements")
+  @ApiOperation(value = "Approuver une transaction", tags = "Gestion des abonnements")
   @PostMapping("/transactions/approbations")
   @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_TRANSACTIONS', 'VALIDATE')")
 	public ResponseEntity<?> approuveTransaction(@Valid @RequestBody ApprouveTransactionRequest request) {
