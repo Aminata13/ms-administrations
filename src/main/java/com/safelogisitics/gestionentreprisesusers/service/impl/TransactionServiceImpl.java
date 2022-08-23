@@ -529,20 +529,29 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String getFactureCommandeNumber(String numeroCommande) {
+    public Map<String, String> getFactureCommandeNumber(String numeroCommande) {
         Optional<Transaction> transactionExist = this.transactionDao.findByNumeroCommande(numeroCommande);
         if (!transactionExist.isPresent()) {
             throw new IllegalArgumentException("Cette transaction n'existe pas.");
         }
         Transaction transaction = transactionExist.get();
+        Map<String, String> result = new HashMap<String, String>();
 
         int month = LocalDate.now().getMonthValue();
         String monthStr = month < 10 ? "0" + month : String.valueOf(month);
 
-        int m = (int) Math.pow(10, 2);
+        int m = (int) Math.pow(10, 1);
         int randomInt = m + new Random().nextInt(9 * m);
 
-        return transaction.getInitialFacture() + monthStr + "-" + transaction.getOrdreFacture() + randomInt;
+        if(transaction.getInitialFacture() == 0) {
+            result.put("numero", "300" + monthStr + "-" + "001" + randomInt);
+            return result;
+        }
+
+        String ordre = String.format("%1$" + 3 + "s", transaction.getOrdreFacture()).replace(' ', '0');
+        result.put("numero", transaction.getInitialFacture() + monthStr + "-" + ordre + randomInt);
+
+        return result;
     }
 
     @Override
@@ -695,7 +704,7 @@ public class TransactionServiceImpl implements TransactionService {
         int ordreFacture = 1;
 
         Optional<Transaction> transactionExist = this.transactionDao.findFirstByActionOrderByIdDesc(ETransactionAction.PAIEMENT);
-        if (transactionExist.isPresent()) {
+        if (transactionExist.isPresent() && transactionExist.get().getInitialFacture() != 0) {
             Transaction transaction = transactionExist.get();
             int initial = transaction.getInitialFacture();
             int ordre = transaction.getOrdreFacture();
