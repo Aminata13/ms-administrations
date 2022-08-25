@@ -284,12 +284,34 @@ public class AbonnementController {
     public void extraitCompteClient(
             HttpServletResponse response,
             @RequestParam String idClient,
-            @RequestParam EClientType clientType,
             @RequestParam String dateDebut,
             @RequestParam String dateFin
     ) {
         try {
-            Path file = Paths.get(transactionService.getExtraitCompteClientPdf(idClient, clientType, dateDebut, dateFin).getAbsolutePath());
+            Path file = Paths.get(transactionService.getExtraitCompteClientPdf(idClient, dateDebut, dateFin).getAbsolutePath());
+            if (Files.exists(file)) {
+                response.setContentType("application/pdf");
+                response.addHeader("Content-Disposition",
+                        "attachment; filename=" + file.getFileName());
+                Files.copy(file, response.getOutputStream());
+                response.getOutputStream().flush();
+            }
+        } catch (DocumentException | IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @ApiOperation(value = "Extrait de compte d'une entreprise", tags = "Gestion des abonnements")
+    @GetMapping("/transactions/extrait_compte/entreprises/pdf")
+    @PreAuthorize("hasRole('COMPTE_ADMINISTRATEUR') && hasPermission('GESTION_ABONNEMENTS', 'READ')")
+    public void extraitCompteEntreprise(
+            HttpServletResponse response,
+            @RequestParam String idEntreprise,
+            @RequestParam String dateDebut,
+            @RequestParam String dateFin
+    ) {
+        try {
+            Path file = Paths.get(transactionService.getExtraitCompteEntreprisePdf(idEntreprise, dateDebut, dateFin).getAbsolutePath());
             if (Files.exists(file)) {
                 response.setContentType("application/pdf");
                 response.addHeader("Content-Disposition",
