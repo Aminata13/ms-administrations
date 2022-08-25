@@ -88,10 +88,6 @@
     padding-right: 3em;
 }
 
-.transactions .description-header {
-    padding-left: 2em;
-}
-
 .transactions .index {
     color: #0E3049;
     font-size: 13px;
@@ -185,7 +181,7 @@
 }
 
 .transactions .transaction-row .description-entreprise {
-    padding-left: 2em;
+    padding-left: 3em;
     width: 10%;
 }
 

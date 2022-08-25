@@ -633,8 +633,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         List<Criteria> factureCriteria = new ArrayList<>();
         criterias.add(Criteria.where("clientId").is(entrepriseId));
-        criterias.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").gte(debut)));
-        criterias.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").lte(fin)));
+        criterias.add(Criteria.where("createdDate").gte(debut));
+        criterias.add(Criteria.where("createdDate").lte(fin));
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[factureCriteria.size()]))),
@@ -645,13 +645,15 @@ public class TransactionServiceImpl implements TransactionService {
 
         BigDecimal montantRestant = BigDecimal.ZERO;
         for (SharedFactureModel r : result) {
-            for (PaiementFacture p : r.getPaiements()) {
-                ExtraitCompteEntrepriseData data = new ExtraitCompteEntrepriseData();
-                data.setDataType("Paiement");
-                data.setMontantPayer(p.getMontantPayer());
-                data.setMontantRestant(r.getMontantRestant());
-                data.setCreatedDate(p.getDatePaiement());
-                extraitData.add(data);
+            if(!r.getPaiements().isEmpty()) {
+                for (PaiementFacture p : r.getPaiements()) {
+                    ExtraitCompteEntrepriseData data = new ExtraitCompteEntrepriseData();
+                    data.setDataType("Paiement");
+                    data.setMontantPayer(p.getMontantPayer());
+                    data.setMontantRestant(r.getMontantRestant());
+                    data.setCreatedDate(p.getDatePaiement());
+                    extraitData.add(data);
+                }
             }
             montantRestant = montantRestant.add(r.getMontantRestant());
         }
