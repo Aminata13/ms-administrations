@@ -1,13 +1,20 @@
 package com.safelogisitics.gestionentreprisesusers.web.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.EntrepriseRequest;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.service.EntrepriseService;
 
+import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +41,9 @@ public class EntrepriseController {
 
   @Autowired
   private EntrepriseService entrepriseService;
+
+  @Autowired
+  private TransactionService transactionService;
 
   @ApiOperation(value = "Liste des entreprises")
   @GetMapping("/list")
@@ -86,4 +96,22 @@ public class EntrepriseController {
     entrepriseService.deleteEntreprise(id);
     return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Supprimé"));
 	}
+
+    @ApiOperation(value = "Extrait de compte d'une entreprise")
+    @GetMapping("/extrait_compte/pdf")
+    @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
+    public void extraitCompteEntreprise(HttpServletResponse response, @RequestParam String idEntreprise, @RequestParam String dateDebut, @RequestParam String dateFin) {
+        try {
+            Path file = Paths.get(transactionService.getExtraitCompteEntreprisePdf(idEntreprise, dateDebut, dateFin).getAbsolutePath());
+            if (Files.exists(file)) {
+                response.setContentType("application/pdf");
+                response.addHeader("Content-Disposition",
+                        "attachment; filename=" + file.getFileName());
+                Files.copy(file, response.getOutputStream());
+                response.getOutputStream().flush();
+            }
+        } catch (DocumentException | IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
