@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,9 @@ public class SharedFactureModel extends AuditMetadata {
 
     @Field(value = "paiementEffectuer")
     private boolean paiementEffectuer;
+
+    @Field(value = "dateCreation")
+    private LocalDateTime dateCreation;
 
     public SharedFactureModel() {
     }
@@ -115,5 +119,13 @@ public class SharedFactureModel extends AuditMetadata {
 
     public void setPaiementEffectuer(boolean paiementEffectuer) {
         this.paiementEffectuer = paiementEffectuer;
+    }
+
+    public LocalDateTime getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(LocalDateTime dateCreation) {
+        this.dateCreation = dateCreation;
     }
 }

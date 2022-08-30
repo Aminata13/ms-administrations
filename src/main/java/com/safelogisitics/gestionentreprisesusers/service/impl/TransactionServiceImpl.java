@@ -626,18 +626,19 @@ public class TransactionServiceImpl implements TransactionService {
         criterias.add(Criteria.where("clientId").is(entrepriseId));
         criterias.add(Criteria.where("createdDate").gte(debut));
         criterias.add(Criteria.where("createdDate").lte(fin));
+        criterias.add(Criteria.where("paiementEffectuer").is(true));
         query.addCriteria(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()])));
 
         List<ExtraitCompteEntrepriseData> extraitData = new ArrayList<>();
         sharedMongoTemplate.find(query, SharedCommandeModel.class).forEach(c -> extraitData.add(objectMapper.convertValue(c, ExtraitCompteEntrepriseData.class)));
 
         List<Criteria> factureCriteria = new ArrayList<>();
-        criterias.add(Criteria.where("clientId").is(entrepriseId));
-        criterias.add(Criteria.where("createdDate").gte(debut));
-        criterias.add(Criteria.where("createdDate").lte(fin));
+        factureCriteria.add(Criteria.where("clientId").is(entrepriseId));
+        factureCriteria.add(Criteria.where("createdDate").gte(debut));
+        factureCriteria.add(Criteria.where("createdDate").lte(fin));
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(new Criteria().andOperator(criterias.toArray(new Criteria[factureCriteria.size()]))),
+                Aggregation.match(new Criteria().andOperator(factureCriteria.toArray(new Criteria[factureCriteria.size()]))),
                 Aggregation.project("paiements", "montantRestant")
         );
 
