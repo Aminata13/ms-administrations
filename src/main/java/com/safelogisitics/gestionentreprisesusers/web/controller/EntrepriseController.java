@@ -42,9 +42,6 @@ public class EntrepriseController {
   @Autowired
   private EntrepriseService entrepriseService;
 
-  @Autowired
-  private TransactionService transactionService;
-
   @ApiOperation(value = "Liste des entreprises")
   @GetMapping("/list")
   @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
@@ -96,22 +93,4 @@ public class EntrepriseController {
     entrepriseService.deleteEntreprise(id);
     return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Supprimé"));
 	}
-
-    @ApiOperation(value = "Extrait de compte d'une entreprise")
-    @GetMapping("/extrait_compte/pdf")
-    @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
-    public void extraitCompteEntreprise(HttpServletResponse response, @RequestParam String idEntreprise, @RequestParam String dateDebut, @RequestParam String dateFin) {
-        try {
-            Path file = Paths.get(transactionService.getExtraitCompteEntreprisePdf(idEntreprise, dateDebut, dateFin).getAbsolutePath());
-            if (Files.exists(file)) {
-                response.setContentType("application/pdf");
-                response.addHeader("Content-Disposition",
-                        "attachment; filename=" + file.getFileName());
-                Files.copy(file, response.getOutputStream());
-                response.getOutputStream().flush();
-            }
-        } catch (DocumentException | IOException ex) {
-            ex.printStackTrace();
-        }
-    }
 }
