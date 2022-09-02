@@ -112,7 +112,6 @@ public class EntrepriseProfilController {
 
     @ApiOperation(value = "Extrait de compte d'une entreprise")
     @GetMapping("/extrait_compte/pdf")
-    @PreAuthorize("hasPermission('GESTION_CLIENTS', 'READ')")
     public void extraitCompteEntreprise(HttpServletResponse response, @RequestParam String idEntreprise, @RequestParam String dateDebut, @RequestParam String dateFin) {
         try {
             Path file = Paths.get(transactionService.getExtraitCompteEntreprisePdf(idEntreprise, dateDebut, dateFin).getAbsolutePath());

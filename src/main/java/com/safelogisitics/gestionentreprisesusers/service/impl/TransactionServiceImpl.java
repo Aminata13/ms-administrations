@@ -14,6 +14,7 @@ import com.safelogisitics.gestionentreprisesusers.data.shared.model.*;
 import com.safelogisitics.gestionentreprisesusers.data.shared.model.subclass.PaiementFacture;
 import com.safelogisitics.gestionentreprisesusers.service.*;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -619,6 +620,7 @@ public class TransactionServiceImpl implements TransactionService {
         SharedEntrepriseModel entreprise = _entreprise.get();
         Abonnement abonnement = this.abonnementDao.findByEntrepriseId(entrepriseId).get();
 
+        /* On récupére les commandes de l'entreprise */
         final Query query = new Query();
         final List<Criteria> criterias = new ArrayList<>();
 
@@ -632,31 +634,43 @@ public class TransactionServiceImpl implements TransactionService {
         List<ExtraitCompteEntrepriseData> extraitData = new ArrayList<>();
         sharedMongoTemplate.find(query, SharedCommandeModel.class).forEach(c -> extraitData.add(objectMapper.convertValue(c, ExtraitCompteEntrepriseData.class)));
 
+        /* On calcule la somme des montants restants des factures de l'entreprise */
         List<Criteria> factureCriteria = new ArrayList<>();
         factureCriteria.add(Criteria.where("clientId").is(entrepriseId));
-        factureCriteria.add(Criteria.where("createdDate").gte(debut));
-        factureCriteria.add(Criteria.where("createdDate").lte(fin));
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.match(new Criteria().andOperator(factureCriteria.toArray(new Criteria[factureCriteria.size()]))),
-                Aggregation.project("paiements", "montantRestant")
+                l -> new Document("$group", new Document("_id", Arrays.asList())
+                        .append("montantTotal", new Document("$sum", new Document("$toDouble", "$montantRestant")))
+                )
         );
-
-        List<SharedFactureModel> result = sharedMongoTemplate.aggregate(aggregation, SharedFactureModel.class, SharedFactureModel.class).getMappedResults();
-
+        Document montantDoc = sharedMongoTemplate.aggregate(aggregation, SharedFactureModel.class, Document.class).getUniqueMappedResult();
         BigDecimal montantRestant = BigDecimal.ZERO;
+        if (montantDoc != null) montantRestant = BigDecimal.valueOf(montantDoc.getDouble("montantTotal"));
+
+        /* On récupére les paiments de l'entreprise à partir de ses factures */
+        List<Criteria> paiementCriteria = new ArrayList<>();
+        paiementCriteria.add(Criteria.where("clientId").is(entrepriseId));
+        paiementCriteria.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").gte(debut)));
+        paiementCriteria.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").lte(fin)));
+
+        Aggregation aggregationPaiement = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().andOperator(paiementCriteria.toArray(new Criteria[paiementCriteria.size()]))),
+                Aggregation.project("paiements")
+        );
+        List<SharedFactureModel> result = sharedMongoTemplate.aggregate(aggregationPaiement, SharedFactureModel.class, SharedFactureModel.class).getMappedResults();
+
         for (SharedFactureModel r : result) {
             if(!r.getPaiements().isEmpty()) {
                 for (PaiementFacture p : r.getPaiements()) {
+                    if(p.getDatePaiement().isBefore(debut) || p.getDatePaiement().isAfter(fin)) continue;
                     ExtraitCompteEntrepriseData data = new ExtraitCompteEntrepriseData();
                     data.setDataType("Paiement");
                     data.setMontantPayer(p.getMontantPayer());
-                    data.setMontantRestant(r.getMontantRestant());
                     data.setCreatedDate(p.getDatePaiement());
                     extraitData.add(data);
                 }
             }
-            montantRestant = montantRestant.add(r.getMontantRestant());
         }
         Collections.sort(extraitData);
 

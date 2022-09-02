@@ -14,8 +14,8 @@
         <div class="en-tete">
             <img class="logo" src="images/logo-safe.png"/>
             <div class="asma-information customize-size">
-                <p>Scat Urbam</p>
-                <p>Grand Yoff villa N°F3/A</p>
+                <p>Sacre Cœur 3</p>
+                <p>Lot N° 137 4-ème étage</p>
                 <p>Tel: 78 306 45 45</p>
                 <p>Email: contact@safelogistics-senegal.com</p>
             </div>
@@ -53,8 +53,8 @@
                     <tr>
                         <th class="index-header">Date</th>
                         <th style="padding-left: 1em">Description</th>
-                        <th class="prix-header">Montant</th>
-                        <th class="prix-header">Solde</th>
+                        <th class="prix-header">Montant(FCFA)</th>
+                        <th class="prix-header">Solde(FCFA)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -121,11 +121,11 @@
                             </div>
                         </td>
                         <td class="montant">
-                            <p class="prix" th:if="${transaction.action.name() == 'RECHARGEMENT'}" th:text="${#numbers.formatDecimal(transaction.montant, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
+                            <p class="prix-paiement" th:if="${transaction.action.name() == 'RECHARGEMENT'}" th:text="${#numbers.formatDecimal(transaction.montant, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
                             <p class="prix" th:if="${transaction.action.name() == 'PAIEMENT'}" th:text="${#numbers.formatDecimal(transaction.commande.prix, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
                         </td>
                         <td>
-                            <p class="prix" th:text="${#numbers.formatDecimal(transaction.nouveauSolde, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
+                            <p class="prix-solde" th:text="${#numbers.formatDecimal(transaction.nouveauSolde, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
                         </td>
                     </tr>
                     </tbody>

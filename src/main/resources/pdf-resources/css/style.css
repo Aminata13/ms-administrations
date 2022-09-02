@@ -24,7 +24,7 @@
     clear: both;
 }
 
-.asma-information p, .client-information p, .total p, .banque-infos p, .description p, .description-entreprise p {
+.asma-information p, .client-information p, .total p, .banque-infos p, .description p {
     margin-bottom: 0.2em;
 }
 
@@ -132,6 +132,12 @@
     font-weight: bold;
 }
 
+.prix-solde {
+    color: #0E3049;
+    font-size: 15px;
+    font-weight: bold;
+}
+
 .transactions .transaction-adresse {
     width: 21em;
     height: 100%;
@@ -139,7 +145,7 @@
 }
 
 .commande-adresse {
-    width: 30em;
+    width: 25em;
     height: 100%;
     margin-top: 0.5em;
 }
@@ -177,11 +183,6 @@
 
 .transactions .transaction-row .description {
     padding-left: 1em;
-    width: 10%;
-}
-
-.transactions .transaction-row .description-entreprise {
-    padding-left: 3em;
     width: 10%;
 }
 

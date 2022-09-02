@@ -10,8 +10,6 @@ public class ExtraitCompteEntrepriseData implements Comparable<ExtraitCompteEntr
 
     private String dataType = "Commande"; /*Paiement ou Commande*/
 
-    private BigDecimal montantRestant;
-
     private BigDecimal montantPayer;
 
     private LocalDateTime createdDate;
@@ -61,14 +59,6 @@ public class ExtraitCompteEntrepriseData implements Comparable<ExtraitCompteEntr
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-    }
-
-    public BigDecimal getMontantRestant() {
-        return montantRestant;
-    }
-
-    public void setMontantRestant(BigDecimal montantRestant) {
-        this.montantRestant = montantRestant;
     }
 
     public BigDecimal getMontantPayer() {

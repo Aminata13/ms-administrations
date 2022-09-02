@@ -14,8 +14,8 @@
     <div class="en-tete">
         <img class="logo" src="images/logo-safe.png"/>
         <div class="asma-information customize-size">
-            <p>Scat Urbam</p>
-            <p>Grand Yoff villa N°F3/A</p>
+            <p>Sacré Cœur 3</p>
+            <p>Lot N° 137 4-ème étage</p>
             <p>Tel: 78 306 45 45</p>
             <p>Email: contact@safelogistics-senegal.com</p>
         </div>
@@ -52,8 +52,8 @@
                 <thead class="table-header">
                 <tr>
                     <th class="index-header">Date</th>
-                    <th style="padding-left: 3em">Description</th>
-                    <th class="prix-header">Montant</th>
+                    <th style="padding-left: 1em">Description</th>
+                    <th class="prix-header">Montant(FCFA)</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -61,7 +61,7 @@
                     <td>
                         <p class="index" th:text="${#temporals.format(datum.createdDate,'dd/MM/yyyy')}"></p>
                     </td>
-                    <td class="description-entreprise">
+                    <td class="description">
                         <div class="description-block" th:if="${datum.dataType == 'Paiement'}">
                             <p class="rechargement">Paiement</p>
                         </div>
