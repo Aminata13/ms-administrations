@@ -211,5 +211,16 @@
       "DELETE",
       "VALIDATE"
     ]
+  },
+  {
+    "libelle": "Gestion du caisse",
+    "valeur": "GESTION_CAISSE",
+    "type": "COMPTE_ADMINISTRATEUR",
+    "statut": 1,
+    "actions": [
+      "READ",
+      "CREATE",
+      "DELETE"
+    ]
   }
 ]
