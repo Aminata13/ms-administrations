@@ -3,6 +3,7 @@ package com.safelogisitics.gestionentreprisesusers.data.model;
 import com.safelogisitics.gestionentreprisesusers.data.enums.EServiceType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.subclass.*;
 import com.safelogisitics.gestionentreprisesusers.data.shared.model.subclass.Abonnement;
 
 import java.math.BigDecimal;
@@ -11,10 +12,6 @@ import java.time.LocalDateTime;
 public class ExtraitCompteDataModel {
 
     private Abonnement abonnement;
-
-    private String reference;
-
-    private ETransactionType type = ETransactionType.SOLDE_COMPTE;
 
     private ETransactionAction action;
 
@@ -25,8 +22,6 @@ public class ExtraitCompteDataModel {
     private BigDecimal montant = BigDecimal.valueOf(0);
 
     private BigDecimal nouveauSolde = BigDecimal.valueOf(0);
-
-    private LocalDateTime dateCreation;
 
     private LocalDateTime dateApprobation;
 
@@ -39,22 +34,6 @@ public class ExtraitCompteDataModel {
 
     public void setAbonnement(Abonnement abonnement) {
         this.abonnement = abonnement;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public ETransactionType getType() {
-        return type;
-    }
-
-    public void setType(ETransactionType type) {
-        this.type = type;
     }
 
     public ETransactionAction getAction() {
@@ -97,14 +76,6 @@ public class ExtraitCompteDataModel {
         this.nouveauSolde = nouveauSolde;
     }
 
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
     public LocalDateTime getDateApprobation() {
         return dateApprobation;
     }
@@ -126,8 +97,6 @@ class Commande {
     private String numero;
 
     private EServiceType type;
-
-    private String libelle;
 
     private Demenagement demenagement;
 
@@ -170,14 +139,6 @@ class Commande {
 
     public void setType(EServiceType type) {
         this.type = type;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
     }
 
     public Demenagement getDemenagement() {
@@ -274,137 +235,5 @@ class Commande {
 
     public void setPrix(BigDecimal prix) {
         this.prix = prix;
-    }
-}
-class Demenagement {
-
-    private PointGeographique adresseDepart;
-
-    private PointGeographique adresseDestination;
-
-    public Demenagement() {
-    }
-
-    public PointGeographique getAdresseDepart() {
-        return adresseDepart;
-    }
-
-    public void setAdresseDepart(PointGeographique adresseDepart) {
-        this.adresseDepart = adresseDepart;
-    }
-
-    public PointGeographique getAdresseDestination() {
-        return adresseDestination;
-    }
-
-    public void setAdresseDestination(PointGeographique adresseDestination) {
-        this.adresseDestination = adresseDestination;
-    }
-}
-
-class Pressing {
-
-    private String typeLavage;
-
-    private String vitesseLavage;
-
-    private PointGeographique adresseRecuperation;
-
-    private PointGeographique adresseLivraison;
-
-    private boolean depositionPressing;
-
-    private boolean recuperationPressing;
-
-    public Pressing() {
-    }
-
-    public String getTypeLavage() {
-        return typeLavage;
-    }
-
-    public void setTypeLavage(String typeLavage) {
-        this.typeLavage = typeLavage;
-    }
-
-    public String getVitesseLavage() {
-        return vitesseLavage;
-    }
-
-    public void setVitesseLavage(String vitesseLavage) {
-        this.vitesseLavage = vitesseLavage;
-    }
-
-    public PointGeographique getAdresseRecuperation() {
-        return adresseRecuperation;
-    }
-
-    public void setAdresseRecuperation(PointGeographique adresseRecuperation) {
-        this.adresseRecuperation = adresseRecuperation;
-    }
-
-    public PointGeographique getAdresseLivraison() {
-        return adresseLivraison;
-    }
-
-    public void setAdresseLivraison(PointGeographique adresseLivraison) {
-        this.adresseLivraison = adresseLivraison;
-    }
-
-    public boolean isDepositionPressing() {
-        return depositionPressing;
-    }
-
-    public void setDepositionPressing(boolean depositionPressing) {
-        this.depositionPressing = depositionPressing;
-    }
-
-    public boolean isRecuperationPressing() {
-        return recuperationPressing;
-    }
-
-    public void setRecuperationPressing(boolean recuperationPressing) {
-        this.recuperationPressing = recuperationPressing;
-    }
-}
-
-class Bricolage {
-
-}
-
-class Banque {
-
-    private String nomBanque;
-
-    public Banque() {
-    }
-
-    public String getNomBanque() {
-        return nomBanque;
-    }
-
-    public void setNomBanque(String nomBanque) {
-        this.nomBanque = nomBanque;
-    }
-}
-
-class Course {
-
-}
-
-class VisiteTechnique {
-
-}
-
-class TypeLivraison {
-
-    private String label;
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 }

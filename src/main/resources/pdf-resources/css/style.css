@@ -126,8 +126,26 @@
     font-weight: bold;
 }
 
+.prix-paiement {
+    color: green;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.prix-solde {
+    color: #0E3049;
+    font-size: 15px;
+    font-weight: bold;
+}
+
 .transactions .transaction-adresse {
     width: 21em;
+    height: 100%;
+    margin-top: 0.5em;
+}
+
+.commande-adresse {
+    width: 25em;
     height: 100%;
     margin-top: 0.5em;
 }

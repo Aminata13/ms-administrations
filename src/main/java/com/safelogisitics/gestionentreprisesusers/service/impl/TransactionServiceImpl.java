@@ -1,5 +1,6 @@
 package com.safelogisitics.gestionentreprisesusers.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dao.*;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
@@ -9,11 +10,11 @@ import com.safelogisitics.gestionentreprisesusers.data.enums.*;
 import com.safelogisitics.gestionentreprisesusers.data.model.*;
 import com.safelogisitics.gestionentreprisesusers.data.shared.dao.SharedEntrepriseDao;
 import com.safelogisitics.gestionentreprisesusers.data.shared.dao.SharedInfosPersoDao;
-import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedEntrepriseModel;
-import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedInfosPersoModel;
-import com.safelogisitics.gestionentreprisesusers.data.shared.model.SharedTransactionModel;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.*;
+import com.safelogisitics.gestionentreprisesusers.data.shared.model.subclass.PaiementFacture;
 import com.safelogisitics.gestionentreprisesusers.service.*;
 import com.safelogisitics.gestionentreprisesusers.web.security.services.UserDetailsImpl;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -93,6 +94,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private SharedEntrepriseDao sharedEntrepriseDao;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public Page<Transaction> findByDateCreation(LocalDate _dateCreation, Pageable pageable) {
@@ -543,7 +547,7 @@ public class TransactionServiceImpl implements TransactionService {
         int m = (int) Math.pow(10, 1);
         int randomInt = m + new Random().nextInt(9 * m);
 
-        if(transaction.getInitialFacture() == 0) {
+        if (transaction.getInitialFacture() == 0) {
             result.put("numero", "300" + monthStr + "-" + "001" + randomInt);
             return result;
         }
@@ -585,46 +589,97 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public File getExtraitCompteClientPdf(String clientId, EClientType clientType, String dateDebut, String dateFin) throws DocumentException, IOException {
+    public File getExtraitCompteClientPdf(String clientId, String dateDebut, String dateFin) throws DocumentException, IOException {
+        Optional<SharedInfosPersoModel> _infosPerso = sharedInfosPersoDao.findByComptesId(clientId);
+        if (!_infosPerso.isPresent()) {
+            throw new IllegalArgumentException("Ce client n'existe pas.");
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime debut = LocalDate.parse(dateDebut, formatter).atTime(0, 0);
         LocalDateTime fin = LocalDate.parse(dateFin, formatter).atTime(23, 59);
-        String prenom;
-        String nom;
-        String adresse;
 
-        if (clientType.equals(EClientType.COMPTE_PARTICULIER)) {
-            Optional<SharedInfosPersoModel> _infosPerso = sharedInfosPersoDao.findByComptesId(clientId);
+        SharedInfosPersoModel infosPerso = _infosPerso.get();
 
-            if (!_infosPerso.isPresent()) {
-                throw new IllegalArgumentException("Ce client n'existe pas.");
-            }
+        List<ExtraitCompteDataModel> extraitCompteData = this.extraitCompteQuery(clientId, debut, fin);
 
-            SharedInfosPersoModel infosPerso = _infosPerso.get();
-            prenom = infosPerso.getPrenom();
-            nom = infosPerso.getNom();
-            adresse = infosPerso.getAdresse();
-        } else {
-            Optional<SharedEntrepriseModel> _entreprise = sharedEntrepriseDao.findByIdAndDeletedIsFalse(clientId);
-            if (!_entreprise.isPresent()) {
-                throw new IllegalArgumentException("Cette entreprise n'existe pas.");
-            }
-
-            SharedEntrepriseModel entreprise = _entreprise.get();
-            prenom = entreprise.getDenomination();
-            nom = "";
-            adresse = entreprise.getAdresse();
-        }
-
-        List<ExtraitCompteDataModel> extraitCompteData = this.extraitCompteQuery(clientId, null, debut, fin);
-
-        return extraitComptePdfService.exportToPdf(debut, fin, extraitCompteData, prenom, nom, adresse);
+        return extraitComptePdfService.exportExtraitCompteClientToPdf(debut, fin, extraitCompteData, infosPerso.getPrenom(), infosPerso.getNom(), infosPerso.getAdresse());
     }
 
-    private List<ExtraitCompteDataModel> extraitCompteQuery(String clientId, String entrepriseId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+    @Override
+    public File getExtraitCompteEntreprisePdf(String entrepriseId, String dateDebut, String dateFin) throws DocumentException, IOException {
+        Optional<SharedEntrepriseModel> _entreprise = sharedEntrepriseDao.findByIdAndDeletedIsFalse(entrepriseId);
+        if (!_entreprise.isPresent()) {
+            throw new IllegalArgumentException("Cette entreprise n'existe pas.");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime debut = LocalDate.parse(dateDebut, formatter).atTime(0, 0);
+        LocalDateTime fin = LocalDate.parse(dateFin, formatter).atTime(23, 59);
+
+        SharedEntrepriseModel entreprise = _entreprise.get();
+        Abonnement abonnement = this.abonnementDao.findByEntrepriseId(entrepriseId).get();
+
+        /* On récupére les commandes de l'entreprise */
+        final Query query = new Query();
+        final List<Criteria> criterias = new ArrayList<>();
+
+        criterias.add(Criteria.where("statut").ne(-1));
+        criterias.add(Criteria.where("clientId").is(entrepriseId));
+        criterias.add(Criteria.where("createdDate").gte(debut));
+        criterias.add(Criteria.where("createdDate").lte(fin));
+        criterias.add(Criteria.where("paiementEffectuer").is(true));
+        query.addCriteria(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()])));
+
+        List<ExtraitCompteEntrepriseData> extraitData = new ArrayList<>();
+        sharedMongoTemplate.find(query, SharedCommandeModel.class).forEach(c -> extraitData.add(objectMapper.convertValue(c, ExtraitCompteEntrepriseData.class)));
+
+        /* On calcule la somme des montants restants des factures de l'entreprise */
+        List<Criteria> factureCriteria = new ArrayList<>();
+        factureCriteria.add(Criteria.where("clientId").is(entrepriseId));
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().andOperator(factureCriteria.toArray(new Criteria[factureCriteria.size()]))),
+                l -> new Document("$group", new Document("_id", Arrays.asList())
+                        .append("montantTotal", new Document("$sum", new Document("$toDouble", "$montantRestant")))
+                )
+        );
+        Document montantDoc = sharedMongoTemplate.aggregate(aggregation, SharedFactureModel.class, Document.class).getUniqueMappedResult();
+        BigDecimal montantRestant = BigDecimal.ZERO;
+        if (montantDoc != null) montantRestant = BigDecimal.valueOf(montantDoc.getDouble("montantTotal"));
+
+        /* On récupére les paiments de l'entreprise à partir de ses factures */
+        List<Criteria> paiementCriteria = new ArrayList<>();
+        paiementCriteria.add(Criteria.where("clientId").is(entrepriseId));
+        paiementCriteria.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").gte(debut)));
+        paiementCriteria.add(Criteria.where("paiements").elemMatch(Criteria.where("datePaiement").lte(fin)));
+
+        Aggregation aggregationPaiement = Aggregation.newAggregation(
+                Aggregation.match(new Criteria().andOperator(paiementCriteria.toArray(new Criteria[paiementCriteria.size()]))),
+                Aggregation.project("paiements")
+        );
+        List<SharedFactureModel> result = sharedMongoTemplate.aggregate(aggregationPaiement, SharedFactureModel.class, SharedFactureModel.class).getMappedResults();
+
+        for (SharedFactureModel r : result) {
+            if(!r.getPaiements().isEmpty()) {
+                for (PaiementFacture p : r.getPaiements()) {
+                    if(p.getDatePaiement().isBefore(debut) || p.getDatePaiement().isAfter(fin)) continue;
+                    ExtraitCompteEntrepriseData data = new ExtraitCompteEntrepriseData();
+                    data.setDataType("Paiement");
+                    data.setMontantPayer(p.getMontantPayer());
+                    data.setCreatedDate(p.getDatePaiement());
+                    extraitData.add(data);
+                }
+            }
+        }
+        Collections.sort(extraitData);
+
+        return extraitComptePdfService.exportExtraitCompteEntrepriseToPdf(debut, fin, abonnement.getDateCreation(), extraitData, abonnement.getNumeroCarte(), entreprise.getDenomination(), entreprise.getAdresse(), montantRestant);
+    }
+
+    private List<ExtraitCompteDataModel> extraitCompteQuery(String clientId, LocalDateTime dateDebut, LocalDateTime dateFin) {
         List<Criteria> criterias = new ArrayList<>();
-        if (clientId != null) criterias.add(Criteria.where("abonnement.compteClient.id").is(clientId));
-        if (entrepriseId != null) criterias.add(Criteria.where("abonnement.entreprise.id").is(entrepriseId));
+        criterias.add(Criteria.where("abonnement.compteClient.id").is(clientId));
         criterias.add(Criteria.where("dateApprobation").gte(dateDebut));
         criterias.add(Criteria.where("dateApprobation").lte(dateFin));
         criterias.add(Criteria.where("approbation").is(1));

@@ -69,6 +69,8 @@ public interface TransactionService {
 
   public ByteArrayInputStream getRapportByAbonnement(String id, String rapportType, String dateDebut, String dateFin);
 
-  public File getExtraitCompteClientPdf(String clientId, EClientType clientType, String dateDebut, String dateFin) throws DocumentException, IOException;
+  public File getExtraitCompteClientPdf(String clientId, String dateDebut, String dateFin) throws DocumentException, IOException;
+
+  public File getExtraitCompteEntreprisePdf(String entrepriseId, String dateDebut, String dateFin) throws DocumentException, IOException;
 
 }
