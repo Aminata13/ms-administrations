@@ -1,0 +1,215 @@
+.customize-size{
+    font-size: 13px;
+    font-family: 'Poppins';
+}
+
+.container {
+    padding: 0 2em;
+}
+
+.en-tete {
+    background-color: #FFF8F4;
+    font-family: 'Poppins';
+    color: #354052;
+    padding: 0.6em;
+    overflow: hidden;
+}
+
+.logo {
+    width: 20%;
+    float: left;
+}
+
+.asma-information {
+    clear: both;
+}
+
+.asma-information p, .client-information p, .total p, .banque-infos p, .description p {
+    margin-bottom: 0.2em;
+}
+
+.date {
+    font-size: 17px;
+    color: #F08000;
+    margin-top: 2em;
+}
+
+.client-information {
+    float: right;
+    margin: 2em 0 1em 0;
+}
+
+.client-information .user {
+    color: #0E3049;
+}
+
+.client-information .compte, .carte{
+    color: #52575D;
+}
+
+.client-information .carte-title {
+    margin-right: 3em;
+}
+
+.client-information .abonnement {
+    float: right;
+    font-weight: bold;
+    font-family: 'Lato';
+}
+
+.title {
+    clear: both;
+    color: #F08000;
+    font-family: 'Poppins';
+    text-align: center;
+    margin-top: 4em;
+}
+
+.transactions {
+    clear: both;
+    font-family: 'Lato';
+}
+
+.transactions .table-header {
+    background-color: #FFF8F4;
+    font-size: 16px;
+    color: #F08000;
+}
+
+.transactions .table-header th {
+    padding: 1em 2em 1em 0;
+}
+
+.transactions .transaction-row td {
+    padding: 0.5em 0 1.3em 0;
+}
+
+.transactions .table-header .index-header {
+    padding-right: 3em;
+}
+
+.transactions .index {
+    color: #0E3049;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: 'Raleway';
+}
+
+.transactions tr {
+    vertical-align: top;
+}
+
+.transactions .numero-commande, .transactions .rechargement {
+    color: #0E3049;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.transactions .rechargement {
+    color: green;
+}
+
+.transactions .type {
+    color: #7F8FA4;
+    font-size: 12px;
+    margin-top: 1em;
+}
+
+.transactions .prestation {
+    color: #354052;
+    font-size: 13px;
+}
+
+.transactions .prix {
+    color: #F08000;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.prix-paiement {
+    color: green;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.prix-solde {
+    color: #0E3049;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.transactions .transaction-adresse {
+    width: 21em;
+    height: 100%;
+    margin-top: 0.5em;
+}
+
+.commande-adresse {
+    width: 25em;
+    height: 100%;
+    margin-top: 0.5em;
+}
+
+.transactions .recuperation {
+    float: left;
+    width: 40%;
+}
+
+.transactions .recuperation-title {
+    font-size: 12px;
+    color: #F08000;
+}
+
+.transactions .recuperation-text {
+    font-size: 14px;
+    color: #354052;
+}
+
+.transactions .arrow-icon {
+    width: 1.3em;
+    text-align: center;
+    padding-top: 0.2em;
+}
+
+.transactions .livraison {
+    float: right;
+    width: 50%;
+}
+
+.transactions .livraison-title {
+    font-size: 12px;
+    color: #0E3049;
+}
+
+.transactions .transaction-row .description {
+    padding-left: 1em;
+    width: 10%;
+}
+
+.titles-style {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins';
+}
+
+.total {
+    float: right;
+    padding: 0.8em 0.3em;
+    margin-top: 3em;
+    background-color: #FFF8F4;
+    font-family: 'Poppins';
+}
+
+.total .total-ht {
+    margin-left: 2.45em;
+}
+
+.signature {
+    clear: both;
+    margin-right: 5em;
+}
+
+.signature p {
+    float: right;
+    margin-top: 3em;
+}

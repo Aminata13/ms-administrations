@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Boot Thymeleaf - Bootstrap Static Files</title>
+
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="en-tete">
+        <img class="logo" src="images/logo-safe.png"/>
+        <div class="asma-information customize-size">
+            <p>Sacré Cœur 3</p>
+            <p>Lot N° 137 4-ème étage</p>
+            <p>Tel: 78 306 45 45</p>
+            <p>Email: contact@safelogistics-senegal.com</p>
+        </div>
+        <div class="client-information customize-size">
+            <p class="user" th:text="${#strings.concat(#strings.capitalize(denomination))}"></p>
+            <p class="user" th:text="${#strings.capitalize(adresse)}"></p>
+            <p class="user" >Dakar, Sénégal</p>
+            <p class="carte">
+                <span class="carte-title">Numéro de carte:</span>
+                <span class="abonnement" th:text="${numeroCarte}"></span>
+            </p>
+            <p class="compte">
+                Date d'abonnement:
+                <span class="abonnement"  th:text="${jourAbonnement + ' ' + #strings.capitalize(moisAbonnement) + ' ' + anneeAbonnement}"></span>
+            </p>
+            <p class="compte">
+                Date d'expiration:
+                <span class="abonnement" th:text="${jourAbonnement} + ' ' + ${#strings.capitalize(moisAbonnement)} + ' ' + ${anneeAbonnement + 1}"></span>
+            </p>
+
+            <div class="date">
+                <p th:text=" 'Date: ' + ${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="title">
+        <h3 th:text=" 'Extrait de compte du ' + ${#temporals.format(dateDebut,'dd/MM/yyyy')} + ' au ' + ${#temporals.format(dateFin,'dd/MM/yyyy')} "></h3>
+    </div>
+
+    <div class="transactions">
+        <div th:if="${not #lists.isEmpty(entrepriseData)}">
+            <table class="transactions_table">
+                <thead class="table-header">
+                <tr>
+                    <th class="index-header">Date</th>
+                    <th style="padding-left: 1em">Description</th>
+                    <th class="prix-header">Montant(FCFA)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="transaction-row" th:each="datum, iter : ${entrepriseData}">
+                    <td>
+                        <p class="index" th:text="${#temporals.format(datum.createdDate,'dd/MM/yyyy')}"></p>
+                    </td>
+                    <td class="description">
+                        <div class="description-block" th:if="${datum.dataType == 'Paiement'}">
+                            <p class="rechargement">Paiement</p>
+                        </div>
+                        <div class="description-block" th:if="${datum.dataType == 'Commande'} and ${datum.type.name() == 'LIVRAISON'}">
+                            <p class="numero-commande" th:text=" 'Livraison N°' + ${datum.numero}"></p>
+                            <p class="type">Vitesse de livraison</p>
+                            <p class="prestation" th:text="${#strings.capitalize(#strings.toLowerCase(datum.typeLivraison.label))}"></p>
+                            <div class="commande-adresse">
+                                <p class="recuperation">
+                                    <span class="recuperation-title">Adresse de récupération</span><br/>
+                                    <span class="recuperation-text" th:text="${#strings.capitalize(#strings.trim(datum.pointDepart.libelle))}"></span>
+                                </p>
+                                <img class="arrow-icon" src="images/fleche-droite.png"/>
+                                <p class="livraison">
+                                    <span class="livraison-title">Adresse de livraison</span><br/>
+                                    <span class="recuperation-text" th:text="${#strings.capitalize(#strings.trim(datum.pointArriver.libelle))}"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="description-block" th:if="${datum.dataType == 'Commande'} and ${datum.type.name() == 'PRESTATION'}">
+                            <p class="numero-commande" th:text=" 'Prestation N°' + ${datum.numero}"></p>
+                            <p class="type">Type de prestation</p>
+                            <p class="prestation" th:text="${#strings.capitalize(#strings.toLowerCase(datum.typeService))}"></p>
+                            <div th:switch="${datum.typeService}">
+                                <div th:case="'DEMENAGEMENT'">
+                                    <div class="commande-adresse">
+                                        <p class="recuperation">
+                                            <span class="recuperation-title">Adresse de récupération</span><br/>
+                                            <span class="recuperation-text" th:text="${#strings.capitalize(#strings.trim(datum.demenagement.adresseDepart.libelle))}"></span>
+                                        </p>
+                                        <img class="arrow-icon arrow-demenagement" src="images/fleche-droite.png"/>
+                                        <p class="livraison">
+                                            <span class="livraison-title">Adresse de livraison</span><br/>
+                                            <span class="recuperation-text" th:text="${#strings.capitalize(#strings.trim(datum.demenagement.adresseDestination.libelle))}"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div th:case="'PRESSING'">
+                                    <p class="type">Type de lavage</p>
+                                    <p class="prestation" th:text="${#strings.capitalize(#strings.toLowerCase(datum.pressing.typeLavage))}"></p>
+                                    <p class="type">Vitesse de lavage</p>
+                                    <p class="prestation" th:text="${#strings.capitalize(#strings.toLowerCase(datum.pressing.vitesseLavage))}"></p>
+                                    <div class="commande-adresse">
+                                        <p class="recuperation">
+                                            <span class="recuperation-title">Adresse de récupération</span><br/>
+                                            <span class="recuperation-text" th:text="${datum.pressing.depositionPressing ? 'Néant' : #strings.capitalize(#strings.trim(datum.pressing.adresseRecuperation.libelle))}"></span>
+                                        </p>
+                                        <img class="arrow-icon arrow-pressing" src="images/fleche-droite.png"/>
+                                        <p class="livraison">
+                                            <span class="livraison-title">Adresse de livraison</span><br/>
+                                            <span class="recuperation-text" th:text="${datum.pressing.recuperationPressing ? 'Néant' : #strings.capitalize(#strings.trim(datum.pressing.adresseLivraison.libelle))}"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="montant">
+                        <p class="prix" th:if="${datum.dataType == 'Commande'}" th:text="${#numbers.formatDecimal(datum.prix, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
+                        <p class="prix-paiement" th:if="${datum.dataType == 'Paiement'}" th:text="${#numbers.formatDecimal(datum.montantPayer, 1, 'WHITESPACE', 0, 'COMMA')}"></p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="total">
+        <p class="titles-style">
+            <span>Solde</span>
+            <span class="total-ht" th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 0, 'COMMA')} + ' FCFA'"></span>
+        </p>
+    </div>
+    <div class="signature">
+        <p class="titles-style">Service Facturation</p>
+    </div>
+</div>
+</body>
+</html>

@@ -40,6 +40,10 @@ public interface TransactionDao extends PagingAndSortingRepository<Transaction, 
 
   Optional<Transaction> findByIdAndApprobation(String id, int approbation);
 
+  Optional<Transaction> findByNumeroCommande(String numero);
+
+  Optional<Transaction> findFirstByActionOrderByIdDesc(ETransactionAction action);
+
   boolean existsByReference(String reference);
 
   boolean existsByNumeroCommande(String numeroCommande);

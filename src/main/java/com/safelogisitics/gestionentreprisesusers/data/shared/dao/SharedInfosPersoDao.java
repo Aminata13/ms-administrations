@@ -22,6 +22,8 @@ public interface SharedInfosPersoDao extends PagingAndSortingRepository<SharedIn
 
   Optional<SharedInfosPersoModel> findByEmailOrTelephone(String email, String telephone);
 
+  Optional<SharedInfosPersoModel> findByComptesId(String id);
+
   boolean existsByEmail(String email);
 
   boolean existsByTelephone(String telephone);

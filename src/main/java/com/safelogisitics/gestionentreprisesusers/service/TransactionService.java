@@ -1,22 +1,29 @@
 package com.safelogisitics.gestionentreprisesusers.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dao.filter.TransactionDefaultFields;
 import com.safelogisitics.gestionentreprisesusers.data.dto.kafka.PaiementServiceDto;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.ApprouveTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.PaiementTransactionRequest;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.RechargementTransactionRequest;
+import com.safelogisitics.gestionentreprisesusers.data.enums.EClientType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ECompteType;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionAction;
 import com.safelogisitics.gestionentreprisesusers.data.enums.ETransactionType;
+import com.safelogisitics.gestionentreprisesusers.data.model.ExtraitCompteDataModel;
 import com.safelogisitics.gestionentreprisesusers.data.model.PaiementValidation;
 import com.safelogisitics.gestionentreprisesusers.data.model.Transaction;
 
+import org.bson.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -58,5 +65,12 @@ public interface TransactionService {
 
   public void annulerPaiementTransaction(PaiementServiceDto paiementServiceDto);
 
+  public Map<String, String> getFactureCommandeNumber(String numeroCommande);
+
   public ByteArrayInputStream getRapportByAbonnement(String id, String rapportType, String dateDebut, String dateFin);
+
+  public File getExtraitCompteClientPdf(String clientId, String dateDebut, String dateFin) throws DocumentException, IOException;
+
+  public File getExtraitCompteEntreprisePdf(String entrepriseId, String dateDebut, String dateFin) throws DocumentException, IOException;
+
 }

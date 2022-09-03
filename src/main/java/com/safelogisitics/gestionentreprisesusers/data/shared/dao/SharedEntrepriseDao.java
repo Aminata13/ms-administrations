@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface SharedEntrepriseDao extends PagingAndSortingRepository<SharedEntrepriseModel, String> {
   Optional<SharedEntrepriseModel> findByDenominationAndDeletedIsFalse(String denomination);
 
+  Optional<SharedEntrepriseModel> findByIdAndDeletedIsFalse(String id);
+
   Optional<SharedEntrepriseModel> findByDenominationOrNineaAndDeletedIsFalse(String denomination, String ninea);
 
   boolean existsByIdAndDeletedIsFalse(String id);

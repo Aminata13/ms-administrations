@@ -1,13 +1,20 @@
 package com.safelogisitics.gestionentreprisesusers.web.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.lowagie.text.DocumentException;
 import com.safelogisitics.gestionentreprisesusers.data.dto.request.EntrepriseRequest;
 import com.safelogisitics.gestionentreprisesusers.data.model.Entreprise;
 import com.safelogisitics.gestionentreprisesusers.service.EntrepriseService;
 
+import com.safelogisitics.gestionentreprisesusers.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
