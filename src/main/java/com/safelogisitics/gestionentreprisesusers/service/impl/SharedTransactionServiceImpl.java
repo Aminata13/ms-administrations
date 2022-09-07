@@ -30,10 +30,15 @@ public class SharedTransactionServiceImpl implements SharedTransactionService {
 
     @Override
     public SharedTransactionModel createOrUpdateTransaction(Transaction transactionRequest) {
-        SharedTransactionModel transaction = null;
+        SharedTransactionModel transaction;
 
         if (this.sharedTransactionRepository.existsById(transactionRequest.getId())) {
             transaction = this.sharedTransactionRepository.findById(transactionRequest.getId()).get();
+            if(transaction.getAction().equals(ETransactionAction.RECHARGEMENT)) {
+                transaction.setApprobation(transactionRequest.getApprobation());
+                transaction.setDateApprobation(transactionRequest.getDateApprobation());
+                transaction.setNouveauSolde(transactionRequest.getNouveauSolde());
+            }
         } else {
             transaction = this.objectMapper.convertValue(transactionRequest, SharedTransactionModel.class);
             if (transaction.getAction().equals(ETransactionAction.PAIEMENT)) {
